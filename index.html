@@ -14,21 +14,189 @@
         }
 
         body {
-            background: #070d19;
-            color: #ffffff;
+            background: linear-gradient(135deg, #0f172a, #1e1b4b, #020617);
             min-height: 100vh;
             display: flex;
             justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            padding: 20px 12px;
         }
 
-        .app-container {
+        /* Loading Screen */
+        #loading-screen {
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            transition: opacity 0.6s ease;
+        }
+
+        .site-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #f8fafc;
+            text-transform: uppercase;
+        }
+
+        .logo-wrapper {
+            margin: 10px 0;
+        }
+
+        .rolling-logo {
+            width: 70px;
+            height: 70px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #38bdf8;
+            border-right: 4px solid #818cf8;
+            border-radius: 50%;
+            animation: spin 1.2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .slogan {
+            font-size: 0.95rem;
+            font-style: italic;
+            color: #cbd5e1;
+        }
+
+        .sub-detail {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 15px;
+            margin-top: 5px;
+            width: 100%;
+        }
+
+        /* Auth Container Card */
+        #auth-container {
+            display: none;
+            width: 100%;
+            max-width: 420px;
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 28px 22px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: opacity 0.6s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+        .auth-header h2 {
+            font-size: 1.35rem;
+            color: #38bdf8;
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .auth-header p {
+            font-size: 0.82rem;
+            color: #94a3b8;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: #ffffff;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #38bdf8;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 13px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s ease;
+        }
+
+        .btn-primary:active {
+            background: #1d4ed8;
+        }
+
+        .toggle-text {
+            text-align: center;
+            font-size: 0.82rem;
+            color: #94a3b8;
+            margin-top: 18px;
+        }
+
+        .toggle-text span {
+            color: #38bdf8;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .msg-box {
+            font-size: 0.85rem;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: none;
+            text-align: center;
+        }
+
+        .msg-error { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid #ef4444; }
+        .msg-success { background: rgba(34, 197, 94, 0.2); color: #86efac; border: 1px solid #22c55e; }
+
+        /* Dashboard View Container */
+        #dashboard-view {
+            display: none;
             width: 100%;
             max-width: 480px;
             background: #0b1329;
             min-height: 100vh;
             position: relative;
             padding-bottom: 70px;
-            overflow-x: hidden;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         /* Sidebar Navigation Overlay */
@@ -59,9 +227,7 @@
             border-left: 1px solid #1e293b;
         }
 
-        .sidebar.active {
-            right: 0;
-        }
+        .sidebar.active { right: 0; }
 
         .sidebar-header {
             display: flex;
@@ -191,21 +357,9 @@
             border: 2px solid #38bdf8;
         }
 
-        .user-greeting {
-            font-size: 0.75rem;
-            color: #94a3b8;
-        }
-
-        .user-fullname {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #ffffff;
-        }
-
-        .user-id {
-            font-size: 0.7rem;
-            color: #64748b;
-        }
+        .user-greeting { font-size: 0.75rem; color: #94a3b8; }
+        .user-fullname { font-size: 1rem; font-weight: 700; color: #ffffff; }
+        .user-id { font-size: 0.7rem; color: #64748b; }
 
         .status-badge {
             background: #10b981;
@@ -232,11 +386,7 @@
             margin-bottom: 14px;
         }
 
-        .section-title {
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: #f8fafc;
-        }
+        .section-title { font-size: 0.95rem; font-weight: 700; color: #f8fafc; }
 
         .date-select {
             background: #1e293b;
@@ -260,26 +410,10 @@
             border-radius: 10px;
         }
 
-        .stat-icon {
-            font-size: 1rem;
-            margin-bottom: 4px;
-        }
-
-        .stat-label {
-            font-size: 0.65rem;
-            color: #94a3b8;
-            margin-bottom: 2px;
-        }
-
-        .stat-amount {
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
-
-        .stat-sub {
-            font-size: 0.6rem;
-            color: #64748b;
-        }
+        .stat-icon { font-size: 1rem; margin-bottom: 4px; }
+        .stat-label { font-size: 0.65rem; color: #94a3b8; margin-bottom: 2px; }
+        .stat-amount { font-size: 0.75rem; font-weight: 700; }
+        .stat-sub { font-size: 0.6rem; color: #64748b; }
 
         /* Quick Actions Grid */
         .quick-grid {
@@ -313,16 +447,10 @@
             margin-bottom: 6px;
         }
 
-        .action-label {
-            font-size: 0.7rem;
-            color: #cbd5e1;
-            font-weight: 500;
-        }
+        .action-label { font-size: 0.7rem; color: #cbd5e1; font-weight: 500; }
 
         /* Recent Transactions */
-        .transactions-section {
-            padding: 0 16px;
-        }
+        .transactions-section { padding: 0 16px; }
 
         .tx-card {
             background: #131d38;
@@ -335,11 +463,7 @@
             border: 1px solid #1e293b;
         }
 
-        .tx-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .tx-info { display: flex; align-items: center; gap: 10px; }
 
         .tx-icon {
             width: 34px;
@@ -351,80 +475,95 @@
             font-size: 0.9rem;
         }
 
-        .tx-title {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #f8fafc;
-        }
-
-        .tx-date {
-            font-size: 0.65rem;
-            color: #64748b;
-        }
-
-        .tx-amount {
-            font-size: 0.8rem;
-            font-weight: 700;
-        }
-
-        /* Auth Container */
-        #auth-container {
-            padding: 24px;
-            display: block;
-        }
-
-        .form-group {
-            margin-bottom: 14px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.8rem;
-            color: #cbd5e1;
-            margin-bottom: 6px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 11px;
-            border-radius: 8px;
-            border: 1px solid #334155;
-            background: #0f172a;
-            color: #ffffff;
-            font-size: 0.9rem;
-            outline: none;
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 12px;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            margin-top: 8px;
-        }
-
-        .msg-box {
-            font-size: 0.85rem;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 12px;
-            display: none;
-            text-align: center;
-        }
-
-        .msg-error { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid #ef4444; }
-        .msg-success { background: rgba(34, 197, 94, 0.2); color: #86efac; border: 1px solid #22c55e; }
+        .tx-title { font-size: 0.8rem; font-weight: 600; color: #f8fafc; }
+        .tx-date { font-size: 0.65rem; color: #64748b; }
+        .tx-amount { font-size: 0.8rem; font-weight: 700; }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
+    <!-- Phase 1: Animated Loading Screen -->
+    <div id="loading-screen">
+        <h1 class="site-title">MEN FELLOWSHIP FINANCIAL RECORD</h1>
+        <div class="logo-wrapper">
+            <div class="rolling-logo"></div>
+        </div>
+        <p class="slogan">“Keeping financial records transparent.”</p>
+        <p class="sub-detail">CITY OF MERCY MEN FELLOWSHIP FINANCIAL RECORD</p>
+    </div>
 
+    <!-- Phase 2: Auth Card Container -->
+    <div id="auth-container">
+        <div id="msg-box" class="msg-box"></div>
+
+        <!-- Login View -->
+        <div id="login-view">
+            <div class="auth-header">
+                <h2>Member Login</h2>
+                <p>Enter your details to sign in</p>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-phone">Phone Number</label>
+                    <input type="tel" id="login-phone" placeholder="e.g. 08012345678" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-pin">6-Digit Security PIN</label>
+                    <input type="password" id="login-pin" maxlength="6" pattern="\d{6}" placeholder="******" required>
+                </div>
+                <button type="submit" class="btn-primary" id="login-btn">Sign In</button>
+            </form>
+            <p class="toggle-text">New member? <span id="go-to-register">Register here</span></p>
+        </div>
+
+        <!-- Register View -->
+        <div id="register-view" style="display: none;">
+            <div class="auth-header">
+                <h2>Member Registration</h2>
+                <p>Create your fellowship account</p>
+            </div>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="reg-name">Full Name</label>
+                    <input type="text" id="reg-name" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-email">Email Address</label>
+                    <input type="email" id="reg-email" placeholder="example@mail.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-phone">Phone Number</label>
+                    <input type="tel" id="reg-phone" placeholder="e.g. 08012345678" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-whatsapp">WhatsApp Number</label>
+                    <input type="tel" id="reg-whatsapp" placeholder="e.g. 08012345678" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-origin">State of Origin</label>
+                    <input type="text" id="reg-origin" placeholder="e.g. Imo" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-residence">State of Residence</label>
+                    <input type="text" id="reg-residence" placeholder="e.g. Lagos" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-nationality">Nationality</label>
+                    <input type="text" id="reg-nationality" value="Nigerian" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-pin">Login PIN (6-Digit PIN)</label>
+                    <input type="password" id="reg-pin" maxlength="6" pattern="\d{6}" placeholder="******" required>
+                </div>
+                <button type="submit" class="btn-primary" id="reg-btn">Register Account</button>
+            </form>
+            <p class="toggle-text">Already registered? <span id="go-to-login">Login here</span></p>
+        </div>
+    </div>
+
+    <!-- Phase 3: Member Dashboard View -->
+    <div id="dashboard-view">
+        
         <!-- Sidebar Navigation -->
         <div class="sidebar-overlay" id="sidebar-overlay"></div>
         <div class="sidebar" id="sidebar">
@@ -433,158 +572,133 @@
                 <span class="sidebar-close" id="sidebar-close">&times;</span>
             </div>
             <ul class="sidebar-menu">
-                <li onclick="alert('Dashboard view active')">Dashboard</li>
-                <li onclick="alert('Profile section')">My Profile</li>
-                <li onclick="alert('Dues section')">Dues & Payments</li>
-                <li onclick="alert('Projects section')">Fellowship Projects</li>
-                <li id="sidebar-logout">Log Out</li>
+                <li>Dashboard</li>
+                <li>My Profile</li>
+                <li>Dues & Payments</li>
+                <li>Fellowship Projects</li>
+                <li id="sidebar-logout" style="background:#7f1d1d; color:#fca5a5;">Log Out</li>
             </ul>
         </div>
 
-        <!-- Auth Views (Login / Register) -->
-        <div id="auth-container">
-            <div id="msg-box" class="msg-box"></div>
-
-            <div id="login-view">
-                <h2 style="color:#38bdf8; margin-bottom:12px; text-align:center;">Member Login</h2>
-                <form id="login-form">
-                    <div class="form-group">
-                        <label>Phone Number</label>
-                        <input type="tel" id="login-phone" placeholder="e.g. 08012345678" required>
-                    </div>
-                    <div class="form-group">
-                        <label>6-Digit PIN</label>
-                        <input type="password" id="login-pin" maxlength="6" pattern="\d{6}" placeholder="******" required>
-                    </div>
-                    <button type="submit" class="btn-primary" id="login-btn">Sign In</button>
-                </form>
+        <!-- Top Header -->
+        <div class="header">
+            <div class="header-brand">
+                <div class="header-logo">MF</div>
+                <div>
+                    <div class="header-title-text">MEN FELLOWSHIP</div>
+                    <div class="header-slogan">FINANCIAL RECORD</div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn">
+                    🔔
+                    <span class="badge-dot">3</span>
+                </button>
+                <button class="icon-btn" id="sidebar-toggle">☰</button>
             </div>
         </div>
 
-        <!-- Main Member Dashboard -->
-        <div id="dashboard-view" style="display: none;">
-            
-            <!-- Top Header -->
-            <div class="header">
-                <div class="header-brand">
-                    <div class="header-logo">MF</div>
+        <!-- Profile Overview -->
+        <div class="profile-card">
+            <div class="profile-info">
+                <img src="https://via.placeholder.com/150" alt="Profile" class="avatar-circle" id="dash-avatar">
+                <div>
+                    <div class="user-greeting">Good day,</div>
+                    <div class="user-fullname" id="dash-name">Member Name</div>
+                    <div class="user-id" id="dash-id">Member ID: MF-0000</div>
+                </div>
+            </div>
+            <div class="status-badge">Active</div>
+        </div>
+
+        <!-- Financial Overview -->
+        <div class="overview-section">
+            <div class="section-header">
+                <span class="section-title">Financial Overview</span>
+                <select class="date-select"><option>May 2026</option></select>
+            </div>
+            <div class="overview-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="color: #10b981;">💵</div>
+                    <div class="stat-label">Current Dues</div>
+                    <div class="stat-amount" style="color:#10b981;">₦5,000</div>
+                    <div class="stat-sub">Due this month</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="color: #ef4444;">⏱️</div>
+                    <div class="stat-label">Arrears</div>
+                    <div class="stat-amount" style="color:#ef4444;">₦15,000</div>
+                    <div class="stat-sub">2 months</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="color: #a855f7;">⬆️</div>
+                    <div class="stat-label">Advance</div>
+                    <div class="stat-amount" style="color:#a855f7;">₦0</div>
+                    <div class="stat-sub">No advance</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="color: #38bdf8;">💳</div>
+                    <div class="stat-label">Total Paid</div>
+                    <div class="stat-amount" style="color:#38bdf8;">₦120,000</div>
+                    <div class="stat-sub">This year</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Grid Actions -->
+        <div class="quick-grid">
+            <div class="action-card">
+                <div class="action-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">💲</div>
+                <div class="action-label">Pay Dues</div>
+            </div>
+            <div class="action-card">
+                <div class="action-icon" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8;">📁</div>
+                <div class="action-label">Projects</div>
+            </div>
+            <div class="action-card">
+                <div class="action-icon" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;">📄</div>
+                <div class="action-label">Expenses</div>
+            </div>
+            <div class="action-card">
+                <div class="action-icon" style="background: rgba(168, 85, 247, 0.2); color: #a855f7;">⇄</div>
+                <div class="action-label">Transactions</div>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="transactions-section">
+            <div class="section-header">
+                <span class="section-title">Recent Transactions</span>
+                <span style="font-size: 0.75rem; color: #38bdf8; cursor: pointer;">View All</span>
+            </div>
+
+            <div class="tx-card">
+                <div class="tx-info">
+                    <div class="tx-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">↑</div>
                     <div>
-                        <div class="header-title-text">MEN FELLOWSHIP</div>
-                        <div class="header-slogan">FINANCIAL RECORD</div>
+                        <div class="tx-title">Dues Payment</div>
+                        <div class="tx-date">Monthly dues (May 2026)</div>
                     </div>
                 </div>
-                <div class="header-actions">
-                    <button class="icon-btn">
-                        🔔
-                        <span class="badge-dot">3</span>
-                    </button>
-                    <button class="icon-btn" id="sidebar-toggle">☰</button>
+                <div style="text-align: right;">
+                    <div class="tx-amount" style="color: #10b981;">₦5,000</div>
+                    <div class="tx-date">17-May-2026</div>
                 </div>
             </div>
 
-            <!-- Profile Overview -->
-            <div class="profile-card">
-                <div class="profile-info">
-                    <img src="https://via.placeholder.com/150" alt="Profile" class="avatar-circle" id="dash-avatar">
+            <div class="tx-card">
+                <div class="tx-info">
+                    <div class="tx-icon" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8;">🏛️</div>
                     <div>
-                        <div class="user-greeting">Good day,</div>
-                        <div class="user-fullname" id="dash-name">James Chuks</div>
-                        <div class="user-id" id="dash-id">Member ID: MF001</div>
+                        <div class="tx-title">Project Payment</div>
+                        <div class="tx-date">Church Hall Project</div>
                     </div>
                 </div>
-                <div class="status-badge">Active</div>
-            </div>
-
-            <!-- Financial Overview -->
-            <div class="overview-section">
-                <div class="section-header">
-                    <span class="section-title">Financial Overview</span>
-                    <select class="date-select"><option>May 2026</option></select>
-                </div>
-                <div class="overview-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon" style="color: #10b981;">💵</div>
-                        <div class="stat-label">Current Dues</div>
-                        <div class="stat-amount" style="color:#10b981;">₦5,000</div>
-                        <div class="stat-sub">Due this month</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon" style="color: #ef4444;">⏱️</div>
-                        <div class="stat-label">Arrears</div>
-                        <div class="stat-amount" style="color:#ef4444;">₦15,000</div>
-                        <div class="stat-sub">2 months</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon" style="color: #a855f7;">⬆️</div>
-                        <div class="stat-label">Advance</div>
-                        <div class="stat-amount" style="color:#a855f7;">₦0</div>
-                        <div class="stat-sub">No advance</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon" style="color: #38bdf8;">💳</div>
-                        <div class="stat-label">Total Paid</div>
-                        <div class="stat-amount" style="color:#38bdf8;">₦120,000</div>
-                        <div class="stat-sub">This year</div>
-                    </div>
+                <div style="text-align: right;">
+                    <div class="tx-amount" style="color: #38bdf8;">₦10,000</div>
+                    <div class="tx-date">15-May-2026</div>
                 </div>
             </div>
-
-            <!-- Quick Grid Actions -->
-            <div class="quick-grid">
-                <div class="action-card">
-                    <div class="action-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">💲</div>
-                    <div class="action-label">Pay Dues</div>
-                </div>
-                <div class="action-card">
-                    <div class="action-icon" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8;">📁</div>
-                    <div class="action-label">Projects</div>
-                </div>
-                <div class="action-card">
-                    <div class="action-icon" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;">📄</div>
-                    <div class="action-label">Expenses</div>
-                </div>
-                <div class="action-card">
-                    <div class="action-icon" style="background: rgba(168, 85, 247, 0.2); color: #a855f7;">⇄</div>
-                    <div class="action-label">Transactions</div>
-                </div>
-            </div>
-
-            <!-- Recent Transactions -->
-            <div class="transactions-section">
-                <div class="section-header">
-                    <span class="section-title">Recent Transactions</span>
-                    <span style="font-size: 0.75rem; color: #38bdf8; cursor: pointer;">View All</span>
-                </div>
-
-                <div class="tx-card">
-                    <div class="tx-info">
-                        <div class="tx-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">↑</div>
-                        <div>
-                            <div class="tx-title">Dues Payment</div>
-                            <div class="tx-date">Monthly dues (May 2026)</div>
-                        </div>
-                    </div>
-                    <div style="text-align: right;">
-                        <div class="tx-amount" style="color: #10b981;">₦5,000</div>
-                        <div class="tx-date">17-May-2026</div>
-                    </div>
-                </div>
-
-                <div class="tx-card">
-                    <div class="tx-info">
-                        <div class="tx-icon" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8;">🏛️</div>
-                        <div>
-                            <div class="tx-title">Project Payment</div>
-                            <div class="tx-date">Church Hall Project</div>
-                        </div>
-                    </div>
-                    <div style="text-align: right;">
-                        <div class="tx-amount" style="color: #38bdf8;">₦10,000</div>
-                        <div class="tx-date">15-May-2026</div>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
     </div>
@@ -594,7 +708,51 @@
         const SUPABASE_KEY = 'sb_publishable_Msx99khN4c2O5hxMcdpfUw_7zB1U4LY';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Sidebar Toggle Logic
+        // Phase 1 Transition Script
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('loading-screen');
+                const auth = document.getElementById('auth-container');
+
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    auth.style.display = 'block';
+                    setTimeout(() => { auth.style.opacity = '1'; }, 50);
+                }, 600);
+            }, 3000);
+        });
+
+        // Toggle Auth Views & Messages
+        const loginView = document.getElementById('login-view');
+        const registerView = document.getElementById('register-view');
+        const authContainer = document.getElementById('auth-container');
+        const dashboardView = document.getElementById('dashboard-view');
+        const msgBox = document.getElementById('msg-box');
+
+        document.getElementById('go-to-register').addEventListener('click', () => {
+            hideMessage();
+            loginView.style.display = 'none';
+            registerView.style.display = 'block';
+        });
+
+        document.getElementById('go-to-login').addEventListener('click', () => {
+            hideMessage();
+            registerView.style.display = 'none';
+            loginView.style.display = 'block';
+        });
+
+        function showMessage(text, isError = true) {
+            msgBox.textContent = text;
+            msgBox.className = 'msg-box ' + (isError ? 'msg-error' : 'msg-success');
+            msgBox.style.display = 'block';
+        }
+
+        function hideMessage() {
+            msgBox.style.display = 'none';
+        }
+
+        // Sidebar Controls
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebar-overlay');
         const toggleBtn = document.getElementById('sidebar-toggle');
@@ -614,36 +772,114 @@
         closeBtn.addEventListener('click', closeSidebar);
         overlay.addEventListener('click', closeSidebar);
 
-        // Login Logic
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
+        // Registration Logic
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const phone = document.getElementById('login-phone').value.trim();
-            const pin = document.getElementById('login-pin').value.trim();
+            hideMessage();
 
-            const { data, error } = await _supabase
-                .from('members')
-                .select('*')
-                .eq('phone_number', phone)
-                .eq('pin_hash', pin)
-                .single();
+            const fullName = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            const whatsapp = document.getElementById('reg-whatsapp').value.trim();
+            const origin = document.getElementById('reg-origin').value.trim();
+            const residence = document.getElementById('reg-residence').value.trim();
+            const nationality = document.getElementById('reg-nationality').value.trim();
+            const pin = document.getElementById('reg-pin').value.trim();
+            const regBtn = document.getElementById('reg-btn');
 
-            if (error || !data) {
-                alert('Invalid details. Please try again.');
-            } else {
-                document.getElementById('dash-name').textContent = data.full_name;
-                document.getElementById('dash-id').textContent = 'Member ID: ' + data.member_id;
-                document.getElementById('auth-container').style.display = 'none';
-                document.getElementById('dashboard-view').style.display = 'block';
+            if (pin.length !== 6 || isNaN(pin)) {
+                showMessage('PIN must be exactly 6 numbers.');
+                return;
+            }
+
+            regBtn.disabled = true;
+            regBtn.textContent = 'Registering...';
+
+            try {
+                const memberId = 'MF-' + Math.floor(1000 + Math.random() * 9000);
+
+                const { data, error } = await _supabase
+                    .from('members')
+                    .insert([{
+                        full_name: fullName,
+                        email: email,
+                        phone_number: phone,
+                        whatsapp_number: whatsapp,
+                        state_of_origin: origin,
+                        state_of_residence: residence,
+                        nationality: nationality,
+                        pin_hash: pin,
+                        member_id: memberId,
+                        role: 'member'
+                    }]);
+
+                if (error) {
+                    if (error.code === '23505') {
+                        showMessage('This phone number or email is already registered.');
+                    } else {
+                        showMessage('Error: ' + error.message);
+                    }
+                } else {
+                    showMessage(`Account created! Member ID: ${memberId}. Please login.`, false);
+                    document.getElementById('register-form').reset();
+                    setTimeout(() => {
+                        registerView.style.display = 'none';
+                        loginView.style.display = 'block';
+                    }, 2500);
+                }
+            } catch (err) {
+                showMessage('Network error. Check connection.');
+            } finally {
+                regBtn.disabled = false;
+                regBtn.textContent = 'Register Account';
             }
         });
 
+        // Login Logic
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideMessage();
+
+            const phone = document.getElementById('login-phone').value.trim();
+            const pin = document.getElementById('login-pin').value.trim();
+            const loginBtn = document.getElementById('login-btn');
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Signing in...';
+
+            try {
+                const { data, error } = await _supabase
+                    .from('members')
+                    .select('*')
+                    .eq('phone_number', phone)
+                    .eq('pin_hash', pin)
+                    .single();
+
+                if (error || !data) {
+                    showMessage('Invalid Phone Number or PIN. Please try again.');
+                } else {
+                    document.getElementById('dash-name').textContent = data.full_name;
+                    document.getElementById('dash-id').textContent = 'Member ID: ' + data.member_id;
+
+                    authContainer.style.display = 'none';
+                    dashboardView.style.display = 'block';
+                }
+            } catch (err) {
+                showMessage('Network error. Check connection.');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Sign In';
+            }
+        });
+
+        // Logout
         document.getElementById('sidebar-logout').addEventListener('click', () => {
             closeSidebar();
-            document.getElementById('dashboard-view').style.display = 'none';
-            document.getElementById('auth-container').style.display = 'block';
+            dashboardView.style.display = 'none';
+            document.getElementById('login-form').reset();
+            authContainer.style.display = 'block';
         });
     </script>
 
 </body>
 </html>
-
