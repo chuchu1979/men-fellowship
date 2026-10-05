@@ -17,29 +17,30 @@
             background: #0f172a;
             color: #ffffff;
             min-height: 100vh;
-            padding: 20px 16px;
+            padding: 16px 12px;
         }
 
         .admin-container {
-            max-width: 600px;
+            max-width: 500px;
             margin: 0 auto;
         }
 
+        /* Header */
         .admin-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 16px;
+            padding-bottom: 14px;
             border-bottom: 1px solid #1e293b;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .admin-title {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 800;
             color: #ef4444;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
         }
 
         .badge-admin {
@@ -48,20 +49,21 @@
             border: 1px solid #ef4444;
             padding: 4px 10px;
             border-radius: 12px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
         }
 
+        /* Cards & Components */
         .card {
             background: #1e293b;
             border-radius: 14px;
-            padding: 20px;
+            padding: 18px 16px;
             margin-bottom: 16px;
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .card-title {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 700;
             color: #38bdf8;
             margin-bottom: 12px;
@@ -78,7 +80,7 @@
             margin-bottom: 6px;
         }
 
-        .form-group input, .form-group select {
+        .form-group input {
             width: 100%;
             padding: 10px 12px;
             border-radius: 8px;
@@ -112,18 +114,110 @@
 
         .msg-error { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid #ef4444; }
         .msg-success { background: rgba(34, 197, 94, 0.2); color: #86efac; border: 1px solid #22c55e; }
+
+        /* Admin Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card {
+            background: #1e293b;
+            padding: 14px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .stat-val {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-top: 4px;
+        }
+
+        .stat-lbl {
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
+
+        /* Action Buttons Grid */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .admin-action-btn {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 12px;
+            color: #f8fafc;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Member List Table */
+        .member-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #334155;
+        }
+
+        .member-item:last-child {
+            border-bottom: none;
+        }
+
+        .member-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .member-phone {
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
+
+        .member-badge {
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+            background: rgba(56, 189, 248, 0.2);
+            color: #38bdf8;
+        }
+
+        .logout-btn {
+            background: none;
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
     <div class="admin-container">
-        <!-- Admin Header -->
+        <!-- Header -->
         <div class="admin-header">
             <div>
                 <div class="admin-title">Admin Panel</div>
                 <div style="font-size: 0.75rem; color: #94a3b8;">Men Fellowship Control Center</div>
             </div>
-            <span class="badge-admin">Admin Access</span>
+            <span class="badge-admin" id="admin-status-tag">Admin Access</span>
         </div>
 
         <div id="msg-box" class="msg-box"></div>
@@ -144,12 +238,54 @@
             </form>
         </div>
 
-        <!-- Admin Main View (Hidden by default) -->
+        <!-- Admin Main Dashboard View (Hidden by default) -->
         <div id="admin-main-view" style="display: none;">
-            <div class="card">
-                <div class="card-title">Welcome, Admin</div>
-                <p style="font-size: 0.85rem; color: #cbd5e1;">You now have administrative access to manage members, payments, and projects.</p>
+            
+            <!-- Top Welcome & Logout -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <div>
+                    <div style="font-size: 0.75rem; color: #94a3b8;">Welcome back,</div>
+                    <div style="font-size: 1rem; font-weight: 700; color: #38bdf8;" id="admin-name">Admin User</div>
+                </div>
+                <button class="logout-btn" id="admin-logout-btn">Logout</button>
             </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-lbl">Total Members</div>
+                    <div class="stat-val" id="stat-total-members">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-lbl">Active Dues</div>
+                    <div class="stat-val" style="color: #10b981;">₦5,000</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-lbl">Pending Approvals</div>
+                    <div class="stat-val" style="color: #f59e0b;">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-lbl">Total Collected</div>
+                    <div class="stat-val" style="color: #38bdf8;">₦0</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="action-grid">
+                <button class="admin-action-btn">👥 Manage Members</button>
+                <button class="admin-action-btn">💵 Record Payment</button>
+                <button class="admin-action-btn">🏗️ Add Project</button>
+                <button class="admin-action-btn">⚙️ Admin Settings</button>
+            </div>
+
+            <!-- Member Directory Card -->
+            <div class="card">
+                <div class="card-title">Registered Members</div>
+                <div id="member-list-container">
+                    <p style="font-size: 0.8rem; color: #94a3b8;">Loading members...</p>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -196,7 +332,11 @@
                 } else {
                     document.getElementById('admin-login-card').style.display = 'none';
                     document.getElementById('admin-main-view').style.display = 'block';
+                    document.getElementById('admin-name').textContent = data.full_name;
                     showMessage('Admin access granted!', false);
+                    
+                    // Fetch dashboard data
+                    loadAdminDashboard();
                 }
             } catch (err) {
                 showMessage('Network error. Please check your connection.');
@@ -204,6 +344,56 @@
                 btn.disabled = false;
                 btn.textContent = 'Access Admin Dashboard';
             }
+        });
+
+        // Load Admin Dashboard Data
+        async function loadAdminDashboard() {
+            try {
+                const { data: members, error } = await _supabase
+                    .from('members')
+                    .select('full_name, phone_number, member_id, role');
+
+                if (error) {
+                    showMessage('Error loading members.');
+                    return;
+                }
+
+                // Update Total Members Count
+                document.getElementById('stat-total-members').textContent = members.length;
+
+                // Render Member List
+                const listContainer = document.getElementById('member-list-container');
+                listContainer.innerHTML = '';
+
+                if (members.length === 0) {
+                    listContainer.innerHTML = '<p style="font-size:0.8rem; color:#94a3b8;">No members found.</p>';
+                    return;
+                }
+
+                members.forEach(member => {
+                    const item = document.createElement('div');
+                    item.className = 'member-item';
+                    item.innerHTML = `
+                        <div>
+                            <div class="member-name">${member.full_name}</div>
+                            <div class="member-phone">${member.phone_number} | ${member.member_id || 'No ID'}</div>
+                        </div>
+                        <span class="member-badge">${member.role.toUpperCase()}</span>
+                    `;
+                    listContainer.appendChild(item);
+                });
+
+            } catch (err) {
+                showMessage('Failed to connect to database.');
+            }
+        }
+
+        // Logout Handle
+        document.getElementById('admin-logout-btn').addEventListener('click', () => {
+            document.getElementById('admin-main-view').style.display = 'none';
+            document.getElementById('admin-login-card').style.display = 'block';
+            document.getElementById('admin-login-form').reset();
+            hideMessage();
         });
     </script>
 </body>
