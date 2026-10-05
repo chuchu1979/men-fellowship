@@ -125,7 +125,7 @@
             font-weight: 500;
         }
 
-        .form-group input {
+        .form-group input, .form-group select {
             width: 100%;
             padding: 12px 14px;
             border-radius: 10px;
@@ -137,7 +137,7 @@
             transition: border-color 0.2s ease;
         }
 
-        .form-group input:focus {
+        .form-group input:focus, .form-group select:focus {
             border-color: #38bdf8;
         }
 
@@ -431,6 +431,36 @@
         .tx-title { font-size: 0.75rem; font-weight: 600; color: #f8fafc; }
         .tx-date { font-size: 0.6rem; color: #64748b; }
         .tx-amount { font-size: 0.75rem; font-weight: 700; }
+
+        /* Inner Sections Style */
+        .inner-section {
+            display: none;
+            padding: 0 16px;
+            margin-bottom: 16px;
+        }
+
+        .card-box {
+            background: #131d38;
+            border-radius: 12px;
+            padding: 14px;
+            border: 1px solid #1e293b;
+        }
+
+        .calendar-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .calendar-inputs select {
+            background: #0f172a;
+            color: #f8fafc;
+            border: 1px solid #334155;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+        }
     </style>
 </head>
 <body>
@@ -526,6 +556,8 @@
             </div>
             <ul class="sidebar-menu">
                 <li id="menu-dashboard">📊 Dashboard</li>
+                <li id="menu-view-dues">📄 View My Dues</li>
+                <li id="menu-calendar-dues">📅 Dues Calendar</li>
                 <li>💰 Pay Dues</li>
                 <li>📋 Dues Records</li>
                 <li>🏗️ Fellowship Projects</li>
@@ -551,78 +583,146 @@
             </div>
         </div>
 
-        <!-- Financial Overview Section -->
-        <div class="overview-section">
-            <div class="section-header">
-                <span class="section-title">Financial Overview</span>
-                <select class="date-select"><option>Oct 2026</option></select>
-            </div>
-            <div class="overview-grid">
-                <div class="stat-card">
-                    <div class="stat-icon" style="color: #10b981;">💵</div>
-                    <div class="stat-label">Current Dues</div>
-                    <div class="stat-amount" style="color:#10b981;">₦5,000</div>
-                    <div class="stat-sub">This month</div>
+        <!-- Main Dashboard Content Area -->
+        <div id="main-dashboard-content">
+            <!-- Financial Overview Section -->
+            <div class="overview-section">
+                <div class="section-header">
+                    <span class="section-title">Financial Overview</span>
+                    <select class="date-select"><option>Oct 2026</option></select>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="color: #ef4444;">⏱</div>
-                    <div class="stat-label">Arrears</div>
-                    <div class="stat-amount" style="color:#ef4444;">₦0</div>
-                    <div class="stat-sub">Clear</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="color: #a855f7;">⬆</div>
-                    <div class="stat-label">Advance</div>
-                    <div class="stat-amount" style="color:#a855f7;">₦0</div>
-                    <div class="stat-sub">No advance</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="color: #38bdf8;">💳</div>
-                    <div class="stat-label">Total Paid</div>
-                    <div class="stat-amount" style="color:#38bdf8;">₦0</div>
-                    <div class="stat-sub">This year</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Quick Actions Grid -->
-        <div class="quick-grid">
-            <div class="action-card">
-                <div class="action-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">💲</div>
-                <div class="action-label">Pay Dues</div>
-            </div>
-            <div class="action-card">
-                <div class="action-icon" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8;">📁</div>
-                <div class="action-label">Projects</div>
-            </div>
-            <div class="action-card">
-                <div class="action-icon" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;">📄</div>
-                <div class="action-label">Expenses</div>
-            </div>
-            <div class="action-card">
-                <div class="action-icon" style="background: rgba(168, 85, 247, 0.2); color: #a855f7;">⇄</div>
-                <div class="action-label">Transactions</div>
-            </div>
-        </div>
-
-        <!-- Recent Transactions -->
-        <div class="transactions-section">
-            <div class="section-header">
-                <span class="section-title">Recent Transactions</span>
-                <span style="font-size: 0.72rem; color: #38bdf8; cursor: pointer;">View All</span>
-            </div>
-
-            <div class="tx-card">
-                <div class="tx-info">
-                    <div class="tx-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">↑</div>
-                    <div>
-                        <div class="tx-title">Registration Account</div>
-                        <div class="tx-date">Account Created</div>
+                <div class="overview-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color: #10b981;">💵</div>
+                        <div class="stat-label">Current Dues</div>
+                        <div class="stat-amount" style="color:#10b981;">₦5,000</div>
+                        <div class="stat-sub">This month</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color: #ef4444;">⏱</div>
+                        <div class="stat-label">Arrears</div>
+                        <div class="stat-amount" style="color:#ef4444;">₦0</div>
+                        <div class="stat-sub">Clear</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color: #a855f7;">⬆</div>
+                        <div class="stat-label">Advance</div>
+                        <div class="stat-amount" style="color:#a855f7;">₦0</div>
+                        <div class="stat-sub">No advance</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color: #38bdf8;">💳</div>
+                        <div class="stat-label">Total Paid</div>
+                        <div class="stat-amount" style="color:#38bdf8;">₦0</div>
+                        <div class="stat-sub">This year</div>
                     </div>
                 </div>
-                <div style="text-align: right;">
-                    <div class="tx-amount" style="color: #10b981;">Active</div>
-                    <div class="tx-date">Verified</div>
+            </div>
+
+            <!-- Quick Actions Grid -->
+            <div class="quick-grid">
+                <div class="action-card">
+                    <div class="action-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">💲</div>
+                    <div class="action-label">Pay Dues</div>
+                </div>
+                <div class="action-card">
+                    <div class="action-icon" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8;">📁</div>
+                    <div class="action-label">Projects</div>
+                </div>
+                <div class="action-card">
+                    <div class="action-icon" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;">📄</div>
+                    <div class="action-label">Expenses</div>
+                </div>
+                <div class="action-card">
+                    <div class="action-icon" style="background: rgba(168, 85, 247, 0.2); color: #a855f7;">⇄</div>
+                    <div class="action-label">Transactions</div>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="transactions-section">
+                <div class="section-header">
+                    <span class="section-title">Recent Transactions</span>
+                    <span style="font-size: 0.72rem; color: #38bdf8; cursor: pointer;">View All</span>
+                </div>
+
+                <div class="tx-card">
+                    <div class="tx-info">
+                        <div class="tx-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">↑</div>
+                        <div>
+                            <div class="tx-title">Registration Account</div>
+                            <div class="tx-date">Account Created</div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="tx-amount" style="color: #10b981;">Active</div>
+                        <div class="tx-date">Verified</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- View My Dues View -->
+        <div id="view-dues-section" class="inner-section">
+            <div class="card-box">
+                <h3 style="font-size: 0.95rem; color:#38bdf8; margin-bottom: 10px;">📄 View My Dues Summary</h3>
+                <p style="font-size: 0.78rem; color:#cbd5e1; margin-bottom: 12px;">Overview of your monthly dues and payment status.</p>
+                <div style="background:#0f172a; padding:12px; border-radius:8px; border:1px solid #1e293b;">
+                    <div style="display:flex; justify-between; margin-bottom:6px; font-size:0.75rem;">
+                        <span style="color:#94a3b8;">Monthly Rate:</span>
+                        <span style="font-weight:700; color:#10b981;">₦5,000</span>
+                    </div>
+                    <div style="display:flex; justify-between; margin-bottom:6px; font-size:0.75rem;">
+                        <span style="color:#94a3b8;">Status:</span>
+                        <span style="font-weight:700; color:#38bdf8;">Up to date</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dues Calendar View -->
+        <div id="calendar-dues-section" class="inner-section">
+            <div class="card-box">
+                <h3 style="font-size: 0.95rem; color:#38bdf8; margin-bottom: 10px;">📅 Dues Calendar Search</h3>
+                <p style="font-size: 0.78rem; color:#cbd5e1; margin-bottom: 12px;">Select day, month, and year to filter dues records:</p>
+                
+                <div class="calendar-inputs">
+                    <select id="cal-day">
+                        <option value="">Day</option>
+                        <!-- Days 1 to 31 -->
+                        <script>
+                            for(let i=1; i<=31; i++) {
+                                document.write(`<option value="${i}">${i}</option>`);
+                            }
+                        </script>
+                    </select>
+                    <select id="cal-month">
+                        <option value="">Month</option>
+                        <option value="1">Jan</option>
+                        <option value="2">Feb</option>
+                        <option value="3">Mar</option>
+                        <option value="4">Apr</option>
+                        <option value="5">May</option>
+                        <option value="6">Jun</option>
+                        <option value="7">Jul</option>
+                        <option value="8">Aug</option>
+                        <option value="9">Sep</option>
+                        <option value="10">Oct</option>
+                        <option value="11">Nov</option>
+                        <option value="12">Dec</option>
+                    </select>
+                    <select id="cal-year">
+                        <option value="">Year</option>
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                    </select>
+                </div>
+
+                <button class="btn-primary" style="padding: 10px; font-size:0.8rem;" id="btn-search-cal">Filter Dues</button>
+
+                <div id="cal-result" style="margin-top:14px; font-size:0.75rem; color:#94a3b8; text-align:center;">
+                    Select date parameters above to check records.
                 </div>
             </div>
         </div>
@@ -655,6 +755,17 @@
         const authContainer = document.getElementById('auth-container');
         const dashboardView = document.getElementById('dashboard-view');
         const msgBox = document.getElementById('msg-box');
+
+        // Navigation Containers
+        const mainContent = document.getElementById('main-dashboard-content');
+        const viewDuesSec = document.getElementById('view-dues-section');
+        const calendarDuesSec = document.getElementById('calendar-dues-section');
+
+        function hideAllViews() {
+            mainContent.style.display = 'none';
+            viewDuesSec.style.display = 'none';
+            calendarDuesSec.style.display = 'none';
+        }
 
         document.getElementById('go-to-register').addEventListener('click', () => {
             hideMessage();
@@ -698,8 +809,23 @@
         closeBtn.addEventListener('click', closeSidebar);
         overlay.addEventListener('click', closeSidebar);
 
+        // Sidebar Navigation Clicks
         document.getElementById('menu-dashboard').addEventListener('click', () => {
             closeSidebar();
+            hideAllViews();
+            mainContent.style.display = 'block';
+        });
+
+        document.getElementById('menu-view-dues').addEventListener('click', () => {
+            closeSidebar();
+            hideAllViews();
+            viewDuesSec.style.display = 'block';
+        });
+
+        document.getElementById('menu-calendar-dues').addEventListener('click', () => {
+            closeSidebar();
+            hideAllViews();
+            calendarDuesSec.style.display = 'block';
         });
 
         // Registration Logic
@@ -788,12 +914,13 @@
                 if (error || !data) {
                     showMessage('Invalid Phone Number or PIN. Please try again.');
                 } else {
-                    // Update Top Right Header Info
                     document.getElementById('top-user-name').textContent = data.full_name || 'Member';
                     document.getElementById('top-user-phone').textContent = data.phone_number || '';
 
                     authContainer.style.display = 'none';
                     dashboardView.style.display = 'block';
+                    hideAllViews();
+                    mainContent.style.display = 'block';
                 }
             } catch (err) {
                 showMessage('Network error. Check connection.');
@@ -801,6 +928,16 @@
                 loginBtn.disabled = false;
                 loginBtn.textContent = 'Sign In';
             }
+        });
+
+        // Calendar Search Filter
+        document.getElementById('btn-search-cal').addEventListener('click', () => {
+            const day = document.getElementById('cal-day').value;
+            const month = document.getElementById('cal-month').value;
+            const year = document.getElementById('cal-year').value;
+
+            const resultDiv = document.getElementById('cal-result');
+            resultDiv.innerHTML = `<span style="color:#38bdf8;">Searching records for ${day || 'All Days'}-${month || 'All Months'}-${year || 'All Years'}...</span>`;
         });
 
         // Logout
