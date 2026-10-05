@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Men Fellowship Financial Record</title>
+    <title>Men Fellowship Financial Record - Admin</title>
     <link rel="manifest" href="/manifest.json">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -194,7 +194,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Slim Sidebar */
+        /* Sidebar Navigation */
         .sidebar-overlay {
             position: fixed;
             top: 0;
@@ -311,51 +311,6 @@
             cursor: pointer;
         }
 
-        /* Financial Overview Grid */
-        .overview-section {
-            background: linear-gradient(180deg, #131d38, #0f172a);
-            border-radius: 14px;
-            padding: 14px;
-            margin: 0 16px 14px;
-            border: 1px solid #1e293b;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .section-title { font-size: 0.88rem; font-weight: 700; color: #f8fafc; }
-
-        .date-select {
-            background: #1e293b;
-            color: #94a3b8;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-        }
-
-        .overview-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
-            text-align: center;
-        }
-
-        .stat-card {
-            background: #1a2542;
-            padding: 8px 3px;
-            border-radius: 8px;
-        }
-
-        .stat-icon { font-size: 0.9rem; margin-bottom: 2px; }
-        .stat-label { font-size: 0.6rem; color: #94a3b8; margin-bottom: 2px; }
-        .stat-amount { font-size: 0.72rem; font-weight: 700; }
-        .stat-sub { font-size: 0.55rem; color: #64748b; }
-
         /* Non-clickable Admin Total Dues Card */
         .admin-total-card {
             background: linear-gradient(135deg, #1e1b4b, #1e293b);
@@ -371,73 +326,8 @@
         .admin-total-label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
         .admin-total-amount { font-size: 1.5rem; font-weight: 800; color: #10b981; margin-top: 4px; }
 
-        /* Quick Actions Grid */
-        .quick-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            padding: 0 16px;
-            margin-bottom: 14px;
-        }
-
-        .action-card {
-            background: #131d38;
-            border-radius: 10px;
-            padding: 12px 4px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid #1e293b;
-            cursor: pointer;
-        }
-
-        .action-icon {
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.85rem;
-            margin-bottom: 4px;
-        }
-
-        .action-label { font-size: 0.65rem; color: #cbd5e1; font-weight: 500; }
-
-        /* Recent Transactions */
-        .transactions-section { padding: 0 16px; }
-
-        .tx-card {
-            background: #131d38;
-            border-radius: 10px;
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            border: 1px solid #1e293b;
-        }
-
-        .tx-info { display: flex; align-items: center; gap: 8px; }
-
-        .tx-icon {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-        }
-
-        .tx-title { font-size: 0.75rem; font-weight: 600; color: #f8fafc; }
-        .tx-date { font-size: 0.6rem; color: #64748b; }
-        .tx-amount { font-size: 0.75rem; font-weight: 700; }
-
         /* Inner Sections Style */
-        .inner-section {
-            display: none;
+        .admin-section-box {
             padding: 0 16px;
             margin-bottom: 16px;
         }
@@ -447,22 +337,6 @@
             border-radius: 12px;
             padding: 14px;
             border: 1px solid #1e293b;
-        }
-
-        .calendar-inputs {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-
-        .calendar-inputs select {
-            background: #0f172a;
-            color: #f8fafc;
-            border: 1px solid #334155;
-            padding: 8px;
-            border-radius: 6px;
-            font-size: 0.75rem;
         }
 
         /* Member Search Result Items */
@@ -503,8 +377,8 @@
         <!-- Login View -->
         <div id="login-view">
             <div class="auth-header">
-                <h2>Member Login</h2>
-                <p>Enter your details to sign in</p>
+                <h2>Admin Login</h2>
+                <p>Sign in to access Admin Control Panel</p>
             </div>
             <form id="login-form">
                 <div class="form-group">
@@ -515,15 +389,15 @@
                     <label for="login-pin">6-Digit Security PIN</label>
                     <input type="password" id="login-pin" maxlength="6" pattern="\d{6}" placeholder="******" required>
                 </div>
-                <button type="submit" class="btn-primary" id="login-btn">Sign In</button>
+                <button type="submit" class="btn-primary" id="login-btn">Sign In to Admin Dashboard</button>
             </form>
-            <p class="toggle-text">New member? <span id="go-to-register">Register here</span></p>
+            <p class="toggle-text">New account? <span id="go-to-register">Register here</span></p>
         </div>
 
         <!-- Register View -->
         <div id="register-view" style="display: none;">
             <div class="auth-header">
-                <h2>Member Registration</h2>
+                <h2>Account Registration</h2>
                 <p>Create your fellowship account</p>
             </div>
             <form id="register-form">
@@ -565,210 +439,58 @@
         </div>
     </div>
 
-    <!-- Member / Admin Dashboard View -->
+    <!-- Admin Dashboard View -->
     <div id="dashboard-view">
         
         <!-- Sidebar Navigation -->
         <div class="sidebar-overlay" id="sidebar-overlay"></div>
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <span style="font-weight:700; color:#38bdf8; font-size:0.75rem;">NAV MENU</span>
+                <span style="font-weight:700; color:#38bdf8; font-size:0.75rem;">ADMIN MENU</span>
                 <span class="sidebar-close" id="sidebar-close">&times;</span>
             </div>
             <ul class="sidebar-menu">
-                <li id="menu-dashboard">📊 Dashboard</li>
-                <li id="menu-view-dues">📄 View My Dues</li>
-                <li id="menu-calendar-dues">📅 Dues Calendar</li>
-                <li id="menu-admin-search" style="display: none; background: #312e81; color: #38bdf8; font-weight:700;">🔍 Search Member (Admin)</li>
-                <li>💰 Pay Dues</li>
-                <li>📋 Dues Records</li>
-                <li>🏗️ Fellowship Projects</li>
-                <li>💵 Project Fund</li>
-                <li>🔔 Notifications</li>
-                <li>⚙️ Account Settings</li>
-                <li id="sidebar-logout" style="background:#7f1d1d; color:#fca5a5; margin-top: 10px;">🚪 Logout</li>
+                <li id="menu-admin-home">⚙️ Admin Dashboard</li>
+                <li id="sidebar-logout" style="background:#7f1d1d; color:#fca5a5; margin-top: 15px;">🚪 Logout</li>
             </ul>
         </div>
 
-        <!-- Header -->
+        <!-- Dashboard Header -->
         <div class="header">
             <div class="header-brand">
                 <button class="icon-btn" id="sidebar-toggle">☰</button>
-                <div class="header-logo">MF</div>
+                <div class="header-logo">ADM</div>
                 <div>
-                    <div class="header-title-text" id="dashboard-role-title">MEMBER DASHBOARD</div>
+                    <div class="header-title-text">ADMIN DASHBOARD</div>
                 </div>
             </div>
             <div class="header-user-info">
-                <div class="header-user-name" id="top-user-name">Member Name</div>
+                <div class="header-user-name" id="top-user-name">Admin</div>
                 <div class="header-user-phone" id="top-user-phone">08000000000</div>
             </div>
         </div>
 
-        <!-- Non-clickable Total Dues Collected Card (Shown to all / Admin) -->
+        <!-- Total Dues Collected Card (Non-clickable) -->
         <div class="admin-total-card">
             <div class="admin-total-label">Total Dues Collected So Far</div>
             <div class="admin-total-amount" id="total-dues-collected">₦0</div>
         </div>
 
-        <!-- Main Dashboard Content Area -->
-        <div id="main-dashboard-content">
-            <!-- Financial Overview Section -->
-            <div class="overview-section">
-                <div class="section-header">
-                    <span class="section-title">Financial Overview</span>
-                    <select class="date-select"><option>Oct 2026</option></select>
-                </div>
-                <div class="overview-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon" style="color: #10b981;">💵</div>
-                        <div class="stat-label">Current Dues</div>
-                        <div class="stat-amount" style="color:#10b981;">₦5,000</div>
-                        <div class="stat-sub">This month</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon" style="color: #ef4444;">⏱</div>
-                        <div class="stat-label">Arrears</div>
-                        <div class="stat-amount" style="color:#ef4444;">₦0</div>
-                        <div class="stat-sub">Clear</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon" style="color: #a855f7;">⬆</div>
-                        <div class="stat-label">Advance</div>
-                        <div class="stat-amount" style="color:#a855f7;">₦0</div>
-                        <div class="stat-sub">No advance</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon" style="color: #38bdf8;">💳</div>
-                        <div class="stat-label">Total Paid</div>
-                        <div class="stat-amount" style="color:#38bdf8;">₦0</div>
-                        <div class="stat-sub">This year</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Actions Grid -->
-            <div class="quick-grid">
-                <div class="action-card">
-                    <div class="action-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">💲</div>
-                    <div class="action-label">Pay Dues</div>
-                </div>
-                <div class="action-card">
-                    <div class="action-icon" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8;">📁</div>
-                    <div class="action-label">Projects</div>
-                </div>
-                <div class="action-card">
-                    <div class="action-icon" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;">📄</div>
-                    <div class="action-label">Expenses</div>
-                </div>
-                <div class="action-card">
-                    <div class="action-icon" style="background: rgba(168, 85, 247, 0.2); color: #a855f7;">⇄</div>
-                    <div class="action-label">Transactions</div>
-                </div>
-            </div>
-
-            <!-- Recent Transactions -->
-            <div class="transactions-section">
-                <div class="section-header">
-                    <span class="section-title">Recent Transactions</span>
-                    <span style="font-size: 0.72rem; color: #38bdf8; cursor: pointer;">View All</span>
-                </div>
-
-                <div class="tx-card">
-                    <div class="tx-info">
-                        <div class="tx-icon" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">↑</div>
-                        <div>
-                            <div class="tx-title">Registration Account</div>
-                            <div class="tx-date">Account Created</div>
-                        </div>
-                    </div>
-                    <div style="text-align: right;">
-                        <div class="tx-amount" style="color: #10b981;">Active</div>
-                        <div class="tx-date">Verified</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- View My Dues View -->
-        <div id="view-dues-section" class="inner-section">
+        <!-- Search Member & Record Dues Box -->
+        <div class="admin-section-box">
             <div class="card-box">
-                <h3 style="font-size: 0.95rem; color:#38bdf8; margin-bottom: 10px;">📄 View My Dues Summary</h3>
-                <p style="font-size: 0.78rem; color:#cbd5e1; margin-bottom: 12px;">Overview of your monthly dues and payment status.</p>
-                <div style="background:#0f172a; padding:12px; border-radius:8px; border:1px solid #1e293b;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.75rem;">
-                        <span style="color:#94a3b8;">Monthly Rate:</span>
-                        <span style="font-weight:700; color:#10b981;">₦500</span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.75rem;">
-                        <span style="color:#94a3b8;">Status:</span>
-                        <span style="font-weight:700; color:#38bdf8;">Up to date</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Dues Calendar View -->
-        <div id="calendar-dues-section" class="inner-section">
-            <div class="card-box">
-                <h3 style="font-size: 0.95rem; color:#38bdf8; margin-bottom: 10px;">📅 Dues Calendar Search</h3>
-                <p style="font-size: 0.78rem; color:#cbd5e1; margin-bottom: 12px;">Select day, month, and year to filter dues records:</p>
-                
-                <div class="calendar-inputs">
-                    <select id="cal-day">
-                        <option value="">Day</option>
-                        <script>
-                            for(let i=1; i<=31; i++) {
-                                document.write(`<option value="${i}">${i}</option>`);
-                            }
-                        </script>
-                    </select>
-                    <select id="cal-month">
-                        <option value="">Month</option>
-                        <option value="1">Jan</option>
-                        <option value="2">Feb</option>
-                        <option value="3">Mar</option>
-                        <option value="4">Apr</option>
-                        <option value="5">May</option>
-                        <option value="6">Jun</option>
-                        <option value="7">Jul</option>
-                        <option value="8">Aug</option>
-                        <option value="9">Sep</option>
-                        <option value="10">Oct</option>
-                        <option value="11">Nov</option>
-                        <option value="12">Dec</option>
-                    </select>
-                    <select id="cal-year">
-                        <option value="">Year</option>
-                        <option value="2026">2026</option>
-                        <option value="2025">2025</option>
-                        <option value="2024">2024</option>
-                    </select>
-                </div>
-
-                <button class="btn-primary" style="padding: 10px; font-size:0.8rem;" id="btn-search-cal">Filter Dues</button>
-
-                <div id="cal-result" style="margin-top:14px; font-size:0.75rem; color:#94a3b8; text-align:center;">
-                    Select date parameters above to check records.
-                </div>
-            </div>
-        </div>
-
-        <!-- Admin Search Member Section -->
-        <div id="admin-search-section" class="inner-section">
-            <div class="card-box">
-                <h3 style="font-size: 0.95rem; color:#38bdf8; margin-bottom: 10px;">🔍 Admin: Search Member</h3>
+                <h3 style="font-size: 0.95rem; color:#38bdf8; margin-bottom: 12px;">🔍 Search & Manage Member Dues</h3>
                 
                 <div class="form-group">
                     <label>Search Member by Name</label>
-                    <input type="text" id="admin-search-input" placeholder="Enter name...">
+                    <input type="text" id="admin-search-input" placeholder="Type name to search...">
                 </div>
 
                 <div id="admin-search-results"></div>
 
-                <!-- Record Payment Form (Hidden until member selected) -->
+                <!-- Dues Payment Form (Appears when member is selected) -->
                 <div id="admin-payment-form" style="display: none; margin-top: 18px; border-top: 1px solid #334155; padding-top: 14px;">
-                    <h4 style="font-size: 0.85rem; color:#10b981; margin-bottom: 8px;" id="selected-member-title">Selected Member: </h4>
+                    <h4 style="font-size: 0.85rem; color:#10b981; margin-bottom: 10px;" id="selected-member-title">Selected Member: </h4>
 
                     <div class="form-group">
                         <label>Select Dues Amount</label>
@@ -837,24 +559,12 @@
             }, 3000);
         });
 
-        // Views & Messages Controls
+        // Views & Messages
         const loginView = document.getElementById('login-view');
         const registerView = document.getElementById('register-view');
         const authContainer = document.getElementById('auth-container');
         const dashboardView = document.getElementById('dashboard-view');
         const msgBox = document.getElementById('msg-box');
-
-        const mainContent = document.getElementById('main-dashboard-content');
-        const viewDuesSec = document.getElementById('view-dues-section');
-        const calendarDuesSec = document.getElementById('calendar-dues-section');
-        const adminSearchSec = document.getElementById('admin-search-section');
-
-        function hideAllViews() {
-            mainContent.style.display = 'none';
-            viewDuesSec.style.display = 'none';
-            calendarDuesSec.style.display = 'none';
-            adminSearchSec.style.display = 'none';
-        }
 
         document.getElementById('go-to-register').addEventListener('click', () => {
             hideMessage();
@@ -876,7 +586,7 @@
 
         function hideMessage() { msgBox.style.display = 'none'; }
 
-        // Sidebar Controls
+        // Sidebar Navigation
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebar-overlay');
         const toggleBtn = document.getElementById('sidebar-toggle');
@@ -895,31 +605,6 @@
         toggleBtn.addEventListener('click', openSidebar);
         closeBtn.addEventListener('click', closeSidebar);
         overlay.addEventListener('click', closeSidebar);
-
-        // Sidebar Navigation Clicks
-        document.getElementById('menu-dashboard').addEventListener('click', () => {
-            closeSidebar();
-            hideAllViews();
-            mainContent.style.display = 'block';
-        });
-
-        document.getElementById('menu-view-dues').addEventListener('click', () => {
-            closeSidebar();
-            hideAllViews();
-            viewDuesSec.style.display = 'block';
-        });
-
-        document.getElementById('menu-calendar-dues').addEventListener('click', () => {
-            closeSidebar();
-            hideAllViews();
-            calendarDuesSec.style.display = 'block';
-        });
-
-        document.getElementById('menu-admin-search').addEventListener('click', () => {
-            closeSidebar();
-            hideAllViews();
-            adminSearchSec.style.display = 'block';
-        });
 
         // Registration Logic
         document.getElementById('register-form').addEventListener('submit', async (e) => {
@@ -984,7 +669,7 @@
             }
         });
 
-        // Login Logic
+        // Admin Login Logic
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             hideMessage();
@@ -1006,23 +691,15 @@
 
                 if (error || !data) {
                     showMessage('Invalid Phone Number or PIN. Please try again.');
+                } else if (data.role !== 'admin') {
+                    showMessage('Access denied: This account does not have Admin privileges.');
                 } else {
                     currentUser = data;
-                    document.getElementById('top-user-name').textContent = data.full_name || 'Member';
+                    document.getElementById('top-user-name').textContent = data.full_name || 'Admin';
                     document.getElementById('top-user-phone').textContent = data.phone_number || '';
-
-                    if (data.role === 'admin') {
-                        document.getElementById('dashboard-role-title').textContent = 'ADMIN DASHBOARD';
-                        document.getElementById('menu-admin-search').style.display = 'flex';
-                    } else {
-                        document.getElementById('dashboard-role-title').textContent = 'MEMBER DASHBOARD';
-                        document.getElementById('menu-admin-search').style.display = 'none';
-                    }
 
                     authContainer.style.display = 'none';
                     dashboardView.style.display = 'block';
-                    hideAllViews();
-                    mainContent.style.display = 'block';
 
                     fetchTotalDuesCollected();
                 }
@@ -1030,11 +707,11 @@
                 showMessage('Network error. Check connection.');
             } finally {
                 loginBtn.disabled = false;
-                loginBtn.textContent = 'Sign In';
+                loginBtn.textContent = 'Sign In to Admin Dashboard';
             }
         });
 
-        // Fetch Total Dues Collected
+        // Fetch Total Dues Amount
         async function fetchTotalDuesCollected() {
             try {
                 const { data, error } = await _supabase.from('dues_payments').select('amount');
@@ -1047,7 +724,7 @@
             }
         }
 
-        // Search Member Logic (Admin)
+        // Admin Search Member Logic
         document.getElementById('admin-search-input').addEventListener('input', async (e) => {
             const query = e.target.value.trim();
             const resultsContainer = document.getElementById('admin-search-results');
@@ -1063,7 +740,7 @@
                 .ilike('full_name', `%${query}%`);
 
             if (error || !data || data.length === 0) {
-                resultsContainer.innerHTML = '<p style="font-size:0.75rem; color:#94a3b8; margin-top:8px;">No member found.</p>';
+                resultsContainer.innerHTML = '<p style="font-size:0.75rem; color:#94a3b8; margin-top:8px;">No member matched your search.</p>';
                 return;
             }
 
@@ -1087,7 +764,7 @@
             });
         });
 
-        // Save Dues Payment (Admin)
+        // Save Dues Record (Admin)
         document.getElementById('btn-save-dues').addEventListener('click', async () => {
             if (!selectedMemberForDues) return;
 
@@ -1111,7 +788,7 @@
                 if (error) {
                     alert('Failed to save record: ' + error.message);
                 } else {
-                    alert(`Payment of ₦${amount.toLocaleString()} recorded for ${selectedMemberForDues.full_name}!`);
+                    alert(`Dues payment of ₦${amount.toLocaleString()} recorded for ${selectedMemberForDues.full_name}!`);
                     document.getElementById('admin-search-input').value = '';
                     document.getElementById('admin-search-results').innerHTML = '';
                     document.getElementById('admin-payment-form').style.display = 'none';
@@ -1124,16 +801,6 @@
                 saveBtn.disabled = false;
                 saveBtn.textContent = 'Save Dues Record';
             }
-        });
-
-        // Calendar Search Filter
-        document.getElementById('btn-search-cal').addEventListener('click', () => {
-            const day = document.getElementById('cal-day').value;
-            const month = document.getElementById('cal-month').value;
-            const year = document.getElementById('cal-year').value;
-
-            const resultDiv = document.getElementById('cal-result');
-            resultDiv.innerHTML = `<span style="color:#38bdf8;">Searching records for ${day || 'All Days'}-${month || 'All Months'}-${year || 'All Years'}...</span>`;
         });
 
         // Logout
