@@ -23,9 +23,10 @@
         .admin-container {
             max-width: 500px;
             margin: 0 auto;
+            position: relative;
         }
 
-        /* Header */
+        /* Admin Header */
         .admin-header {
             display: flex;
             justify-content: space-between;
@@ -43,6 +44,12 @@
             letter-spacing: 0.8px;
         }
 
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         .badge-admin {
             background: rgba(239, 68, 68, 0.2);
             color: #fca5a5;
@@ -53,7 +60,87 @@
             font-weight: 600;
         }
 
-        /* Cards & Components */
+        .menu-toggle-btn {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #ffffff;
+            font-size: 1.2rem;
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* Sidebar Navigation Overlay */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 100;
+            display: none;
+            backdrop-filter: blur(4px);
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -290px;
+            width: 290px;
+            height: 100%;
+            background: #0f172a;
+            z-index: 101;
+            transition: right 0.3s ease;
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid #1e293b;
+            overflow-y: auto;
+        }
+
+        .sidebar.active { right: 0; }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .sidebar-close {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #94a3b8;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-menu li {
+            padding: 12px 14px;
+            border-radius: 8px;
+            background: #1e293b;
+            color: #f8fafc;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-menu li:hover {
+            background: #334155;
+        }
+
+        /* Cards & Form Components */
         .card {
             background: #1e293b;
             border-radius: 14px;
@@ -142,28 +229,6 @@
             color: #94a3b8;
         }
 
-        /* Action Buttons Grid */
-        .action-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-
-        .admin-action-btn {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 10px;
-            padding: 12px;
-            color: #f8fafc;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
         /* Member List Table */
         .member-item {
             display: flex;
@@ -196,31 +261,48 @@
             background: rgba(56, 189, 248, 0.2);
             color: #38bdf8;
         }
-
-        .logout-btn {
-            background: none;
-            border: 1px solid #ef4444;
-            color: #fca5a5;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.75rem;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
 
     <div class="admin-container">
-        <!-- Header -->
+        <!-- Admin Header -->
         <div class="admin-header">
             <div>
                 <div class="admin-title">Admin Panel</div>
                 <div style="font-size: 0.75rem; color: #94a3b8;">Men Fellowship Control Center</div>
             </div>
-            <span class="badge-admin" id="admin-status-tag">Admin Access</span>
+            <div class="header-actions">
+                <span class="badge-admin">Admin Access</span>
+                <button class="menu-toggle-btn" id="sidebar-toggle" style="display: none;">☰</button>
+            </div>
         </div>
 
         <div id="msg-box" class="msg-box"></div>
+
+        <!-- Sidebar Navigation Drawer -->
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <span style="font-weight:700; color:#ef4444; font-size: 0.9rem;">ADMIN CONTROL</span>
+                <span class="sidebar-close" id="sidebar-close">&times;</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li>📊 Dashboard</li>
+                <li>👥 Members</li>
+                <li>💰 Dues Management</li>
+                <li>📋 Dues Records</li>
+                <li>💵 Project Money</li>
+                <li>💳 Transactions</li>
+                <li>📄 Reports / Print PDF</li>
+                <li>📱 Share Reports</li>
+                <li>🔔 Notifications</li>
+                <li>⚙️ Settings</li>
+                <li>🔐 Member PIN Reset</li>
+                <li>👤 Admin Profile</li>
+                <li id="sidebar-logout" style="background:#7f1d1d; color:#fca5a5; margin-top: 10px;">🚪 Logout</li>
+            </ul>
+        </div>
 
         <!-- Admin Login Card -->
         <div class="card" id="admin-login-card">
@@ -241,13 +323,9 @@
         <!-- Admin Main Dashboard View (Hidden by default) -->
         <div id="admin-main-view" style="display: none;">
             
-            <!-- Top Welcome & Logout -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <div>
-                    <div style="font-size: 0.75rem; color: #94a3b8;">Welcome back,</div>
-                    <div style="font-size: 1rem; font-weight: 700; color: #38bdf8;" id="admin-name">Admin User</div>
-                </div>
-                <button class="logout-btn" id="admin-logout-btn">Logout</button>
+            <div style="margin-bottom: 16px;">
+                <div style="font-size: 0.75rem; color: #94a3b8;">Welcome back,</div>
+                <div style="font-size: 1.1rem; font-weight: 700; color: #38bdf8;" id="admin-name">Admin User</div>
             </div>
 
             <!-- Stats Grid -->
@@ -270,17 +348,9 @@
                 </div>
             </div>
 
-            <!-- Quick Actions -->
-            <div class="action-grid">
-                <button class="admin-action-btn">👥 Manage Members</button>
-                <button class="admin-action-btn">💵 Record Payment</button>
-                <button class="admin-action-btn">🏗️ Add Project</button>
-                <button class="admin-action-btn">⚙️ Admin Settings</button>
-            </div>
-
             <!-- Member Directory Card -->
             <div class="card">
-                <div class="card-title">Registered Members</div>
+                <div class="card-title">Registered Members Overview</div>
                 <div id="member-list-container">
                     <p style="font-size: 0.8rem; color: #94a3b8;">Loading members...</p>
                 </div>
@@ -295,6 +365,10 @@
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const msgBox = document.getElementById('msg-box');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const toggleBtn = document.getElementById('sidebar-toggle');
+        const closeBtn = document.getElementById('sidebar-close');
 
         function showMessage(text, isError = true) {
             msgBox.textContent = text;
@@ -305,6 +379,21 @@
         function hideMessage() {
             msgBox.style.display = 'none';
         }
+
+        // Sidebar Control
+        function openSidebar() {
+            sidebar.classList.add('active');
+            overlay.style.display = 'block';
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('active');
+            overlay.style.display = 'none';
+        }
+
+        toggleBtn.addEventListener('click', openSidebar);
+        closeBtn.addEventListener('click', closeSidebar);
+        overlay.addEventListener('click', closeSidebar);
 
         // Admin Login Handle
         document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
@@ -332,10 +421,10 @@
                 } else {
                     document.getElementById('admin-login-card').style.display = 'none';
                     document.getElementById('admin-main-view').style.display = 'block';
+                    toggleBtn.style.display = 'block'; // Show sidebar toggle menu button
                     document.getElementById('admin-name').textContent = data.full_name;
                     showMessage('Admin access granted!', false);
                     
-                    // Fetch dashboard data
                     loadAdminDashboard();
                 }
             } catch (err) {
@@ -358,10 +447,8 @@
                     return;
                 }
 
-                // Update Total Members Count
                 document.getElementById('stat-total-members').textContent = members.length;
 
-                // Render Member List
                 const listContainer = document.getElementById('member-list-container');
                 listContainer.innerHTML = '';
 
@@ -389,8 +476,10 @@
         }
 
         // Logout Handle
-        document.getElementById('admin-logout-btn').addEventListener('click', () => {
+        document.getElementById('sidebar-logout').addEventListener('click', () => {
+            closeSidebar();
             document.getElementById('admin-main-view').style.display = 'none';
+            toggleBtn.style.display = 'none';
             document.getElementById('admin-login-card').style.display = 'block';
             document.getElementById('admin-login-form').reset();
             hideMessage();
