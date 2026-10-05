@@ -216,19 +216,19 @@
         .sidebar {
             position: fixed;
             top: 0;
-            right: -280px;
+            left: -280px;
             width: 280px;
             height: 100%;
             background: #0f172a;
             z-index: 101;
-            transition: right 0.3s ease;
+            transition: left 0.3s ease;
             padding: 24px 20px;
             display: flex;
             flex-direction: column;
-            border-left: 1px solid #1e293b;
+            border-right: 1px solid #1e293b;
         }
 
-        .sidebar.active { right: 0; }
+        .sidebar.active { left: 0; }
 
         .sidebar-header {
             display: flex;
@@ -590,6 +590,7 @@
         <!-- Top Header -->
         <div class="header">
             <div class="header-brand">
+                <button class="icon-btn" id="sidebar-toggle">☰</button>
                 <div class="header-logo">MF</div>
                 <div>
                     <div class="header-title-text">MEN FELLOWSHIP</div>
@@ -601,7 +602,6 @@
                     🔔
                     <span class="badge-dot">3</span>
                 </button>
-                <button class="icon-btn" id="sidebar-toggle">☰</button>
             </div>
         </div>
 
