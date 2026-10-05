@@ -36,18 +36,18 @@
             margin-bottom: 18px;
         }
 
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
         .admin-title {
             font-size: 1.1rem;
             font-weight: 800;
             color: #ef4444;
             text-transform: uppercase;
             letter-spacing: 0.8px;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .badge-admin {
@@ -86,20 +86,20 @@
         .sidebar {
             position: fixed;
             top: 0;
-            right: -290px;
+            left: -290px;
             width: 290px;
             height: 100%;
             background: #0f172a;
             z-index: 101;
-            transition: right 0.3s ease;
+            transition: left 0.3s ease;
             padding: 24px 20px;
             display: flex;
             flex-direction: column;
-            border-left: 1px solid #1e293b;
+            border-right: 1px solid #1e293b;
             overflow-y: auto;
         }
 
-        .sidebar.active { right: 0; }
+        .sidebar.active { left: 0; }
 
         .sidebar-header {
             display: flex;
@@ -268,14 +268,14 @@
     <div class="admin-container">
         <!-- Admin Header -->
         <div class="admin-header">
-            <div>
-                <div class="admin-title">Admin Panel</div>
-                <div style="font-size: 0.75rem; color: #94a3b8;">Men Fellowship Control Center</div>
-            </div>
-            <div class="header-actions">
-                <span class="badge-admin">Admin Access</span>
+            <div class="header-left">
                 <button class="menu-toggle-btn" id="sidebar-toggle" style="display: none;">☰</button>
+                <div>
+                    <div class="admin-title">Admin Panel</div>
+                    <div style="font-size: 0.75rem; color: #94a3b8;">Men Fellowship Control Center</div>
+                </div>
             </div>
+            <span class="badge-admin">Admin Access</span>
         </div>
 
         <div id="msg-box" class="msg-box"></div>
@@ -421,7 +421,7 @@
                 } else {
                     document.getElementById('admin-login-card').style.display = 'none';
                     document.getElementById('admin-main-view').style.display = 'block';
-                    toggleBtn.style.display = 'block'; // Show sidebar toggle menu button
+                    toggleBtn.style.display = 'block';
                     document.getElementById('admin-name').textContent = data.full_name;
                     showMessage('Admin access granted!', false);
                     
