@@ -17,7 +17,7 @@
             background: #0f172a;
             color: #ffffff;
             min-height: 100vh;
-            padding: 16px 12px;
+            padding: 14px 10px;
         }
 
         .admin-container {
@@ -31,32 +31,32 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 14px;
+            padding-bottom: 12px;
             border-bottom: 1px solid #1e293b;
-            margin-bottom: 18px;
+            margin-bottom: 16px;
         }
 
         .header-left {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .admin-title {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 800;
             color: #ef4444;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.5px;
         }
 
         .badge-admin {
             background: rgba(239, 68, 68, 0.2);
             color: #fca5a5;
             border: 1px solid #ef4444;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.65rem;
             font-weight: 600;
         }
 
@@ -64,13 +64,13 @@
             background: #1e293b;
             border: 1px solid #334155;
             color: #ffffff;
-            font-size: 1.2rem;
-            padding: 6px 10px;
-            border-radius: 8px;
+            font-size: 1.1rem;
+            padding: 4px 8px;
+            border-radius: 6px;
             cursor: pointer;
         }
 
-        /* Sidebar Navigation Overlay */
+        /* Slimmer Sidebar Navigation Overlay */
         .sidebar-overlay {
             position: fixed;
             top: 0;
@@ -86,13 +86,13 @@
         .sidebar {
             position: fixed;
             top: 0;
-            left: -230px;
-            width: 230px;
+            left: -190px;
+            width: 190px;
             height: 100%;
             background: #0f172a;
             z-index: 101;
-            transition: left 0.3s ease;
-            padding: 20px 14px;
+            transition: left 0.25s ease-in-out;
+            padding: 16px 10px;
             display: flex;
             flex-direction: column;
             border-right: 1px solid #1e293b;
@@ -105,13 +105,13 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 18px;
-            padding-bottom: 10px;
+            margin-bottom: 14px;
+            padding-bottom: 8px;
             border-bottom: 1px solid #1e293b;
         }
 
         .sidebar-close {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             cursor: pointer;
             color: #94a3b8;
         }
@@ -120,20 +120,23 @@
             list-style: none;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 5px;
         }
 
         .sidebar-menu li {
-            padding: 10px 12px;
-            border-radius: 8px;
+            padding: 8px 10px;
+            border-radius: 6px;
             background: #1e293b;
             color: #f8fafc;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 500;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .sidebar-menu li:hover {
@@ -143,58 +146,58 @@
         /* Cards & Form Components */
         .card {
             background: #1e293b;
-            border-radius: 14px;
-            padding: 18px 16px;
-            margin-bottom: 16px;
+            border-radius: 12px;
+            padding: 16px 14px;
+            margin-bottom: 14px;
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .card-title {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 700;
             color: #38bdf8;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .form-group {
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
 
         .form-group label {
             display: block;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #cbd5e1;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .form-group input {
             width: 100%;
-            padding: 10px 12px;
-            border-radius: 8px;
+            padding: 9px 10px;
+            border-radius: 6px;
             border: 1px solid #334155;
             background: #0f172a;
             color: #ffffff;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             outline: none;
         }
 
         .btn-danger {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             background: #dc2626;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             cursor: pointer;
         }
 
         .msg-box {
-            font-size: 0.85rem;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 14px;
+            font-size: 0.8rem;
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 12px;
             display: none;
             text-align: center;
         }
@@ -206,26 +209,26 @@
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 16px;
+            gap: 8px;
+            margin-bottom: 14px;
         }
 
         .stat-card {
             background: #1e293b;
-            padding: 14px 12px;
-            border-radius: 12px;
+            padding: 12px 10px;
+            border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .stat-val {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 800;
             color: #ffffff;
-            margin-top: 4px;
+            margin-top: 2px;
         }
 
         .stat-lbl {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: #94a3b8;
         }
 
@@ -234,7 +237,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
+            padding: 8px 0;
             border-bottom: 1px solid #334155;
         }
 
@@ -243,20 +246,20 @@
         }
 
         .member-name {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
             color: #ffffff;
         }
 
         .member-phone {
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             color: #94a3b8;
         }
 
         .member-badge {
-            font-size: 0.65rem;
-            padding: 3px 8px;
-            border-radius: 10px;
+            font-size: 0.6rem;
+            padding: 2px 6px;
+            border-radius: 8px;
             font-weight: 600;
             background: rgba(56, 189, 248, 0.2);
             color: #38bdf8;
@@ -272,10 +275,10 @@
                 <button class="menu-toggle-btn" id="sidebar-toggle" style="display: none;">☰</button>
                 <div>
                     <div class="admin-title">Admin Panel</div>
-                    <div style="font-size: 0.75rem; color: #94a3b8;">Men Fellowship Control Center</div>
+                    <div style="font-size: 0.7rem; color: #94a3b8;">Men Fellowship Control</div>
                 </div>
             </div>
-            <span class="badge-admin">Admin Access</span>
+            <span class="badge-admin">Admin</span>
         </div>
 
         <div id="msg-box" class="msg-box"></div>
@@ -284,23 +287,23 @@
         <div class="sidebar-overlay" id="sidebar-overlay"></div>
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <span style="font-weight:700; color:#ef4444; font-size: 0.85rem;">ADMIN CONTROL</span>
+                <span style="font-weight:700; color:#ef4444; font-size: 0.75rem;">ADMIN MENU</span>
                 <span class="sidebar-close" id="sidebar-close">&times;</span>
             </div>
             <ul class="sidebar-menu">
                 <li>📊 Dashboard</li>
                 <li>👥 Members</li>
-                <li>💰 Dues Management</li>
+                <li>💰 Dues Manage</li>
                 <li>📋 Dues Records</li>
-                <li>💵 Project Money</li>
+                <li>💵 Project Fund</li>
                 <li>💳 Transactions</li>
-                <li>📄 Reports / Print PDF</li>
+                <li>📄 Reports/PDF</li>
                 <li>📱 Share Reports</li>
                 <li>🔔 Notifications</li>
                 <li>⚙️ Settings</li>
-                <li>🔐 Member PIN Reset</li>
+                <li>🔐 PIN Reset</li>
                 <li>👤 Admin Profile</li>
-                <li id="sidebar-logout" style="background:#7f1d1d; color:#fca5a5; margin-top: 8px;">🚪 Logout</li>
+                <li id="sidebar-logout" style="background:#7f1d1d; color:#fca5a5; margin-top: 6px;">🚪 Logout</li>
             </ul>
         </div>
 
@@ -323,9 +326,9 @@
         <!-- Admin Main Dashboard View (Hidden by default) -->
         <div id="admin-main-view" style="display: none;">
             
-            <div style="margin-bottom: 16px;">
-                <div style="font-size: 0.75rem; color: #94a3b8;">Welcome back,</div>
-                <div style="font-size: 1.1rem; font-weight: 700; color: #38bdf8;" id="admin-name">Admin User</div>
+            <div style="margin-bottom: 14px;">
+                <div style="font-size: 0.7rem; color: #94a3b8;">Welcome back,</div>
+                <div style="font-size: 1rem; font-weight: 700; color: #38bdf8;" id="admin-name">Admin User</div>
             </div>
 
             <!-- Stats Grid -->
@@ -352,7 +355,7 @@
             <div class="card">
                 <div class="card-title">Registered Members Overview</div>
                 <div id="member-list-container">
-                    <p style="font-size: 0.8rem; color: #94a3b8;">Loading members...</p>
+                    <p style="font-size: 0.75rem; color: #94a3b8;">Loading members...</p>
                 </div>
             </div>
 
@@ -453,7 +456,7 @@
                 listContainer.innerHTML = '';
 
                 if (members.length === 0) {
-                    listContainer.innerHTML = '<p style="font-size:0.8rem; color:#94a3b8;">No members found.</p>';
+                    listContainer.innerHTML = '<p style="font-size:0.75rem; color:#94a3b8;">No members found.</p>';
                     return;
                 }
 
