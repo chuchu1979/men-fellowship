@@ -267,20 +267,21 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px;
+            padding: 14px 16px;
             background: #0b1329;
             border-bottom: 1px solid #1e293b;
+            margin-bottom: 16px;
         }
 
         .header-brand {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .header-logo {
-            width: 36px;
-            height: 36px;
+            width: 34px;
+            height: 34px;
             background: linear-gradient(135deg, #2563eb, #38bdf8);
             border-radius: 50%;
             display: flex;
@@ -293,9 +294,25 @@
         }
 
         .header-title-text {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 800;
             color: #f8fafc;
+        }
+
+        .header-user-info {
+            text-align: right;
+        }
+
+        .header-user-name {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #38bdf8;
+        }
+
+        .header-user-phone {
+            font-size: 0.68rem;
+            color: #cbd5e1;
+            font-weight: 500;
         }
 
         .icon-btn {
@@ -304,90 +321,6 @@
             color: #f8fafc;
             font-size: 1.2rem;
             cursor: pointer;
-        }
-
-        /* Minimal Header Card (ONLY Name + ID + Active Badge) */
-        .mini-profile-card {
-            background: #1e293b;
-            border-radius: 14px;
-            padding: 16px;
-            margin: 14px 16px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .user-fullname { font-size: 1.1rem; font-weight: 700; color: #ffffff; }
-        .user-id { font-size: 0.75rem; color: #38bdf8; font-weight: 600; margin-top: 2px; }
-
-        .status-badge {
-            background: rgba(16, 185, 129, 0.2);
-            color: #34d399;
-            border: 1px solid #10b981;
-            font-size: 0.65rem;
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 10px;
-        }
-
-        /* Profile Modal Overlay (Shows personal details when 'My Profile' is clicked) */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 200;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 16px;
-            backdrop-filter: blur(5px);
-        }
-
-        .profile-modal {
-            background: #1e293b;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 400px;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #334155;
-        }
-
-        .modal-title { font-size: 1rem; font-weight: 700; color: #38bdf8; }
-        .modal-close { font-size: 1.3rem; color: #94a3b8; cursor: pointer; }
-
-        .details-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .detail-item { display: flex; flex-direction: column; }
-        .detail-label { font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; }
-        .detail-value { font-size: 0.8rem; color: #f8fafc; font-weight: 500; margin-top: 3px; word-break: break-word; }
-
-        .notice-card {
-            background: rgba(56, 189, 248, 0.1);
-            border: 1px solid #0284c7;
-            border-radius: 10px;
-            padding: 10px 12px;
-            font-size: 0.72rem;
-            color: #bae6fd;
-            line-height: 1.3;
         }
 
         /* Financial Overview Grid */
@@ -593,7 +526,6 @@
             </div>
             <ul class="sidebar-menu">
                 <li id="menu-dashboard">📊 Dashboard</li>
-                <li id="menu-profile">👤 My Profile</li>
                 <li>💰 Pay Dues</li>
                 <li>📋 Dues Records</li>
                 <li>🏗️ Fellowship Projects</li>
@@ -613,18 +545,10 @@
                     <div class="header-title-text">MEMBER DASHBOARD</div>
                 </div>
             </div>
-            <div class="header-actions">
-                <button class="icon-btn">🔔</button>
+            <div class="header-user-info">
+                <div class="header-user-name" id="top-user-name">Member Name</div>
+                <div class="header-user-phone" id="top-user-phone">08000000000</div>
             </div>
-        </div>
-
-        <!-- Clean Dashboard User Header (Only Name + ID + Badge) -->
-        <div class="mini-profile-card">
-            <div>
-                <div class="user-fullname" id="dash-name">Member Name</div>
-                <div class="user-id" id="dash-id">ID: MF-0000</div>
-            </div>
-            <span class="status-badge">ACTIVE MEMBER</span>
         </div>
 
         <!-- Financial Overview Section -->
@@ -641,7 +565,7 @@
                     <div class="stat-sub">This month</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon" style="color: #ef4444;">⏱️</div>
+                    <div class="stat-icon" style="color: #ef4444;">⏱</div>
                     <div class="stat-label">Arrears</div>
                     <div class="stat-amount" style="color:#ef4444;">₦0</div>
                     <div class="stat-sub">Clear</div>
@@ -703,47 +627,6 @@
             </div>
         </div>
 
-    </div>
-
-    <!-- Personal Profile Modal (Opened via Sidebar "My Profile") -->
-    <div class="modal-overlay" id="profile-modal-overlay">
-        <div class="profile-modal">
-            <div class="modal-header">
-                <span class="modal-title">👤 My Personal Profile</span>
-                <span class="modal-close" id="profile-modal-close">&times;</span>
-            </div>
-
-            <div class="details-grid">
-                <div class="detail-item">
-                    <span class="detail-label">Phone</span>
-                    <span class="detail-value" id="dash-phone">-</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">WhatsApp</span>
-                    <span class="detail-value" id="dash-whatsapp">-</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Email</span>
-                    <span class="detail-value" id="dash-email">-</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">State of Origin</span>
-                    <span class="detail-value" id="dash-origin">-</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Residence</span>
-                    <span class="detail-value" id="dash-residence">-</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Nationality</span>
-                    <span class="detail-value" id="dash-nationality">-</span>
-                </div>
-            </div>
-
-            <div class="notice-card">
-                🔒 <strong>Member Notice:</strong> Information is read-only. Contact administrator to update your profile details.
-            </div>
-        </div>
     </div>
 
     <script>
@@ -815,30 +698,8 @@
         closeBtn.addEventListener('click', closeSidebar);
         overlay.addEventListener('click', closeSidebar);
 
-        // Profile Modal Controls
-        const profileModalOverlay = document.getElementById('profile-modal-overlay');
-        const profileModalClose = document.getElementById('profile-modal-close');
-        const menuProfile = document.getElementById('menu-profile');
-        const menuDashboard = document.getElementById('menu-dashboard');
-
-        menuProfile.addEventListener('click', () => {
+        document.getElementById('menu-dashboard').addEventListener('click', () => {
             closeSidebar();
-            profileModalOverlay.style.display = 'flex';
-        });
-
-        menuDashboard.addEventListener('click', () => {
-            closeSidebar();
-            profileModalOverlay.style.display = 'none';
-        });
-
-        profileModalClose.addEventListener('click', () => {
-            profileModalOverlay.style.display = 'none';
-        });
-
-        profileModalOverlay.addEventListener('click', (e) => {
-            if (e.target === profileModalOverlay) {
-                profileModalOverlay.style.display = 'none';
-            }
         });
 
         // Registration Logic
@@ -927,15 +788,9 @@
                 if (error || !data) {
                     showMessage('Invalid Phone Number or PIN. Please try again.');
                 } else {
-                    // Populate Member Info
-                    document.getElementById('dash-name').textContent = data.full_name || 'N/A';
-                    document.getElementById('dash-id').textContent = 'ID: ' + (data.member_id || 'N/A');
-                    document.getElementById('dash-phone').textContent = data.phone_number || 'N/A';
-                    document.getElementById('dash-whatsapp').textContent = data.whatsapp_number || 'N/A';
-                    document.getElementById('dash-email').textContent = data.email || 'N/A';
-                    document.getElementById('dash-origin').textContent = data.state_of_origin || 'N/A';
-                    document.getElementById('dash-residence').textContent = data.state_of_residence || 'N/A';
-                    document.getElementById('dash-nationality').textContent = data.nationality || 'N/A';
+                    // Update Top Right Header Info
+                    document.getElementById('top-user-name').textContent = data.full_name || 'Member';
+                    document.getElementById('top-user-phone').textContent = data.phone_number || '';
 
                     authContainer.style.display = 'none';
                     dashboardView.style.display = 'block';
