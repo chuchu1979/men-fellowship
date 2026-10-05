@@ -306,7 +306,7 @@
             cursor: pointer;
         }
 
-        /* Minimal User Header Card */
+        /* Minimal Header Card (ONLY Name + ID + Active Badge) */
         .mini-profile-card {
             background: #1e293b;
             border-radius: 14px;
@@ -331,7 +331,7 @@
             border-radius: 10px;
         }
 
-        /* Profile Modal Overlay */
+        /* Profile Modal Overlay (Shows personal details when 'My Profile' is clicked) */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -512,11 +512,11 @@
         <p class="sub-detail">CITY OF MERCY MEN FELLOWSHIP FINANCIAL RECORD</p>
     </div>
 
-    <!-- Auth Form -->
+    <!-- Auth Container Card -->
     <div id="auth-container">
         <div id="msg-box" class="msg-box"></div>
 
-        <!-- Login -->
+        <!-- Login View -->
         <div id="login-view">
             <div class="auth-header">
                 <h2>Member Login</h2>
@@ -536,7 +536,7 @@
             <p class="toggle-text">New member? <span id="go-to-register">Register here</span></p>
         </div>
 
-        <!-- Register -->
+        <!-- Register View -->
         <div id="register-view" style="display: none;">
             <div class="auth-header">
                 <h2>Member Registration</h2>
@@ -581,7 +581,7 @@
         </div>
     </div>
 
-    <!-- Member Dashboard -->
+    <!-- Member Dashboard View -->
     <div id="dashboard-view">
         
         <!-- Sidebar Navigation -->
@@ -618,7 +618,7 @@
             </div>
         </div>
 
-        <!-- Clean Minimal Member Card -->
+        <!-- Clean Dashboard User Header (Only Name + ID + Badge) -->
         <div class="mini-profile-card">
             <div>
                 <div class="user-fullname" id="dash-name">Member Name</div>
@@ -705,11 +705,11 @@
 
     </div>
 
-    <!-- Personal Profile Modal -->
+    <!-- Personal Profile Modal (Opened via Sidebar "My Profile") -->
     <div class="modal-overlay" id="profile-modal-overlay">
         <div class="profile-modal">
             <div class="modal-header">
-                <span class="modal-title">👤 My Profile Details</span>
+                <span class="modal-title">👤 My Personal Profile</span>
                 <span class="modal-close" id="profile-modal-close">&times;</span>
             </div>
 
@@ -741,7 +741,7 @@
             </div>
 
             <div class="notice-card">
-                🔒 <strong>Member Notice:</strong> Information is read-only. Contact admin for profile modifications.
+                🔒 <strong>Member Notice:</strong> Information is read-only. Contact administrator to update your profile details.
             </div>
         </div>
     </div>
