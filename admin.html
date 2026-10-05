@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Men Fellowship</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e1b4b, #020617);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            padding: 20px 12px;
+        }
+
+        /* Loading Screen */
+        #loading-screen {
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            transition: opacity 0.6s ease;
+        }
+
+        .site-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #ef4444;
+            text-transform: uppercase;
+        }
+
+        .logo-wrapper {
+            margin: 10px 0;
+        }
+
+        .rolling-logo {
+            width: 70px;
+            height: 70px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #ef4444;
+            border-right: 4px solid #f87171;
+            border-radius: 50%;
+            animation: spin 1.2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .slogan {
+            font-size: 0.95rem;
+            font-style: italic;
+            color: #cbd5e1;
+        }
+
+        .sub-detail {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            color: #ef4444;
+            text-transform: uppercase;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 15px;
+            margin-top: 5px;
+            width: 100%;
+        }
+
+        /* Auth Container Card */
+        #auth-container {
+            display: none;
+            width: 100%;
+            max-width: 420px;
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 20px;
+            padding: 28px 22px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+        .auth-header h2 {
+            font-size: 1.35rem;
+            color: #ef4444;
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .auth-header p {
+            font-size: 0.82rem;
+            color: #94a3b8;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: #ffffff;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #ef4444;
+        }
+
+        .btn-danger {
+            width: 100%;
+            padding: 13px;
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s ease;
+        }
+
+        .btn-danger:active {
+            background: #b91c1c;
+        }
+
+        .toggle-text {
+            text-align: center;
+            font-size: 0.82rem;
+            color: #94a3b8;
+            margin-top: 18px;
+        }
+
+        .toggle-text span {
+            color: #ef4444;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .msg-box {
+            font-size: 0.85rem;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: none;
+            text-align: center;
+        }
+
+        .msg-error { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid #ef4444; }
+        .msg-success { background: rgba(34, 197, 94, 0.2); color: #86efac; border: 1px solid #22c55e; }
+
+        /* Admin Main Dashboard View */
+        #admin-dashboard-view {
+            display: none;
+            width: 100%;
+            max-width: 500px;
+            background: #0b1329;
+            min-height: 80vh;
+            border-radius: 20px;
+            padding: 24px 20px;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .dash-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #1e293b;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 6-Second Admin Loading Screen -->
+    <div id="loading-screen">
+        <h1 class="site-title">MEN FELLOWSHIP FINANCIAL RECORD</h1>
+        <div class="logo-wrapper">
+            <div class="rolling-logo"></div>
+        </div>
+        <p class="slogan">“Keeping financial records transparent.”</p>
+        <p class="sub-detail">ADMIN DASHBOARD</p>
+    </div>
+
+    <!-- Auth Container -->
+    <div id="auth-container">
+        <div id="msg-box" class="msg-box"></div>
+
+        <!-- Admin Registration View -->
+        <div id="register-view">
+            <div class="auth-header">
+                <h2>Admin Registration</h2>
+                <p>Register as a fellowship administrator</p>
+            </div>
+            <form id="admin-register-form">
+                <div class="form-group">
+                    <label for="reg-phone">Mobile Number</label>
+                    <input type="tel" id="reg-phone" placeholder="e.g. 08012345678" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-name">Full Name</label>
+                    <input type="text" id="reg-name" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-pin">Login PIN (6-Digit PIN)</label>
+                    <input type="password" id="reg-pin" maxlength="6" pattern="\d{6}" placeholder="******" required>
+                </div>
+                <button type="submit" class="btn-danger" id="reg-btn">Register Admin</button>
+            </form>
+            <p class="toggle-text">Already registered? <span id="go-to-login">Login here</span></p>
+        </div>
+
+        <!-- Admin Login View -->
+        <div id="login-view" style="display: none;">
+            <div class="auth-header">
+                <h2>Admin Login</h2>
+                <p>Enter your details to access control panel</p>
+            </div>
+            <form id="admin-login-form">
+                <div class="form-group">
+                    <label for="login-phone">Mobile Number</label>
+                    <input type="tel" id="login-phone" placeholder="e.g. 08012345678" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-pin">6-Digit Security PIN</label>
+                    <input type="password" id="login-pin" maxlength="6" pattern="\d{6}" placeholder="******" required>
+                </div>
+                <button type="submit" class="btn-danger" id="login-btn">Sign In to Admin</button>
+            </form>
+            <p class="toggle-text">Need to register? <span id="go-to-register">Register Admin</span></p>
+        </div>
+    </div>
+
+    <!-- Main Admin Dashboard View -->
+    <div id="admin-dashboard-view">
+        <div class="dash-header">
+            <div>
+                <h2 style="font-size: 1.2rem; color: #ef4444;">Admin Dashboard</h2>
+                <p id="admin-welcome-name" style="font-size: 0.8rem; color: #94a3b8;">Welcome, Admin</p>
+            </div>
+            <button id="admin-logout-btn" style="background: #7f1d1d; color: #fca5a5; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 600; cursor: pointer;">Logout</button>
+        </div>
+        <div style="background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+            <p style="font-size: 0.9rem; color: #cbd5e1;">Admin Control Panel Ready.</p>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://dgoanvhtgdkoqowwbddh.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_Msx99khN4c2O5hxMcdpfUw_7zB1U4LY';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // 6-Second Loading Transition
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('loading-screen');
+                const auth = document.getElementById('auth-container');
+
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    auth.style.display = 'block';
+                    setTimeout(() => { auth.style.opacity = '1'; }, 50);
+                }, 600);
+            }, 6000); // Set to 6 seconds
+        });
+
+        const loginView = document.getElementById('login-view');
+        const registerView = document.getElementById('register-view');
+        const authContainer = document.getElementById('auth-container');
+        const adminDashboardView = document.getElementById('admin-dashboard-view');
+        const msgBox = document.getElementById('msg-box');
+
+        document.getElementById('go-to-login').addEventListener('click', () => {
+            hideMessage();
+            registerView.style.display = 'none';
+            loginView.style.display = 'block';
+        });
+
+        document.getElementById('go-to-register').addEventListener('click', () => {
+            hideMessage();
+            loginView.style.display = 'none';
+            registerView.style.display = 'block';
+        });
+
+        function showMessage(text, isError = true) {
+            msgBox.textContent = text;
+            msgBox.className = 'msg-box ' + (isError ? 'msg-error' : 'msg-success');
+            msgBox.style.display = 'block';
+        }
+
+        function hideMessage() {
+            msgBox.style.display = 'none';
+        }
+
+        // Admin Registration Logic
+        document.getElementById('admin-register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideMessage();
+
+            const phone = document.getElementById('reg-phone').value.trim();
+            const fullName = document.getElementById('reg-name').value.trim();
+            const pin = document.getElementById('reg-pin').value.trim();
+            const regBtn = document.getElementById('reg-btn');
+
+            if (pin.length !== 6 || isNaN(pin)) {
+                showMessage('PIN must be exactly 6 numbers.');
+                return;
+            }
+
+            regBtn.disabled = true;
+            regBtn.textContent = 'Registering Admin...';
+
+            try {
+                const adminId = 'ADM-' + Math.floor(1000 + Math.random() * 9000);
+
+                const { data, error } = await _supabase
+                    .from('members')
+                    .insert([{
+                        full_name: fullName,
+                        phone_number: phone,
+                        pin_hash: pin,
+                        member_id: adminId,
+                        role: 'admin'
+                    }]);
+
+                if (error) {
+                    if (error.code === '23505') {
+                        showMessage('This mobile number is already registered.');
+                    } else {
+                        showMessage('Error: ' + error.message);
+                    }
+                } else {
+                    showMessage('Admin account registered! Please sign in.', false);
+                    document.getElementById('admin-register-form').reset();
+                    setTimeout(() => {
+                        registerView.style.display = 'none';
+                        loginView.style.display = 'block';
+                    }, 2000);
+                }
+            } catch (err) {
+                showMessage('Network error. Check connection.');
+            } finally {
+                regBtn.disabled = false;
+                regBtn.textContent = 'Register Admin';
+            }
+        });
+
+        // Admin Login Logic
+        document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideMessage();
+
+            const phone = document.getElementById('login-phone').value.trim();
+            const pin = document.getElementById('login-pin').value.trim();
+            const loginBtn = document.getElementById('login-btn');
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Signing in...';
+
+            try {
+                const { data, error } = await _supabase
+                    .from('members')
+                    .select('*')
+                    .eq('phone_number', phone)
+                    .eq('pin_hash', pin)
+                    .eq('role', 'admin')
+                    .single();
+
+                if (error || !data) {
+                    showMessage('Access Denied: Invalid Mobile Number/PIN or not an Admin account.');
+                } else {
+                    document.getElementById('admin-welcome-name').textContent = 'Welcome, ' + data.full_name;
+                    authContainer.style.display = 'none';
+                    adminDashboardView.style.display = 'block';
+                }
+            } catch (err) {
+                showMessage('Network error. Check connection.');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Sign In to Admin';
+            }
+        });
+
+        // Logout
+        document.getElementById('admin-logout-btn').addEventListener('click', () => {
+            adminDashboardView.style.display = 'none';
+            document.getElementById('admin-login-form').reset();
+            authContainer.style.display = 'block';
+            registerView.style.display = 'none';
+            loginView.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
+
