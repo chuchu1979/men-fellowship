@@ -396,15 +396,15 @@
         .history-title { font-size: 0.85rem; font-weight: 700; color: var(--text-color); }
         .history-amount { font-size: 0.9rem; font-weight: 700; color: #10b981; }
 
-        .levy-badge {
+        .levy-badge, .status-badge {
             font-size: 0.7rem;
             font-weight: 700;
             padding: 3px 8px;
             border-radius: 12px;
         }
-        .badge-paid { background: rgba(34, 197, 94, 0.2); color: #86efac; border: 1px solid #22c55e; }
-        .badge-partial { background: rgba(234, 179, 8, 0.2); color: #fde047; border: 1px solid #eab308; }
-        .badge-unpaid { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid #ef4444; }
+        .badge-paid, .status-present { background: rgba(34, 197, 94, 0.2); color: #86efac; border: 1px solid #22c55e; }
+        .badge-partial, .status-excused { background: rgba(234, 179, 8, 0.2); color: #fde047; border: 1px solid #eab308; }
+        .badge-unpaid, .status-absent { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid #ef4444; }
 
         .profile-row {
             display: flex;
@@ -555,6 +555,7 @@
                 <li id="menu-dues-record">📋 My Dues Record</li>
                 <li id="menu-arrears">⚠️ My Arrears Dues</li>
                 <li id="menu-levy">🏛️ My Levy View</li>
+                <li id="menu-attendance">📅 Attendance Performance</li>
                 <li id="menu-proj-info">🏗️ Project Information</li>
                 <li id="menu-notifications">🔔 Notifications</li>
                 <li id="menu-settings">⚙️ Settings</li>
@@ -631,6 +632,39 @@
                 </div>
             </div>
 
+            <!-- Admin Mark Attendance Card -->
+            <div class="card-box">
+                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 12px;">📝 Mark Member Attendance</h3>
+                
+                <div class="form-group">
+                    <label>Search Member for Attendance</label>
+                    <input type="text" id="admin-att-search" placeholder="Type member name...">
+                </div>
+                <div id="admin-att-results"></div>
+
+                <div id="admin-att-form" style="display: none; margin-top: 14px; border-top: 1px solid var(--border-color); padding-top: 12px;">
+                    <h4 style="font-size: 0.82rem; color:var(--accent-color); margin-bottom: 8px;" id="att-member-title">Selected Member: </h4>
+                    
+                    <div class="form-group">
+                        <label>Meeting Title</label>
+                        <input type="text" id="att-meeting-title" value="General Fellowship Meeting">
+                    </div>
+                    <div class="form-group">
+                        <label>Meeting Date</label>
+                        <input type="date" id="att-meeting-date">
+                    </div>
+                    <div class="form-group">
+                        <label>Attendance Status</label>
+                        <select id="att-status">
+                            <option value="Present" selected>Present</option>
+                            <option value="Absent">Absent</option>
+                            <option value="Excused">Excused</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary" id="btn-save-attendance">Save Attendance</button>
+                </div>
+            </div>
+
             <!-- Admin Create Levy Card -->
             <div class="card-box">
                 <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 12px;">➕ Create New Project Levy</h3>
@@ -662,7 +696,7 @@
 
             <!-- 2. MY ARREARS DUES VIEW -->
             <div id="sec-arrears" class="card-box" style="display:none;">
-                <h3 style="font-size: 0.95rem; color:#f87171; margin-bottom: 10px;">⚠️️ My Arrears Dues</h3>
+                <h3 style="font-size: 0.95rem; color:#f87171; margin-bottom: 10px;">⚠ My Arrears Dues</h3>
                 <div id="arrears-container">
                     <p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Calculating arrears...</p>
                 </div>
@@ -676,7 +710,31 @@
                 </div>
             </div>
 
-            <!-- 4. PROJECT INFORMATION VIEW -->
+            <!-- 4. ATTENDANCE PERFORMANCE VIEW -->
+            <div id="sec-attendance" class="card-box" style="display:none;">
+                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">📅 Attendance Performance</h3>
+                
+                <div id="att-summary-box" style="margin-bottom: 14px; padding: 12px; background: var(--input-bg); border-radius:10px; border:1px solid var(--border-color); display:flex; justify-content:space-around; text-align:center;">
+                    <div>
+                        <div style="font-size:0.7rem; color:var(--subtext-color);">Total Meetings</div>
+                        <div id="att-total-cnt" style="font-size:1.1rem; font-weight:800; color:var(--text-color);">0</div>
+                    </div>
+                    <div>
+                        <div style="font-size:0.7rem; color:var(--subtext-color);">Present</div>
+                        <div id="att-present-cnt" style="font-size:1.1rem; font-weight:800; color:#10b981;">0</div>
+                    </div>
+                    <div>
+                        <div style="font-size:0.7rem; color:var(--subtext-color);">Performance</div>
+                        <div id="att-rate-cnt" style="font-size:1.1rem; font-weight:800; color:var(--accent-color);">0%</div>
+                    </div>
+                </div>
+
+                <div id="attendance-list-container">
+                    <p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Loading attendance records...</p>
+                </div>
+            </div>
+
+            <!-- 5. PROJECT INFORMATION VIEW -->
             <div id="sec-proj-info" class="card-box" style="display:none;">
                 <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">🏗️ Project Information</h3>
                 <div id="project-info-container">
@@ -686,17 +744,17 @@
                 </div>
             </div>
 
-            <!-- 5. NOTIFICATIONS VIEW -->
+            <!-- 6. NOTIFICATIONS VIEW -->
             <div id="sec-notifications" class="card-box" style="display:none;">
                 <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">🔔 Notifications</h3>
                 <div class="history-item">
                     <div class="history-title">Welcome to Men Fellowship</div>
                     <div class="history-date">System Notification</div>
-                    <p style="font-size:0.75rem; color:var(--subtext-color); margin-top:4px;">Stay updated on all dues, levies, and fellowship announcements right here.</p>
+                    <p style="font-size:0.75rem; color:var(--subtext-color); margin-top:4px;">Stay updated on all dues, levies, attendance, and fellowship announcements right here.</p>
                 </div>
             </div>
 
-            <!-- 6. SETTINGS VIEW -->
+            <!-- 7. SETTINGS VIEW -->
             <div id="sec-settings" class="card-box" style="display:none;">
                 <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">⚙️ Settings</h3>
                 <p style="font-size:0.8rem; color:var(--subtext-color); margin-bottom:12px;">App Theme Customization</p>
@@ -717,6 +775,10 @@
 
         let currentUser = null;
         let selectedMemberForDues = null;
+        let selectedMemberForAtt = null;
+
+        // Set default date picker to today
+        document.getElementById('att-meeting-date').valueAsDate = new Date();
 
         // Loading Screen Transition
         window.addEventListener('DOMContentLoaded', () => {
@@ -806,6 +868,7 @@
         const menuDuesRecord = document.getElementById('menu-dues-record');
         const menuArrears = document.getElementById('menu-arrears');
         const menuLevy = document.getElementById('menu-levy');
+        const menuAttendance = document.getElementById('menu-attendance');
         const menuProjInfo = document.getElementById('menu-proj-info');
         const menuNotifications = document.getElementById('menu-notifications');
         const menuSettings = document.getElementById('menu-settings');
@@ -813,12 +876,13 @@
         const secDuesRecord = document.getElementById('sec-dues-record');
         const secArrears = document.getElementById('sec-arrears');
         const secLevy = document.getElementById('sec-levy');
+        const secAttendance = document.getElementById('sec-attendance');
         const secProjInfo = document.getElementById('sec-proj-info');
         const secNotifications = document.getElementById('sec-notifications');
         const secSettings = document.getElementById('sec-settings');
 
-        const allMenuBtns = [menuHome, menuDuesRecord, menuArrears, menuLevy, menuProjInfo, menuNotifications, menuSettings];
-        const allSections = [secDuesRecord, secArrears, secLevy, secProjInfo, secNotifications, secSettings];
+        const allMenuBtns = [menuHome, menuDuesRecord, menuArrears, menuLevy, menuAttendance, menuProjInfo, menuNotifications, menuSettings];
+        const allSections = [secDuesRecord, secArrears, secLevy, secAttendance, secProjInfo, secNotifications, secSettings];
 
         function hideAllMemberSections() {
             allSections.forEach(sec => sec.style.display = 'none');
@@ -866,6 +930,17 @@
                 hideAllMemberSections();
                 secLevy.style.display = 'block';
                 fetchProjectLevies(currentUser.member_id);
+            }
+            closeSidebar();
+        });
+
+        menuAttendance.addEventListener('click', () => {
+            resetSidebarActive();
+            menuAttendance.classList.add('active-item');
+            if (currentUser && currentUser.role === 'member') {
+                hideAllMemberSections();
+                secAttendance.style.display = 'block';
+                fetchMemberAttendance(currentUser.member_id);
             }
             closeSidebar();
         });
@@ -1227,6 +1302,63 @@
             }
         }
 
+        // Fetch Member Attendance Records
+        async function fetchMemberAttendance(memberId) {
+            const container = document.getElementById('attendance-list-container');
+            container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center;">Loading attendance records...</p>';
+
+            try {
+                const { data, error } = await _supabase
+                    .from('attendance')
+                    .select('*')
+                    .eq('member_id', memberId)
+                    .order('meeting_date', { ascending: false });
+
+                if (error || !data || data.length === 0) {
+                    container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">No attendance records found.</p>';
+                    document.getElementById('att-total-cnt').textContent = '0';
+                    document.getElementById('att-present-cnt').textContent = '0';
+                    document.getElementById('att-rate-cnt').textContent = '0%';
+                    return;
+                }
+
+                const totalMeetings = data.length;
+                const presentCount = data.filter(a => a.status === 'Present').length;
+                const rate = Math.round((presentCount / totalMeetings) * 100);
+
+                document.getElementById('att-total-cnt').textContent = totalMeetings;
+                document.getElementById('att-present-cnt').textContent = presentCount;
+                document.getElementById('att-rate-cnt').textContent = rate + '%';
+
+                container.innerHTML = '';
+
+                data.forEach(item => {
+                    const dateFormatted = new Date(item.meeting_date).toLocaleDateString('en-GB', {
+                        day: 'numeric', month: 'short', year: 'numeric'
+                    });
+
+                    let statusBadge = '';
+                    if (item.status === 'Present') statusBadge = '<span class="status-badge status-present">Present</span>';
+                    else if (item.status === 'Absent') statusBadge = '<span class="status-badge status-absent">Absent</span>';
+                    else statusBadge = '<span class="status-badge status-excused">Excused</span>';
+
+                    const div = document.createElement('div');
+                    div.className = 'history-item';
+                    div.innerHTML = `
+                        <div class="history-row">
+                            <div class="history-title">${item.meeting_title}</div>
+                            ${statusBadge}
+                        </div>
+                        <div class="history-date" style="margin-top:4px;">${dateFormatted} • Marked by: ${item.recorded_by || 'Admin'}</div>
+                    `;
+                    container.appendChild(div);
+                });
+
+            } catch (err) {
+                container.innerHTML = '<p style="font-size:0.75rem; color:#ef4444; text-align:center;">Network error.</p>';
+            }
+        }
+
         // Save Project Levy (Admin)
         document.getElementById('btn-save-levy').addEventListener('click', async () => {
             const title = document.getElementById('admin-levy-title').value.trim();
@@ -1353,6 +1485,93 @@
             } finally {
                 saveBtn.disabled = false;
                 saveBtn.textContent = 'Save Dues Record';
+            }
+        });
+
+        // Admin Search & Mark Attendance Logic
+        document.getElementById('admin-att-search').addEventListener('input', async (e) => {
+            const query = e.target.value.trim();
+            const container = document.getElementById('admin-att-results');
+
+            if (query.length < 2) {
+                container.innerHTML = '';
+                return;
+            }
+
+            const { data } = await _supabase
+                .from('members')
+                .select('*')
+                .ilike('full_name', `%${query}%`);
+
+            if (!data || data.length === 0) {
+                container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); margin-top:8px;">No member matched.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            data.forEach(m => {
+                const div = document.createElement('div');
+                div.className = 'search-item';
+                div.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div style="font-size:0.8rem; font-weight:700; color:var(--text-color);">${m.full_name}</div>
+                            <div style="font-size:0.68rem; color:var(--subtext-color);">${m.phone_number}</div>
+                        </div>
+                        <span style="font-size:0.75rem; color:var(--accent-color); font-weight:600;">Select</span>
+                    </div>
+                `;
+                div.addEventListener('click', () => {
+                    selectedMemberForAtt = m;
+                    document.getElementById('att-member-title').textContent = `Selected Member: ${m.full_name} (${m.phone_number})`;
+                    document.getElementById('admin-att-form').style.display = 'block';
+                });
+                container.appendChild(div);
+            });
+        });
+
+        document.getElementById('btn-save-attendance').addEventListener('click', async () => {
+            if (!selectedMemberForAtt) return;
+
+            const title = document.getElementById('att-meeting-title').value.trim();
+            const date = document.getElementById('att-meeting-date').value;
+            const status = document.getElementById('att-status').value;
+            const btn = document.getElementById('btn-save-attendance');
+
+            if (!date) {
+                alert('Please select a meeting date.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Saving Attendance...';
+
+            try {
+                const { error } = await _supabase
+                    .from('attendance')
+                    .insert([{
+                        member_id: selectedMemberForAtt.member_id,
+                        member_name: selectedMemberForAtt.full_name,
+                        meeting_title: title || 'General Fellowship Meeting',
+                        meeting_date: date,
+                        status: status,
+                        recorded_by: currentUser.full_name
+                    }]);
+
+                if (error) {
+                    alert('Error saving attendance: ' + error.message);
+                } else {
+                    alert(`Attendance marked as "${status}" for ${selectedMemberForAtt.full_name}!`);
+                    document.getElementById('admin-att-search').value = '';
+                    document.getElementById('admin-att-results').innerHTML = '';
+                    document.getElementById('admin-att-form').style.display = 'none';
+                    selectedMemberForAtt = null;
+                }
+            } catch (err) {
+                alert('Network error.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Save Attendance';
             }
         });
 
