@@ -152,7 +152,7 @@
             font-weight: 500;
         }
 
-        .form-group input, .form-group select {
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%;
             padding: 12px 14px;
             border-radius: 10px;
@@ -164,7 +164,7 @@
             transition: border-color 0.2s ease;
         }
 
-        .form-group input:focus, .form-group select:focus {
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             border-color: #38bdf8;
         }
 
@@ -237,8 +237,8 @@
         .sidebar {
             position: fixed;
             top: 0;
-            left: -190px;
-            width: 190px;
+            left: -220px;
+            width: 220px;
             height: 100%;
             background: #0f172a;
             z-index: 101;
@@ -275,19 +275,20 @@
         }
 
         .sidebar-menu li {
-            padding: 8px 10px;
-            border-radius: 6px;
+            padding: 10px 12px;
+            border-radius: 8px;
             background: #1e293b;
             color: #f8fafc;
-            font-size: 0.75rem;
+            font-size: 0.78rem;
             font-weight: 500;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
         .sidebar-menu li:hover { background: #334155; }
+        .sidebar-menu li.active-item { background: #2563eb; color: #ffffff; }
 
         /* Dashboard Header */
         .header {
@@ -362,15 +363,15 @@
         }
 
         /* Search & History Items */
-        .search-item, .history-item {
+        .search-item, .history-item, .levy-item {
             background: #0f172a;
             border: 1px solid #334155;
-            padding: 10px 12px;
-            border-radius: 8px;
-            margin-top: 8px;
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 10px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            gap: 6px;
         }
 
         .search-item:hover {
@@ -379,9 +380,26 @@
             cursor: pointer;
         }
 
+        .history-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         .history-date { font-size: 0.68rem; color: #94a3b8; }
-        .history-title { font-size: 0.8rem; font-weight: 700; color: #f8fafc; }
-        .history-amount { font-size: 0.85rem; font-weight: 700; color: #10b981; }
+        .history-title { font-size: 0.85rem; font-weight: 700; color: #f8fafc; }
+        .history-amount { font-size: 0.9rem; font-weight: 700; color: #10b981; }
+
+        .levy-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+        .badge-paid { background: rgba(34, 197, 94, 0.2); color: #86efac; border: 1px solid #22c55e; }
+        .badge-partial { background: rgba(234, 179, 8, 0.2); color: #fde047; border: 1px solid #eab308; }
+        .badge-unpaid { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid #ef4444; }
 
         .profile-row {
             display: flex;
@@ -512,11 +530,14 @@
         <div class="sidebar-overlay" id="sidebar-overlay"></div>
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <span style="font-weight:700; color:#38bdf8; font-size:0.75rem;">NAV MENU</span>
+                <span style="font-weight:700; color:#38bdf8; font-size:0.75rem;">NAVIGATION MENU</span>
                 <span class="sidebar-close" id="sidebar-close">&times;</span>
             </div>
             <ul class="sidebar-menu">
-                <li id="menu-dashboard">📊 Dashboard</li>
+                <li id="menu-home" class="active-item">📊 Dashboard</li>
+                <li id="menu-dues-record">📜 My Dues Record</li>
+                <li id="menu-arrears">⚠️ My Arrears Dues</li>
+                <li id="menu-levy">🏗️ Project Levy</li>
                 <li id="sidebar-logout" style="background:#7f1d1d; color:#fca5a5; margin-top: 15px;">🚪 Logout</li>
             </ul>
         </div>
@@ -604,12 +625,30 @@
                     <button class="btn-primary" id="btn-save-dues">Save Dues Record</button>
                 </div>
             </div>
+
+            <!-- Admin Create Levy Card -->
+            <div class="card-box">
+                <h3 style="font-size: 0.95rem; color:#38bdf8; margin-bottom: 12px;">➕ Create New Project Levy</h3>
+                <div class="form-group">
+                    <label>Levy Title (e.g. PASTOR BIRTHDAY)</label>
+                    <input type="text" id="admin-levy-title" placeholder="e.g. PASTOR BIRTHDAY">
+                </div>
+                <div class="form-group">
+                    <label>Fixed Target Amount (₦)</label>
+                    <input type="number" id="admin-levy-amount" placeholder="e.g. 10000">
+                </div>
+                <div class="form-group">
+                    <label>Details / Description</label>
+                    <textarea id="admin-levy-details" rows="2" placeholder="Brief description of the levy..."></textarea>
+                </div>
+                <button class="btn-primary" id="btn-save-levy">Save Project Levy</button>
+            </div>
         </div>
 
         <!-- MEMBER DASHBOARD SECTION -->
         <div id="member-dashboard-section" style="display: none;">
             <!-- Profile Info (Read Only) -->
-            <div class="card-box">
+            <div id="sec-profile" class="card-box">
                 <h3 style="font-size: 0.95rem; color:#38bdf8; margin-bottom: 10px;">👤 Profile Summary</h3>
                 <div class="profile-row">
                     <span class="profile-key">Full Name</span>
@@ -625,11 +664,27 @@
                 </div>
             </div>
 
-            <!-- Payment History List -->
-            <div class="card-box">
-                <h3 style="font-size: 0.95rem; color:#38bdf8; margin-bottom: 10px;">📜 My Payment History</h3>
+            <!-- 1. MY DUES RECORD VIEW -->
+            <div id="sec-dues-record" class="card-box">
+                <h3 style="font-size: 0.95rem; color:#38bdf8; margin-bottom: 10px;">📜 My Dues Record</h3>
                 <div id="member-history-container">
                     <p style="font-size:0.75rem; color:#94a3b8; text-align:center; padding:10px;">Loading payment history...</p>
+                </div>
+            </div>
+
+            <!-- 2. MY ARREARS DUES VIEW -->
+            <div id="sec-arrears" class="card-box" style="display:none;">
+                <h3 style="font-size: 0.95rem; color:#f87171; margin-bottom: 10px;">⚠️ My Arrears Dues</h3>
+                <div id="arrears-container">
+                    <p style="font-size:0.75rem; color:#94a3b8; text-align:center; padding:10px;">Calculating arrears...</p>
+                </div>
+            </div>
+
+            <!-- 3. PROJECT LEVY VIEW -->
+            <div id="sec-levy" class="card-box" style="display:none;">
+                <h3 style="font-size: 0.95rem; color:#38bdf8; margin-bottom: 10px;">🏗️ Project Levies</h3>
+                <div id="levies-container">
+                    <p style="font-size:0.75rem; color:#94a3b8; text-align:center; padding:10px;">Loading project levies...</p>
                 </div>
             </div>
         </div>
@@ -707,7 +762,7 @@
 
         function hideMessage() { msgBox.style.display = 'none'; }
 
-        // Sidebar Navigation Controls
+        // Sidebar Controls & Navigation Tabs
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebar-overlay');
         const toggleBtn = document.getElementById('sidebar-toggle');
@@ -726,6 +781,71 @@
         toggleBtn.addEventListener('click', openSidebar);
         closeBtn.addEventListener('click', closeSidebar);
         overlay.addEventListener('click', closeSidebar);
+
+        // Sidebar Navigation Handling
+        const menuHome = document.getElementById('menu-home');
+        const menuDuesRecord = document.getElementById('menu-dues-record');
+        const menuArrears = document.getElementById('menu-arrears');
+        const menuLevy = document.getElementById('menu-levy');
+
+        const secProfile = document.getElementById('sec-profile');
+        const secDuesRecord = document.getElementById('sec-dues-record');
+        const secArrears = document.getElementById('sec-arrears');
+        const secLevy = document.getElementById('sec-levy');
+
+        function resetSidebarActive() {
+            [menuHome, menuDuesRecord, menuArrears, menuLevy].forEach(item => item.classList.remove('active-item'));
+        }
+
+        menuHome.addEventListener('click', () => {
+            resetSidebarActive();
+            menuHome.classList.add('active-item');
+            if (currentUser && currentUser.role === 'member') {
+                secProfile.style.display = 'block';
+                secDuesRecord.style.display = 'block';
+                secArrears.style.display = 'none';
+                secLevy.style.display = 'none';
+            }
+            closeSidebar();
+        });
+
+        menuDuesRecord.addEventListener('click', () => {
+            resetSidebarActive();
+            menuDuesRecord.classList.add('active-item');
+            if (currentUser && currentUser.role === 'member') {
+                secProfile.style.display = 'none';
+                secDuesRecord.style.display = 'block';
+                secArrears.style.display = 'none';
+                secLevy.style.display = 'none';
+            }
+            closeSidebar();
+        });
+
+        menuArrears.addEventListener('click', () => {
+            resetSidebarActive();
+            menuArrears.classList.add('active-item');
+            if (currentUser && currentUser.role === 'member') {
+                secProfile.style.display = 'none';
+                secDuesRecord.style.display = 'none';
+                secArrears.style.display = 'block';
+                secLevy.style.display = 'none';
+                calculateMemberArrears(currentUser.member_id, currentUser.created_at);
+            }
+            closeSidebar();
+        });
+
+        menuLevy.addEventListener('click', () => {
+            resetSidebarActive();
+            menuLevy.classList.add('active-item');
+            if (currentUser && currentUser.role === 'member') {
+                secProfile.style.display = 'none';
+                secDuesRecord.style.display = 'none';
+                secArrears.style.display = 'none';
+                secLevy.style.display = 'block';
+                fetchProjectLevies(currentUser.member_id);
+            }
+            closeSidebar();
+        });
 
         // Registration Logic
         document.getElementById('register-form').addEventListener('submit', async (e) => {
@@ -790,7 +910,7 @@
             }
         });
 
-        // 1. MEMBER LOGIN FORM
+        // MEMBER LOGIN FORM
         document.getElementById('member-login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             hideMessage();
@@ -829,7 +949,7 @@
                     document.getElementById('admin-dashboard-section').style.display = 'none';
                     document.getElementById('member-dashboard-section').style.display = 'block';
 
-                    // Fill Profile Details
+                    // Profile Details
                     document.getElementById('mem-profile-name').textContent = data.full_name || '-';
                     document.getElementById('mem-profile-id').textContent = data.member_id || '-';
                     document.getElementById('mem-profile-phone').textContent = data.phone_number || '-';
@@ -845,7 +965,7 @@
             }
         });
 
-        // 2. ADMIN LOGIN FORM
+        // ADMIN LOGIN FORM
         document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             hideMessage();
@@ -930,11 +1050,11 @@
                     const div = document.createElement('div');
                     div.className = 'history-item';
                     div.innerHTML = `
-                        <div>
-                            <div class="history-title">Compulsory Dues</div>
-                            <div class="history-date">${dateFormatted} • Rec. by: ${item.recorded_by || 'Admin'}</div>
+                        <div class="history-row">
+                            <div class="history-title">${item.payment_type === 'compulsory_dues' ? 'Compulsory Dues' : item.payment_type}</div>
+                            <div class="history-amount">₦${Number(item.amount).toLocaleString()}</div>
                         </div>
-                        <div class="history-amount">₦${Number(item.amount).toLocaleString()}</div>
+                        <div class="history-date">${dateFormatted} • Rec. by: ${item.recorded_by || 'Admin'}</div>
                     `;
                     container.appendChild(div);
                 });
@@ -945,6 +1065,163 @@
                 container.innerHTML = '<p style="font-size:0.75rem; color:#ef4444; text-align:center;">Network error.</p>';
             }
         }
+
+        // Calculate Arrears Dues
+        async function calculateMemberArrears(memberId, regDateStr) {
+            const container = document.getElementById('arrears-container');
+            container.innerHTML = '<p style="font-size:0.75rem; color:#94a3b8; text-align:center;">Calculating arrears...</p>';
+
+            try {
+                // Fetch total compulsory dues paid
+                const { data, error } = await _supabase
+                    .from('dues_payments')
+                    .select('amount, created_at')
+                    .eq('member_id', memberId)
+                    .eq('payment_type', 'compulsory_dues');
+
+                if (error) {
+                    container.innerHTML = '<p style="font-size:0.75rem; color:#ef4444; text-align:center;">Error calculating arrears.</p>';
+                    return;
+                }
+
+                const totalPaid = data ? data.reduce((sum, item) => sum + Number(item.amount), 0) : 0;
+
+                // Monthly dues rate = ₦500
+                const MONTHLY_RATE = 500;
+                const regDate = new Date(regDateStr || Date.now());
+                const now = new Date();
+
+                // Months elapsed from registration month to current month
+                const monthsElapsed = (now.getFullYear() - regDate.getFullYear()) * 12 + (now.getMonth() - regDate.getMonth()) + 1;
+                const totalExpectedDues = Math.max(1, monthsElapsed) * MONTHLY_RATE;
+                const totalArrears = Math.max(0, totalExpectedDues - totalPaid);
+
+                if (totalArrears === 0) {
+                    container.innerHTML = `
+                        <div style="text-align:center; padding:15px;">
+                            <div style="font-size:1.8rem;">🎉</div>
+                            <div style="font-size:0.85rem; color:#86efac; font-weight:700; margin-top:5px;">Up to Date!</div>
+                            <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">You have no outstanding dues arrears.</div>
+                        </div>
+                    `;
+                } else {
+                    const monthsOwing = Math.ceil(totalArrears / MONTHLY_RATE);
+                    container.innerHTML = `
+                        <div class="history-item" style="border-color:#f87171; background:rgba(239,68,68,0.1);">
+                            <div class="history-row">
+                                <div class="history-title" style="color:#fca5a5;">Total Arrears Owed</div>
+                                <div class="history-amount" style="color:#ef4444;">₦${totalArrears.toLocaleString()}</div>
+                            </div>
+                            <div class="history-date" style="color:#cbd5e1; margin-top:6px;">
+                                You have <strong>${monthsOwing} month(s)</strong> outstanding up to ${now.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}.
+                            </div>
+                        </div>
+                    `;
+                }
+
+            } catch (err) {
+                container.innerHTML = '<p style="font-size:0.75rem; color:#ef4444; text-align:center;">Network error.</p>';
+            }
+        }
+
+        // Fetch & Render Project Levies
+        async function fetchProjectLevies(memberId) {
+            const container = document.getElementById('levies-container');
+            container.innerHTML = '<p style="font-size:0.75rem; color:#94a3b8; text-align:center;">Loading project levies...</p>';
+
+            try {
+                // Fetch all levies created by Admin
+                const { data: levies, error: levyErr } = await _supabase.from('project_levies').select('*').order('created_at', { ascending: false });
+
+                if (levyErr || !levies || levies.length === 0) {
+                    container.innerHTML = '<p style="font-size:0.75rem; color:#94a3b8; text-align:center; padding:10px;">No active project levies at the moment.</p>';
+                    return;
+                }
+
+                // Fetch member's levy payments
+                const { data: userPayments } = await _supabase.from('dues_payments').select('*').eq('member_id', memberId);
+
+                container.innerHTML = '';
+
+                levies.forEach(levy => {
+                    const target = Number(levy.fixed_amount);
+                    
+                    // Sum payments for this levy
+                    const paid = userPayments 
+                        ? userPayments.filter(p => p.payment_type === levy.title).reduce((sum, p) => sum + Number(p.amount), 0)
+                        : 0;
+
+                    const balance = Math.max(0, target - paid);
+
+                    let badgeHtml = '';
+                    if (paid >= target) {
+                        badgeHtml = '<span class="levy-badge badge-paid">Fully Paid</span>';
+                    } else if (paid > 0) {
+                        badgeHtml = '<span class="levy-badge badge-partial">Partially Paid</span>';
+                    } else {
+                        badgeHtml = '<span class="levy-badge badge-unpaid">Not Paid</span>';
+                    }
+
+                    const div = document.createElement('div');
+                    div.className = 'levy-item';
+                    div.innerHTML = `
+                        <div class="history-row">
+                            <div class="history-title" style="color:#38bdf8;">${levy.title}</div>
+                            ${badgeHtml}
+                        </div>
+                        <div style="font-size:0.75rem; color:#cbd5e1; margin-top:2px;">${levy.details || 'No description available.'}</div>
+                        <div style="border-top:1px dashed #334155; margin-top:6px; padding-top:6px;">
+                            <div class="profile-row"><span class="profile-key">Target Amount:</span><span class="profile-val">₦${target.toLocaleString()}</span></div>
+                            <div class="profile-row"><span class="profile-key">Amount Paid:</span><span class="profile-val" style="color:#10b981;">₦${paid.toLocaleString()}</span></div>
+                            <div class="profile-row"><span class="profile-key">Remaining Balance:</span><span class="profile-val" style="color:${balance > 0 ? '#ef4444' : '#10b981'};">₦${balance.toLocaleString()}</span></div>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+
+            } catch (err) {
+                container.innerHTML = '<p style="font-size:0.75rem; color:#ef4444; text-align:center;">Network error.</p>';
+            }
+        }
+
+        // Save Project Levy (Admin Action)
+        document.getElementById('btn-save-levy').addEventListener('click', async () => {
+            const title = document.getElementById('admin-levy-title').value.trim();
+            const amount = Number(document.getElementById('admin-levy-amount').value);
+            const details = document.getElementById('admin-levy-details').value.trim();
+            const saveBtn = document.getElementById('btn-save-levy');
+
+            if (!title || !amount || amount <= 0) {
+                alert('Please enter a valid levy title and fixed target amount.');
+                return;
+            }
+
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving Levy...';
+
+            try {
+                const { error } = await _supabase.from('project_levies').insert([{
+                    title: title,
+                    fixed_amount: amount,
+                    details: details,
+                    created_by: currentUser.full_name
+                }]);
+
+                if (error) {
+                    alert('Error creating levy: ' + error.message);
+                } else {
+                    alert(`Project Levy "${title}" of ₦${amount.toLocaleString()} created successfully!`);
+                    document.getElementById('admin-levy-title').value = '';
+                    document.getElementById('admin-levy-amount').value = '';
+                    document.getElementById('admin-levy-details').value = '';
+                }
+            } catch (err) {
+                alert('Network error.');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Project Levy';
+            }
+        });
 
         // Fetch Total Dues Collected (For Admin)
         async function fetchTotalDuesCollected() {
@@ -984,11 +1261,13 @@
                 const div = document.createElement('div');
                 div.className = 'search-item';
                 div.innerHTML = `
-                    <div>
-                        <div style="font-size:0.8rem; font-weight:700; color:#f8fafc;">${m.full_name}</div>
-                        <div style="font-size:0.68rem; color:#94a3b8;">${m.phone_number}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div style="font-size:0.8rem; font-weight:700; color:#f8fafc;">${m.full_name}</div>
+                            <div style="font-size:0.68rem; color:#94a3b8;">${m.phone_number}</div>
+                        </div>
+                        <span style="font-size:0.75rem; color:#38bdf8; font-weight:600;">Select</span>
                     </div>
-                    <span style="font-size:0.75rem; color:#38bdf8; font-weight:600;">Select</span>
                 `;
                 div.addEventListener('click', () => {
                     selectedMemberForDues = m;
