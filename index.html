@@ -282,7 +282,6 @@
 
         .icon-btn { background: none; border: none; color: var(--text-color); font-size: 1.2rem; cursor: pointer; }
 
-        /* Dashboard Summary Grid Cards */
         .member-cards-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -478,17 +477,8 @@
                 <span style="font-weight:700; color:var(--accent-color); font-size:0.75rem;">NAVIGATION MENU</span>
                 <span class="sidebar-close" id="sidebar-close">&times;</span>
             </div>
-            <ul class="sidebar-menu">
-                <li id="menu-home" class="active-item">📊 Dashboard Overview</li>
-                <li id="menu-track-dues">🎯 Track My Dues</li>
-                <li id="menu-dues-transactions">💳 View Dues Transactions</li>
-                <li id="menu-arrears">⚠️ My Arrears Dues</li>
-                <li id="menu-levy">🏛️ My Levy View</li>
-                <li id="menu-attendance">📅 Attendance Performance</li>
-                <li id="menu-proj-info">🏗 Project Information</li>
-                <li id="menu-notifications">🔔 Notifications</li>
-                <li id="menu-settings">⚙️ Settings</li>
-                <li id="sidebar-logout" style="background:#7f1d1d; color:#fca5a5; margin-top: 15px; border-color:#991b1b;">🚪 Logout</li>
+            <ul class="sidebar-menu" id="sidebar-menu-list">
+                <!-- Links dynamically rendered via JavaScript based on Member vs Admin -->
             </ul>
         </div>
 
@@ -518,7 +508,7 @@
             
             <!-- Member Overview (Home) Tab -->
             <div id="sec-member-overview">
-                <!-- 4 Summary Cards Grid -->
+                <!-- 5 Summary Cards Grid -->
                 <div class="member-cards-grid">
                     <div class="summary-mini-card" style="border-color:#10b981;">
                         <div class="card-label">Total Dues Paid</div>
@@ -528,11 +518,15 @@
                         <div class="card-label">Total Arrears</div>
                         <div class="card-val" id="card-total-arrears" style="color:#ef4444;">₦0</div>
                     </div>
+                    <div class="summary-mini-card" style="border-color:#eab308;">
+                        <div class="card-label">Old Dues (Pre-App)</div>
+                        <div class="card-val" id="card-old-dues" style="color:#fde047;">₦0</div>
+                    </div>
                     <div class="summary-mini-card" style="border-color:#38bdf8;">
                         <div class="card-label">Meetings Present</div>
                         <div class="card-val" id="card-total-meetings" style="color:#38bdf8;">0</div>
                     </div>
-                    <div class="summary-mini-card" style="border-color:#a855f7;">
+                    <div class="summary-mini-card" style="border-color:#a855f7; grid-column: span 2;">
                         <div class="card-label">Total Project Paid</div>
                         <div class="card-val" id="card-total-project" style="color:#c084fc;">₦0</div>
                     </div>
@@ -596,7 +590,7 @@
 
             <!-- 2. MY ARREARS DUES VIEW -->
             <div id="sec-arrears" class="card-box" style="display:none;">
-                <h3 style="font-size: 0.95rem; color:#f87171; margin-bottom: 10px;">⚠ My Arrears Dues</h3>
+                <h3 style="font-size: 0.95rem; color:#f87171; margin-bottom: 10px;">⚠️ My Arrears Dues</h3>
                 <div id="arrears-container">
                     <p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Calculating arrears...</p>
                 </div>
@@ -669,7 +663,9 @@
 
         <!-- ADMIN DASHBOARD SECTION -->
         <div id="admin-dashboard-section" style="display: none;">
-            <div class="card-box">
+            
+            <!-- ADMIN RECORD CURRENT DUES SECTION -->
+            <div id="sec-admin-current-dues" class="card-box">
                 <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 12px;">🔍 Search & Record Member Dues</h3>
                 
                 <div class="form-group">
@@ -709,8 +705,31 @@
                 </div>
             </div>
 
+            <!-- ADMIN RECORD OLD DUES SECTION -->
+            <div id="sec-admin-old-dues" class="card-box" style="display: none;">
+                <h3 style="font-size: 0.95rem; color:#fde047; margin-bottom: 12px;">📜 Record Old Dues (Pre-App Dues)</h3>
+                
+                <div class="form-group">
+                    <label>Search Member by Name</label>
+                    <input type="text" id="admin-old-dues-search" placeholder="Type member name...">
+                </div>
+
+                <div id="admin-old-dues-results"></div>
+
+                <div id="admin-old-dues-form" style="display: none; margin-top: 18px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+                    <h4 style="font-size: 0.85rem; color:#fde047; margin-bottom: 10px;" id="selected-old-member-title">Selected Member: </h4>
+
+                    <div class="form-group">
+                        <label>Enter Old Dues Amount (₦)</label>
+                        <input type="number" id="admin-old-dues-amount" placeholder="e.g. 5000">
+                    </div>
+
+                    <button class="btn-primary" id="btn-save-old-dues" style="background:#eab308; color:#000;">Save Old Dues Record</button>
+                </div>
+            </div>
+
             <!-- Admin Mark Attendance Card -->
-            <div class="card-box">
+            <div id="sec-admin-attendance" class="card-box">
                 <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 12px;">📝 Mark Member Attendance</h3>
                 
                 <div class="form-group">
@@ -743,7 +762,7 @@
             </div>
 
             <!-- Admin Create Levy Card -->
-            <div class="card-box">
+            <div id="sec-admin-levy" class="card-box">
                 <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 12px;">➕ Create New Project Levy</h3>
                 <div class="form-group">
                     <label>Levy Title (e.g. PASTOR BIRTHDAY)</label>
@@ -770,6 +789,7 @@
 
         let currentUser = null;
         let selectedMemberForDues = null;
+        let selectedMemberForOldDues = null;
         let selectedMemberForAtt = null;
         let chartInstance = null;
 
@@ -848,127 +868,211 @@
         closeBtn.addEventListener('click', closeSidebar);
         overlay.addEventListener('click', closeSidebar);
 
-        const menuHome = document.getElementById('menu-home');
-        const menuTrackDues = document.getElementById('menu-track-dues');
-        const menuDuesTransactions = document.getElementById('menu-dues-transactions');
-        const menuArrears = document.getElementById('menu-arrears');
-        const menuLevy = document.getElementById('menu-levy');
-        const menuAttendance = document.getElementById('menu-attendance');
-        const menuProjInfo = document.getElementById('menu-proj-info');
-        const menuNotifications = document.getElementById('menu-notifications');
-        const menuSettings = document.getElementById('menu-settings');
+        function setupSidebarMenu(role) {
+            const menuList = document.getElementById('sidebar-menu-list');
+            menuList.innerHTML = '';
 
-        const secMemberOverview = document.getElementById('sec-member-overview');
-        const secTrackDues = document.getElementById('sec-track-dues');
-        const secDuesTransactions = document.getElementById('sec-dues-transactions');
-        const secArrears = document.getElementById('sec-arrears');
-        const secLevy = document.getElementById('sec-levy');
-        const secAttendance = document.getElementById('sec-attendance');
-        const secProjInfo = document.getElementById('sec-proj-info');
-        const secNotifications = document.getElementById('sec-notifications');
-        const secSettings = document.getElementById('sec-settings');
+            if (role === 'admin') {
+                menuList.innerHTML = `
+                    <li id="menu-admin-home" class="active-item">📊 Admin Overview</li>
+                    <li id="menu-admin-old-dues">📜 Record Old Dues</li>
+                    <li id="menu-admin-attendance">📝 Mark Attendance</li>
+                    <li id="menu-admin-levy">➕ Create Project Levy</li>
+                    <li id="sidebar-logout" style="background:#7f1d1d; color:#fca5a5; margin-top: 15px; border-color:#991b1b;">🚪 Logout</li>
+                `;
 
-        const allMenuBtns = [menuHome, menuTrackDues, menuDuesTransactions, menuArrears, menuLevy, menuAttendance, menuProjInfo, menuNotifications, menuSettings];
-        const allSections = [secMemberOverview, secTrackDues, secDuesTransactions, secArrears, secLevy, secAttendance, secProjInfo, secNotifications, secSettings];
+                document.getElementById('menu-admin-home').addEventListener('click', () => {
+                    resetAdminSidebarActive();
+                    document.getElementById('menu-admin-home').classList.add('active-item');
+                    showAdminSection('sec-admin-current-dues');
+                    closeSidebar();
+                });
 
-        function hideAllMemberSections() { allSections.forEach(sec => sec.style.display = 'none'); }
-        function resetSidebarActive() { allMenuBtns.forEach(item => item.classList.remove('active-item')); }
+                document.getElementById('menu-admin-old-dues').addEventListener('click', () => {
+                    resetAdminSidebarActive();
+                    document.getElementById('menu-admin-old-dues').classList.add('active-item');
+                    showAdminSection('sec-admin-old-dues');
+                    closeSidebar();
+                });
 
-        menuHome.addEventListener('click', () => {
-            resetSidebarActive();
-            menuHome.classList.add('active-item');
-            if (currentUser && currentUser.role === 'member') {
-                hideAllMemberSections();
-                secMemberOverview.style.display = 'block';
-                loadMemberOverviewData(currentUser);
+                document.getElementById('menu-admin-attendance').addEventListener('click', () => {
+                    resetAdminSidebarActive();
+                    document.getElementById('menu-admin-attendance').classList.add('active-item');
+                    showAdminSection('sec-admin-attendance');
+                    closeSidebar();
+                });
+
+                document.getElementById('menu-admin-levy').addEventListener('click', () => {
+                    resetAdminSidebarActive();
+                    document.getElementById('menu-admin-levy').classList.add('active-item');
+                    showAdminSection('sec-admin-levy');
+                    closeSidebar();
+                });
+
+            } else {
+                menuList.innerHTML = `
+                    <li id="menu-home" class="active-item">📊 Dashboard Overview</li>
+                    <li id="menu-track-dues">🎯 Track My Dues</li>
+                    <li id="menu-dues-transactions">💳 View Dues Transactions</li>
+                    <li id="menu-arrears">⚠️ My Arrears Dues</li>
+                    <li id="menu-levy">🏛️ My Levy View</li>
+                    <li id="menu-attendance">📅 Attendance Performance</li>
+                    <li id="menu-proj-info">🏗️ Project Information</li>
+                    <li id="menu-notifications">🔔 Notifications</li>
+                    <li id="menu-settings">⚙️ Settings</li>
+                    <li id="sidebar-logout" style="background:#7f1d1d; color:#fca5a5; margin-top: 15px; border-color:#991b1b;">🚪 Logout</li>
+                `;
+
+                setupMemberSidebarEvents();
             }
-            closeSidebar();
-        });
 
-        menuTrackDues.addEventListener('click', () => {
-            resetSidebarActive();
-            menuTrackDues.classList.add('active-item');
-            if (currentUser && currentUser.role === 'member') {
-                hideAllMemberSections();
-                secTrackDues.style.display = 'block';
-                trackMemberDues(currentUser.member_id);
-            }
-            closeSidebar();
-        });
+            document.getElementById('sidebar-logout').addEventListener('click', () => {
+                closeSidebar();
+                dashboardView.style.display = 'none';
+                document.getElementById('member-login-form').reset();
+                document.getElementById('admin-login-form').reset();
+                authContainer.style.display = 'block';
+                currentUser = null;
+            });
+        }
 
-        menuDuesTransactions.addEventListener('click', () => {
-            resetSidebarActive();
-            menuDuesTransactions.classList.add('active-item');
-            if (currentUser && currentUser.role === 'member') {
-                hideAllMemberSections();
-                secDuesTransactions.style.display = 'block';
-                fetchMemberDuesHistory(currentUser.member_id);
-            }
-            closeSidebar();
-        });
+        function resetAdminSidebarActive() {
+            const items = document.querySelectorAll('#sidebar-menu-list li');
+            items.forEach(i => i.classList.remove('active-item'));
+        }
 
-        menuArrears.addEventListener('click', () => {
-            resetSidebarActive();
-            menuArrears.classList.add('active-item');
-            if (currentUser && currentUser.role === 'member') {
-                hideAllMemberSections();
-                secArrears.style.display = 'block';
-                calculateMemberArrears(currentUser.member_id, currentUser.created_at);
-            }
-            closeSidebar();
-        });
+        function showAdminSection(sectionId) {
+            document.getElementById('sec-admin-current-dues').style.display = 'none';
+            document.getElementById('sec-admin-old-dues').style.display = 'none';
+            document.getElementById('sec-admin-attendance').style.display = 'none';
+            document.getElementById('sec-admin-levy').style.display = 'none';
 
-        menuLevy.addEventListener('click', () => {
-            resetSidebarActive();
-            menuLevy.classList.add('active-item');
-            if (currentUser && currentUser.role === 'member') {
-                hideAllMemberSections();
-                secLevy.style.display = 'block';
-                fetchProjectLevies(currentUser.member_id);
-            }
-            closeSidebar();
-        });
+            document.getElementById(sectionId).style.display = 'block';
+        }
 
-        menuAttendance.addEventListener('click', () => {
-            resetSidebarActive();
-            menuAttendance.classList.add('active-item');
-            if (currentUser && currentUser.role === 'member') {
-                hideAllMemberSections();
-                secAttendance.style.display = 'block';
-                fetchMemberAttendance(currentUser.member_id);
-            }
-            closeSidebar();
-        });
+        function setupMemberSidebarEvents() {
+            const menuHome = document.getElementById('menu-home');
+            const menuTrackDues = document.getElementById('menu-track-dues');
+            const menuDuesTransactions = document.getElementById('menu-dues-transactions');
+            const menuArrears = document.getElementById('menu-arrears');
+            const menuLevy = document.getElementById('menu-levy');
+            const menuAttendance = document.getElementById('menu-attendance');
+            const menuProjInfo = document.getElementById('menu-proj-info');
+            const menuNotifications = document.getElementById('menu-notifications');
+            const menuSettings = document.getElementById('menu-settings');
 
-        menuProjInfo.addEventListener('click', () => {
-            resetSidebarActive();
-            menuProjInfo.classList.add('active-item');
-            if (currentUser && currentUser.role === 'member') {
-                hideAllMemberSections();
-                secProjInfo.style.display = 'block';
-            }
-            closeSidebar();
-        });
+            const secMemberOverview = document.getElementById('sec-member-overview');
+            const secTrackDues = document.getElementById('sec-track-dues');
+            const secDuesTransactions = document.getElementById('sec-dues-transactions');
+            const secArrears = document.getElementById('sec-arrears');
+            const secLevy = document.getElementById('sec-levy');
+            const secAttendance = document.getElementById('sec-attendance');
+            const secProjInfo = document.getElementById('sec-proj-info');
+            const secNotifications = document.getElementById('sec-notifications');
+            const secSettings = document.getElementById('sec-settings');
 
-        menuNotifications.addEventListener('click', () => {
-            resetSidebarActive();
-            menuNotifications.classList.add('active-item');
-            if (currentUser && currentUser.role === 'member') {
-                hideAllMemberSections();
-                secNotifications.style.display = 'block';
-            }
-            closeSidebar();
-        });
+            const allMenuBtns = [menuHome, menuTrackDues, menuDuesTransactions, menuArrears, menuLevy, menuAttendance, menuProjInfo, menuNotifications, menuSettings];
+            const allSections = [secMemberOverview, secTrackDues, secDuesTransactions, secArrears, secLevy, secAttendance, secProjInfo, secNotifications, secSettings];
 
-        menuSettings.addEventListener('click', () => {
-            resetSidebarActive();
-            menuSettings.classList.add('active-item');
-            if (currentUser && currentUser.role === 'member') {
-                hideAllMemberSections();
-                secSettings.style.display = 'block';
-            }
-            closeSidebar();
-        });
+            function hideAllMemberSections() { allSections.forEach(sec => sec.style.display = 'none'); }
+            function resetSidebarActive() { allMenuBtns.forEach(item => item.classList.remove('active-item')); }
+
+            menuHome.addEventListener('click', () => {
+                resetSidebarActive();
+                menuHome.classList.add('active-item');
+                if (currentUser && currentUser.role === 'member') {
+                    hideAllMemberSections();
+                    secMemberOverview.style.display = 'block';
+                    loadMemberOverviewData(currentUser);
+                }
+                closeSidebar();
+            });
+
+            menuTrackDues.addEventListener('click', () => {
+                resetSidebarActive();
+                menuTrackDues.classList.add('active-item');
+                if (currentUser && currentUser.role === 'member') {
+                    hideAllMemberSections();
+                    secTrackDues.style.display = 'block';
+                    trackMemberDues(currentUser.member_id);
+                }
+                closeSidebar();
+            });
+
+            menuDuesTransactions.addEventListener('click', () => {
+                resetSidebarActive();
+                menuDuesTransactions.classList.add('active-item');
+                if (currentUser && currentUser.role === 'member') {
+                    hideAllMemberSections();
+                    secDuesTransactions.style.display = 'block';
+                    fetchMemberDuesHistory(currentUser.member_id);
+                }
+                closeSidebar();
+            });
+
+            menuArrears.addEventListener('click', () => {
+                resetSidebarActive();
+                menuArrears.classList.add('active-item');
+                if (currentUser && currentUser.role === 'member') {
+                    hideAllMemberSections();
+                    secArrears.style.display = 'block';
+                    calculateMemberArrears(currentUser.member_id, currentUser.created_at);
+                }
+                closeSidebar();
+            });
+
+            menuLevy.addEventListener('click', () => {
+                resetSidebarActive();
+                menuLevy.classList.add('active-item');
+                if (currentUser && currentUser.role === 'member') {
+                    hideAllMemberSections();
+                    secLevy.style.display = 'block';
+                    fetchProjectLevies(currentUser.member_id);
+                }
+                closeSidebar();
+            });
+
+            menuAttendance.addEventListener('click', () => {
+                resetSidebarActive();
+                menuAttendance.classList.add('active-item');
+                if (currentUser && currentUser.role === 'member') {
+                    hideAllMemberSections();
+                    secAttendance.style.display = 'block';
+                    fetchMemberAttendance(currentUser.member_id);
+                }
+                closeSidebar();
+            });
+
+            menuProjInfo.addEventListener('click', () => {
+                resetSidebarActive();
+                menuProjInfo.classList.add('active-item');
+                if (currentUser && currentUser.role === 'member') {
+                    hideAllMemberSections();
+                    secProjInfo.style.display = 'block';
+                }
+                closeSidebar();
+            });
+
+            menuNotifications.addEventListener('click', () => {
+                resetSidebarActive();
+                menuNotifications.classList.add('active-item');
+                if (currentUser && currentUser.role === 'member') {
+                    hideAllMemberSections();
+                    secNotifications.style.display = 'block';
+                }
+                closeSidebar();
+            });
+
+            menuSettings.addEventListener('click', () => {
+                resetSidebarActive();
+                menuSettings.classList.add('active-item');
+                if (currentUser && currentUser.role === 'member') {
+                    hideAllMemberSections();
+                    secSettings.style.display = 'block';
+                }
+                closeSidebar();
+            });
+        }
 
         document.getElementById('track-year-select').addEventListener('change', () => {
             if (currentUser) trackMemberDues(currentUser.member_id);
@@ -1083,6 +1187,7 @@
                     document.getElementById('admin-dashboard-section').style.display = 'none';
                     document.getElementById('member-dashboard-section').style.display = 'block';
 
+                    setupSidebarMenu('member');
                     loadMemberOverviewData(currentUser);
                 }
             } catch (err) {
@@ -1130,6 +1235,8 @@
                     document.getElementById('admin-dashboard-section').style.display = 'block';
                     document.getElementById('member-dashboard-section').style.display = 'none';
 
+                    setupSidebarMenu('admin');
+                    showAdminSection('sec-admin-current-dues');
                     fetchTotalDuesCollected();
                 }
             } catch (err) {
@@ -1171,6 +1278,18 @@
 
                 document.getElementById('card-total-dues').textContent = '₦' + compulsoryPaid.toLocaleString();
                 document.getElementById('card-total-project').textContent = '₦' + projectPaid.toLocaleString();
+
+                // FETCH OLD DUES
+                const { data: oldDuesData } = await _supabase
+                    .from('old_dues')
+                    .select('amount')
+                    .eq('member_id', user.member_id);
+
+                let totalOldDues = 0;
+                if (oldDuesData) {
+                    totalOldDues = oldDuesData.reduce((sum, item) => sum + Number(item.amount), 0);
+                }
+                document.getElementById('card-old-dues').textContent = '₦' + totalOldDues.toLocaleString();
 
                 const MONTHLY_RATE = 500;
                 const regDate = new Date(user.created_at || Date.now());
@@ -1244,10 +1363,9 @@
 
                 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
                 
-                // Track from 2025 up to current date (Oct 2026)
                 const startYear = 2025;
                 const endYear = 2026;
-                const currentMonth = 9; // October (0-indexed)
+                const currentMonth = 9;
 
                 let totalPaidCount = payments ? Math.floor(payments.reduce((s, p) => s + Number(p.amount), 0) / 500) : 0;
                 let monthList = [];
@@ -1259,7 +1377,6 @@
                     }
                 }
 
-                // Filter by year/month if requested
                 let filteredList = monthList.filter(item => {
                     if (selectedYear !== 'ALL' && item.year !== Number(selectedYear)) return false;
                     if (selectedMonth !== 'ALL' && item.monthIndex !== Number(selectedMonth)) return false;
@@ -1273,7 +1390,6 @@
 
                 container.innerHTML = '';
 
-                // Map paid months sequentially
                 filteredList.forEach((item, index) => {
                     const isPaid = (index < totalPaidCount);
 
@@ -1617,6 +1733,90 @@
             }
         });
 
+        // ADMIN OLD DUES SEARCH & SAVE
+        document.getElementById('admin-old-dues-search').addEventListener('input', async (e) => {
+            const query = e.target.value.trim();
+            const container = document.getElementById('admin-old-dues-results');
+
+            if (query.length < 2) {
+                container.innerHTML = '';
+                return;
+            }
+
+            const { data } = await _supabase
+                .from('members')
+                .select('*')
+                .ilike('full_name', `%${query}%`);
+
+            if (!data || data.length === 0) {
+                container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); margin-top:8px;">No member matched.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            data.forEach(m => {
+                const div = document.createElement('div');
+                div.className = 'search-item';
+                div.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div style="font-size:0.8rem; font-weight:700; color:var(--text-color);">${m.full_name}</div>
+                            <div style="font-size:0.68rem; color:var(--subtext-color);">${m.phone_number}</div>
+                        </div>
+                        <span style="font-size:0.75rem; color:#fde047; font-weight:600;">Select</span>
+                    </div>
+                `;
+                div.addEventListener('click', () => {
+                    selectedMemberForOldDues = m;
+                    document.getElementById('selected-old-member-title').textContent = `Selected Member: ${m.full_name} (${m.phone_number})`;
+                    document.getElementById('admin-old-dues-form').style.display = 'block';
+                });
+                container.appendChild(div);
+            });
+        });
+
+        document.getElementById('btn-save-old-dues').addEventListener('click', async () => {
+            if (!selectedMemberForOldDues) return;
+
+            const amount = Number(document.getElementById('admin-old-dues-amount').value);
+            const saveBtn = document.getElementById('btn-save-old-dues');
+
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid amount.');
+                return;
+            }
+
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving Old Dues...';
+
+            try {
+                const { error } = await _supabase
+                    .from('old_dues')
+                    .insert([{
+                        member_id: selectedMemberForOldDues.member_id,
+                        member_name: selectedMemberForOldDues.full_name,
+                        amount: amount,
+                        recorded_by: currentUser.full_name
+                    }]);
+
+                if (error) {
+                    alert('Failed to save old dues: ' + error.message);
+                } else {
+                    alert(`Old Dues of ₦${amount.toLocaleString()} saved for ${selectedMemberForOldDues.full_name}!`);
+                    document.getElementById('admin-old-dues-search').value = '';
+                    document.getElementById('admin-old-dues-results').innerHTML = '';
+                    document.getElementById('admin-old-dues-amount').value = '';
+                    document.getElementById('admin-old-dues-form').style.display = 'none';
+                    selectedMemberForOldDues = null;
+                }
+            } catch (err) {
+                alert('Network error.');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Old Dues Record';
+            }
+        });
+
         document.getElementById('admin-att-search').addEventListener('input', async (e) => {
             const query = e.target.value.trim();
             const container = document.getElementById('admin-att-results');
@@ -1701,15 +1901,6 @@
                 btn.disabled = false;
                 btn.textContent = 'Save Attendance';
             }
-        });
-
-        document.getElementById('sidebar-logout').addEventListener('click', () => {
-            closeSidebar();
-            dashboardView.style.display = 'none';
-            document.getElementById('member-login-form').reset();
-            document.getElementById('admin-login-form').reset();
-            authContainer.style.display = 'block';
-            currentUser = null;
         });
     </script>
 </body>
