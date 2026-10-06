@@ -289,6 +289,13 @@
             padding: 0 16px 16px;
         }
 
+        .admin-cards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 0 16px 16px;
+        }
+
         .summary-mini-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -299,18 +306,6 @@
 
         .summary-mini-card .card-label { font-size: 0.68rem; color: var(--subtext-color); text-transform: uppercase; font-weight: 700; }
         .summary-mini-card .card-val { font-size: 1.1rem; font-weight: 800; margin-top: 4px; }
-
-        .summary-card {
-            background: var(--card-bg);
-            border: 1px solid var(--accent-color);
-            border-radius: 12px;
-            padding: 16px;
-            margin: 0 16px 14px;
-            text-align: center;
-        }
-
-        .summary-label { font-size: 0.75rem; color: var(--subtext-color); text-transform: uppercase; letter-spacing: 1px; }
-        .summary-amount { font-size: 1.5rem; font-weight: 800; color: #10b981; margin-top: 4px; }
 
         .card-box {
             background: var(--card-bg);
@@ -497,10 +492,20 @@
             </div>
         </div>
 
-        <!-- Admin Total Dues Card -->
-        <div class="summary-card" id="admin-total-card-wrapper" style="display: none; pointer-events: none;">
-            <div class="summary-label">Total Dues Collected So Far</div>
-            <div class="summary-amount" id="total-dues-collected">₦0</div>
+        <!-- ADMIN DASHBOARD FINANCIAL SUMMARY CARDS -->
+        <div class="admin-cards-grid" id="admin-total-card-wrapper" style="display: none;">
+            <div class="summary-mini-card" style="border-color:#10b981;">
+                <div class="card-label">Total Inflow</div>
+                <div class="card-val" id="admin-total-inflow" style="color:#10b981;">₦0</div>
+            </div>
+            <div class="summary-mini-card" style="border-color:#ef4444;">
+                <div class="card-label">Total Expenses</div>
+                <div class="card-val" id="admin-total-expenses" style="color:#ef4444;">₦0</div>
+            </div>
+            <div class="summary-mini-card" style="border-color:#38bdf8; grid-column: span 2;">
+                <div class="card-label">Total Balance</div>
+                <div class="card-val" id="admin-total-balance" style="color:#38bdf8;">₦0</div>
+            </div>
         </div>
 
         <!-- MEMBER DASHBOARD SECTION -->
@@ -541,11 +546,18 @@
                 </div>
             </div>
 
+            <!-- MEMBER EXPENSES HISTORY SECTION -->
+            <div id="sec-member-expenses" class="card-box" style="display:none;">
+                <h3 style="font-size: 0.95rem; color:#f87171; margin-bottom: 12px;">💸 Fellowship Expenses History</h3>
+                <div id="member-expenses-container">
+                    <p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Loading expenses history...</p>
+                </div>
+            </div>
+
             <!-- TRACK MY DUES SECTION -->
             <div id="sec-track-dues" class="card-box" style="display:none;">
                 <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 12px;">🎯 Track My Monthly Dues</h3>
                 
-                <!-- Search Filter Form -->
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom: 14px;">
                     <div>
                         <label style="font-size:0.75rem; color:var(--subtext-color);">Year</label>
@@ -728,6 +740,45 @@
                 </div>
             </div>
 
+            <!-- ADMIN RECORD EXPENSES SECTION -->
+            <div id="sec-admin-record-expenses" class="card-box" style="display: none;">
+                <h3 style="font-size: 0.95rem; color:#f87171; margin-bottom: 12px;">💸 Record Expense</h3>
+                
+                <div class="form-group">
+                    <label>Expense Title</label>
+                    <input type="text" id="expense-title-input" placeholder="e.g. Church roof">
+                </div>
+
+                <div class="form-group">
+                    <label>Expense Date</label>
+                    <input type="date" id="expense-date-input">
+                </div>
+
+                <div class="form-group">
+                    <label>Details / Breakdown</label>
+                    <textarea id="expense-details-input" rows="2" placeholder="e.g. building church roof"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Amount (₦)</label>
+                    <input type="number" id="expense-amount-input" placeholder="e.g. 10000">
+                </div>
+
+                <button class="btn-primary" id="btn-save-expense" style="background:#ef4444;">Enter Expense</button>
+
+                <div id="daily-expense-summary" style="display:none; margin-top:14px; padding:10px; background:rgba(239, 68, 68, 0.1); border:1px solid #ef4444; border-radius:8px; text-align:center;">
+                    <span style="font-size:0.8rem; color:#fca5a5;" id="daily-expense-text"></span>
+                </div>
+            </div>
+
+            <!-- ADMIN VIEW EXPENSES HISTORY SECTION -->
+            <div id="sec-admin-view-expenses" class="card-box" style="display: none;">
+                <h3 style="font-size: 0.95rem; color:#f87171; margin-bottom: 12px;">📖 Expenses History</h3>
+                <div id="admin-expenses-history-container">
+                    <p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Loading expenses history...</p>
+                </div>
+            </div>
+
             <!-- Admin Mark Attendance Card -->
             <div id="sec-admin-attendance" class="card-box">
                 <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 12px;">📝 Mark Member Attendance</h3>
@@ -794,6 +845,7 @@
         let chartInstance = null;
 
         document.getElementById('att-meeting-date').valueAsDate = new Date();
+        document.getElementById('expense-date-input').valueAsDate = new Date();
 
         window.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
@@ -876,6 +928,8 @@
                 menuList.innerHTML = `
                     <li id="menu-admin-home" class="active-item">📊 Admin Overview</li>
                     <li id="menu-admin-old-dues">📜 Record Old Dues</li>
+                    <li id="menu-admin-record-expense">💸 Record Expenses</li>
+                    <li id="menu-admin-view-expenses">📖 View Expenses</li>
                     <li id="menu-admin-attendance">📝 Mark Attendance</li>
                     <li id="menu-admin-levy">➕ Create Project Levy</li>
                     <li id="sidebar-logout" style="background:#7f1d1d; color:#fca5a5; margin-top: 15px; border-color:#991b1b;">🚪 Logout</li>
@@ -892,6 +946,21 @@
                     resetAdminSidebarActive();
                     document.getElementById('menu-admin-old-dues').classList.add('active-item');
                     showAdminSection('sec-admin-old-dues');
+                    closeSidebar();
+                });
+
+                document.getElementById('menu-admin-record-expense').addEventListener('click', () => {
+                    resetAdminSidebarActive();
+                    document.getElementById('menu-admin-record-expense').classList.add('active-item');
+                    showAdminSection('sec-admin-record-expenses');
+                    closeSidebar();
+                });
+
+                document.getElementById('menu-admin-view-expenses').addEventListener('click', () => {
+                    resetAdminSidebarActive();
+                    document.getElementById('menu-admin-view-expenses').classList.add('active-item');
+                    showAdminSection('sec-admin-view-expenses');
+                    fetchAdminExpensesHistory();
                     closeSidebar();
                 });
 
@@ -912,6 +981,7 @@
             } else {
                 menuList.innerHTML = `
                     <li id="menu-home" class="active-item">📊 Dashboard Overview</li>
+                    <li id="menu-member-expenses">💸 Expenses History</li>
                     <li id="menu-track-dues">🎯 Track My Dues</li>
                     <li id="menu-dues-transactions">💳 View Dues Transactions</li>
                     <li id="menu-arrears">⚠️ My Arrears Dues</li>
@@ -944,6 +1014,8 @@
         function showAdminSection(sectionId) {
             document.getElementById('sec-admin-current-dues').style.display = 'none';
             document.getElementById('sec-admin-old-dues').style.display = 'none';
+            document.getElementById('sec-admin-record-expenses').style.display = 'none';
+            document.getElementById('sec-admin-view-expenses').style.display = 'none';
             document.getElementById('sec-admin-attendance').style.display = 'none';
             document.getElementById('sec-admin-levy').style.display = 'none';
 
@@ -952,6 +1024,7 @@
 
         function setupMemberSidebarEvents() {
             const menuHome = document.getElementById('menu-home');
+            const menuExpenses = document.getElementById('menu-member-expenses');
             const menuTrackDues = document.getElementById('menu-track-dues');
             const menuDuesTransactions = document.getElementById('menu-dues-transactions');
             const menuArrears = document.getElementById('menu-arrears');
@@ -962,6 +1035,7 @@
             const menuSettings = document.getElementById('menu-settings');
 
             const secMemberOverview = document.getElementById('sec-member-overview');
+            const secMemberExpenses = document.getElementById('sec-member-expenses');
             const secTrackDues = document.getElementById('sec-track-dues');
             const secDuesTransactions = document.getElementById('sec-dues-transactions');
             const secArrears = document.getElementById('sec-arrears');
@@ -971,8 +1045,8 @@
             const secNotifications = document.getElementById('sec-notifications');
             const secSettings = document.getElementById('sec-settings');
 
-            const allMenuBtns = [menuHome, menuTrackDues, menuDuesTransactions, menuArrears, menuLevy, menuAttendance, menuProjInfo, menuNotifications, menuSettings];
-            const allSections = [secMemberOverview, secTrackDues, secDuesTransactions, secArrears, secLevy, secAttendance, secProjInfo, secNotifications, secSettings];
+            const allMenuBtns = [menuHome, menuExpenses, menuTrackDues, menuDuesTransactions, menuArrears, menuLevy, menuAttendance, menuProjInfo, menuNotifications, menuSettings];
+            const allSections = [secMemberOverview, secMemberExpenses, secTrackDues, secDuesTransactions, secArrears, secLevy, secAttendance, secProjInfo, secNotifications, secSettings];
 
             function hideAllMemberSections() { allSections.forEach(sec => sec.style.display = 'none'); }
             function resetSidebarActive() { allMenuBtns.forEach(item => item.classList.remove('active-item')); }
@@ -984,6 +1058,17 @@
                     hideAllMemberSections();
                     secMemberOverview.style.display = 'block';
                     loadMemberOverviewData(currentUser);
+                }
+                closeSidebar();
+            });
+
+            menuExpenses.addEventListener('click', () => {
+                resetSidebarActive();
+                menuExpenses.classList.add('active-item');
+                if (currentUser && currentUser.role === 'member') {
+                    hideAllMemberSections();
+                    secMemberExpenses.style.display = 'block';
+                    fetchMemberExpensesHistory();
                 }
                 closeSidebar();
             });
@@ -1231,13 +1316,13 @@
 
                     document.getElementById('dashboard-role-title').textContent = 'ADMIN DASHBOARD';
                     document.getElementById('header-logo-badge').textContent = 'ADM';
-                    document.getElementById('admin-total-card-wrapper').style.display = 'block';
+                    document.getElementById('admin-total-card-wrapper').style.display = 'grid';
                     document.getElementById('admin-dashboard-section').style.display = 'block';
                     document.getElementById('member-dashboard-section').style.display = 'none';
 
                     setupSidebarMenu('admin');
                     showAdminSection('sec-admin-current-dues');
-                    fetchTotalDuesCollected();
+                    calculateAdminFinancialSummary();
                 }
             } catch (err) {
                 showMessage('Network error.');
@@ -1279,7 +1364,6 @@
                 document.getElementById('card-total-dues').textContent = '₦' + compulsoryPaid.toLocaleString();
                 document.getElementById('card-total-project').textContent = '₦' + projectPaid.toLocaleString();
 
-                // FETCH OLD DUES
                 const { data: oldDuesData } = await _supabase
                     .from('old_dues')
                     .select('amount')
@@ -1644,14 +1728,172 @@
             }
         });
 
-        async function fetchTotalDuesCollected() {
+        // CALCULATE ADMIN FINANCIAL SUMMARY (INFLOW, EXPENSES, BALANCE)
+        async function calculateAdminFinancialSummary() {
             try {
-                const { data } = await _supabase.from('dues_payments').select('amount');
-                if (data) {
-                    const total = data.reduce((sum, item) => sum + Number(item.amount), 0);
-                    document.getElementById('total-dues-collected').textContent = '₦' + total.toLocaleString();
+                // 1. Get total dues payments
+                const { data: payments } = await _supabase.from('dues_payments').select('amount');
+                const duesTotal = payments ? payments.reduce((sum, item) => sum + Number(item.amount), 0) : 0;
+
+                // 2. Get total old dues
+                const { data: oldDues } = await _supabase.from('old_dues').select('amount');
+                const oldDuesTotal = oldDues ? oldDues.reduce((sum, item) => sum + Number(item.amount), 0) : 0;
+
+                // Total Inflow
+                const totalInflow = duesTotal + oldDuesTotal;
+
+                // 3. Get total expenses
+                const { data: expenses } = await _supabase.from('expenses').select('amount');
+                const totalExpenses = expenses ? expenses.reduce((sum, item) => sum + Number(item.amount), 0) : 0;
+
+                // Total Balance = Inflow - Expenses
+                const totalBalance = totalInflow - totalExpenses;
+
+                document.getElementById('admin-total-inflow').textContent = '₦' + totalInflow.toLocaleString();
+                document.getElementById('admin-total-expenses').textContent = '₦' + totalExpenses.toLocaleString();
+                document.getElementById('admin-total-balance').textContent = '₦' + totalBalance.toLocaleString();
+
+            } catch (err) {
+                console.log(err);
+            }
+        }
+
+        // SAVE EXPENSE BY ADMIN
+        document.getElementById('btn-save-expense').addEventListener('click', async () => {
+            const title = document.getElementById('expense-title-input').value.trim();
+            const date = document.getElementById('expense-date-input').value;
+            const details = document.getElementById('expense-details-input').value.trim();
+            const amount = Number(document.getElementById('expense-amount-input').value);
+            const saveBtn = document.getElementById('btn-save-expense');
+
+            if (!title || !date || !amount || amount <= 0) {
+                alert('Please fill in Expense Title, Date, and a valid Amount.');
+                return;
+            }
+
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving Expense...';
+
+            try {
+                const { error } = await _supabase.from('expenses').insert([{
+                    title: title,
+                    expense_date: date,
+                    details: details,
+                    amount: amount,
+                    recorded_by: currentUser.full_name
+                }]);
+
+                if (error) {
+                    alert('Failed to save expense: ' + error.message);
+                } else {
+                    alert(`Expense "${title}" of ₦${amount.toLocaleString()} saved!`);
+                    document.getElementById('expense-title-input').value = '';
+                    document.getElementById('expense-details-input').value = '';
+                    document.getElementById('expense-amount-input').value = '';
+
+                    // Calculate Total Expenses for that Date
+                    const { data: dailyData } = await _supabase
+                        .from('expenses')
+                        .select('amount')
+                        .eq('expense_date', date);
+
+                    const dailySum = dailyData ? dailyData.reduce((s, i) => s + Number(i.amount), 0) : 0;
+                    
+                    const dailyBox = document.getElementById('daily-expense-summary');
+                    const dailyText = document.getElementById('daily-expense-text');
+                    dailyText.textContent = `Total Expenses for ${date}: ₦${dailySum.toLocaleString()}`;
+                    dailyBox.style.display = 'block';
+
+                    calculateAdminFinancialSummary();
                 }
-            } catch (err) {}
+            } catch (err) {
+                alert('Network error.');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Enter Expense';
+            }
+        });
+
+        // FETCH EXPENSES FOR MEMBER VIEW
+        async function fetchMemberExpensesHistory() {
+            const container = document.getElementById('member-expenses-container');
+            container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Loading expenses history...</p>';
+
+            try {
+                const { data, error } = await _supabase
+                    .from('expenses')
+                    .select('*')
+                    .order('expense_date', { ascending: false });
+
+                if (error || !data || data.length === 0) {
+                    container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">No expenses recorded yet.</p>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                data.forEach(item => {
+                    const dateFormatted = new Date(item.expense_date).toLocaleDateString('en-GB', {
+                        day: 'numeric', month: 'short', year: 'numeric'
+                    });
+
+                    const div = document.createElement('div');
+                    div.className = 'history-item';
+                    div.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                    div.innerHTML = `
+                        <div class="history-row">
+                            <div class="history-title" style="color:#fca5a5;">${item.title}</div>
+                            <div class="history-amount" style="color:#ef4444;">-₦${Number(item.amount).toLocaleString()}</div>
+                        </div>
+                        <div style="font-size:0.75rem; color:var(--subtext-color); margin-top:2px;">${item.details || 'No details specified.'}</div>
+                        <div class="history-date" style="margin-top:4px;">Date: ${dateFormatted} • Approved by: ${item.recorded_by || 'Admin'}</div>
+                    `;
+                    container.appendChild(div);
+                });
+
+            } catch (err) {
+                container.innerHTML = '<p style="font-size:0.75rem; color:#ef4444; text-align:center;">Network error.</p>';
+            }
+        }
+
+        // FETCH EXPENSES FOR ADMIN VIEW
+        async function fetchAdminExpensesHistory() {
+            const container = document.getElementById('admin-expenses-history-container');
+            container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Loading expenses history...</p>';
+
+            try {
+                const { data, error } = await _supabase
+                    .from('expenses')
+                    .select('*')
+                    .order('expense_date', { ascending: false });
+
+                if (error || !data || data.length === 0) {
+                    container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">No expenses recorded yet.</p>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                data.forEach(item => {
+                    const dateFormatted = new Date(item.expense_date).toLocaleDateString('en-GB', {
+                        day: 'numeric', month: 'short', year: 'numeric'
+                    });
+
+                    const div = document.createElement('div');
+                    div.className = 'history-item';
+                    div.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                    div.innerHTML = `
+                        <div class="history-row">
+                            <div class="history-title" style="color:#fca5a5;">${item.title}</div>
+                            <div class="history-amount" style="color:#ef4444;">-₦${Number(item.amount).toLocaleString()}</div>
+                        </div>
+                        <div style="font-size:0.75rem; color:var(--subtext-color); margin-top:2px;">${item.details || 'No details specified.'}</div>
+                        <div class="history-date" style="margin-top:4px;">Date: ${dateFormatted} • Recorded by: ${item.recorded_by || 'Admin'}</div>
+                    `;
+                    container.appendChild(div);
+                });
+
+            } catch (err) {
+                container.innerHTML = '<p style="font-size:0.75rem; color:#ef4444; text-align:center;">Network error.</p>';
+            }
         }
 
         document.getElementById('admin-search-input').addEventListener('input', async (e) => {
@@ -1723,7 +1965,7 @@
                     document.getElementById('admin-search-results').innerHTML = '';
                     document.getElementById('admin-payment-form').style.display = 'none';
                     selectedMemberForDues = null;
-                    fetchTotalDuesCollected();
+                    calculateAdminFinancialSummary();
                 }
             } catch (err) {
                 alert('Network error.');
@@ -1808,6 +2050,7 @@
                     document.getElementById('admin-old-dues-amount').value = '';
                     document.getElementById('admin-old-dues-form').style.display = 'none';
                     selectedMemberForOldDues = null;
+                    calculateAdminFinancialSummary();
                 }
             } catch (err) {
                 alert('Network error.');
