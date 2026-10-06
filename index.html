@@ -652,23 +652,6 @@
 
         <!-- MEMBER DASHBOARD SECTION -->
         <div id="member-dashboard-section" style="display: none;">
-            <!-- Profile Info (Read Only) -->
-            <div id="sec-profile" class="card-box">
-                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">👤 Profile Summary</h3>
-                <div class="profile-row">
-                    <span class="profile-key">Full Name</span>
-                    <span class="profile-val" id="mem-profile-name">-</span>
-                </div>
-                <div class="profile-row">
-                    <span class="profile-key">Member ID</span>
-                    <span class="profile-val" id="mem-profile-id">-</span>
-                </div>
-                <div class="profile-row">
-                    <span class="profile-key">Phone Number</span>
-                    <span class="profile-val" id="mem-profile-phone">-</span>
-                </div>
-            </div>
-
             <!-- 1. MY DUES RECORD VIEW -->
             <div id="sec-dues-record" class="card-box">
                 <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">📋 My Dues Record</h3>
@@ -679,7 +662,7 @@
 
             <!-- 2. MY ARREARS DUES VIEW -->
             <div id="sec-arrears" class="card-box" style="display:none;">
-                <h3 style="font-size: 0.95rem; color:#f87171; margin-bottom: 10px;">⚠️ My Arrears Dues</h3>
+                <h3 style="font-size: 0.95rem; color:#f87171; margin-bottom: 10px;">⚠️️ My Arrears Dues</h3>
                 <div id="arrears-container">
                     <p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Calculating arrears...</p>
                 </div>
@@ -687,7 +670,7 @@
 
             <!-- 3. MY LEVY VIEW -->
             <div id="sec-levy" class="card-box" style="display:none;">
-                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">🏛️️ My Levy View</h3>
+                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">🏛 My Levy View</h3>
                 <div id="levies-container">
                     <p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Loading project levies...</p>
                 </div>
@@ -827,7 +810,6 @@
         const menuNotifications = document.getElementById('menu-notifications');
         const menuSettings = document.getElementById('menu-settings');
 
-        const secProfile = document.getElementById('sec-profile');
         const secDuesRecord = document.getElementById('sec-dues-record');
         const secArrears = document.getElementById('sec-arrears');
         const secLevy = document.getElementById('sec-levy');
@@ -836,7 +818,7 @@
         const secSettings = document.getElementById('sec-settings');
 
         const allMenuBtns = [menuHome, menuDuesRecord, menuArrears, menuLevy, menuProjInfo, menuNotifications, menuSettings];
-        const allSections = [secProfile, secDuesRecord, secArrears, secLevy, secProjInfo, secNotifications, secSettings];
+        const allSections = [secDuesRecord, secArrears, secLevy, secProjInfo, secNotifications, secSettings];
 
         function hideAllMemberSections() {
             allSections.forEach(sec => sec.style.display = 'none');
@@ -851,7 +833,6 @@
             menuHome.classList.add('active-item');
             if (currentUser && currentUser.role === 'member') {
                 hideAllMemberSections();
-                secProfile.style.display = 'block';
                 secDuesRecord.style.display = 'block';
             }
             closeSidebar();
@@ -1030,10 +1011,6 @@
                     document.getElementById('member-total-card-wrapper').style.display = 'block';
                     document.getElementById('admin-dashboard-section').style.display = 'none';
                     document.getElementById('member-dashboard-section').style.display = 'block';
-
-                    document.getElementById('mem-profile-name').textContent = data.full_name || '-';
-                    document.getElementById('mem-profile-id').textContent = data.member_id || '-';
-                    document.getElementById('mem-profile-phone').textContent = data.phone_number || '-';
 
                     fetchMemberDuesHistory(data.member_id);
                 }
