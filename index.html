@@ -321,7 +321,7 @@
             margin: 0 16px 16px;
         }
 
-        .search-item, .history-item, .levy-item {
+        .search-item, .history-item, .levy-item, .track-item {
             background: var(--input-bg);
             border: 1px solid var(--border-color);
             padding: 12px;
@@ -480,11 +480,12 @@
             </div>
             <ul class="sidebar-menu">
                 <li id="menu-home" class="active-item">📊 Dashboard Overview</li>
+                <li id="menu-track-dues">🎯 Track My Dues</li>
                 <li id="menu-dues-transactions">💳 View Dues Transactions</li>
                 <li id="menu-arrears">⚠️ My Arrears Dues</li>
                 <li id="menu-levy">🏛️ My Levy View</li>
                 <li id="menu-attendance">📅 Attendance Performance</li>
-                <li id="menu-proj-info">🏗️️ Project Information</li>
+                <li id="menu-proj-info">🏗 Project Information</li>
                 <li id="menu-notifications">🔔 Notifications</li>
                 <li id="menu-settings">⚙️ Settings</li>
                 <li id="sidebar-logout" style="background:#7f1d1d; color:#fca5a5; margin-top: 15px; border-color:#991b1b;">🚪 Logout</li>
@@ -546,6 +547,45 @@
                 </div>
             </div>
 
+            <!-- TRACK MY DUES SECTION -->
+            <div id="sec-track-dues" class="card-box" style="display:none;">
+                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 12px;">🎯 Track My Monthly Dues</h3>
+                
+                <!-- Search Filter Form -->
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom: 14px;">
+                    <div>
+                        <label style="font-size:0.75rem; color:var(--subtext-color);">Year</label>
+                        <select id="track-year-select" style="width:100%; padding:8px; border-radius:8px; background:var(--input-bg); color:var(--text-color); border:1px solid var(--border-color);">
+                            <option value="ALL">All Years</option>
+                            <option value="2025">2025</option>
+                            <option value="2026" selected>2026</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size:0.75rem; color:var(--subtext-color);">Month</label>
+                        <select id="track-month-select" style="width:100%; padding:8px; border-radius:8px; background:var(--input-bg); color:var(--text-color); border:1px solid var(--border-color);">
+                            <option value="ALL" selected>All Months</option>
+                            <option value="0">January</option>
+                            <option value="1">February</option>
+                            <option value="2">March</option>
+                            <option value="3">April</option>
+                            <option value="4">May</option>
+                            <option value="5">June</option>
+                            <option value="6">July</option>
+                            <option value="7">August</option>
+                            <option value="8">September</option>
+                            <option value="9">October</option>
+                            <option value="10">November</option>
+                            <option value="11">December</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="track-results-container">
+                    <p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Loading dues records...</p>
+                </div>
+            </div>
+
             <!-- 1. VIEW DUES TRANSACTIONS -->
             <div id="sec-dues-transactions" class="card-box" style="display:none;">
                 <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">💳 View Dues Transactions History</h3>
@@ -556,7 +596,7 @@
 
             <!-- 2. MY ARREARS DUES VIEW -->
             <div id="sec-arrears" class="card-box" style="display:none;">
-                <h3 style="font-size: 0.95rem; color:#f87171; margin-bottom: 10px;">⚠️️ My Arrears Dues</h3>
+                <h3 style="font-size: 0.95rem; color:#f87171; margin-bottom: 10px;">⚠ My Arrears Dues</h3>
                 <div id="arrears-container">
                     <p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Calculating arrears...</p>
                 </div>
@@ -809,6 +849,7 @@
         overlay.addEventListener('click', closeSidebar);
 
         const menuHome = document.getElementById('menu-home');
+        const menuTrackDues = document.getElementById('menu-track-dues');
         const menuDuesTransactions = document.getElementById('menu-dues-transactions');
         const menuArrears = document.getElementById('menu-arrears');
         const menuLevy = document.getElementById('menu-levy');
@@ -818,6 +859,7 @@
         const menuSettings = document.getElementById('menu-settings');
 
         const secMemberOverview = document.getElementById('sec-member-overview');
+        const secTrackDues = document.getElementById('sec-track-dues');
         const secDuesTransactions = document.getElementById('sec-dues-transactions');
         const secArrears = document.getElementById('sec-arrears');
         const secLevy = document.getElementById('sec-levy');
@@ -826,8 +868,8 @@
         const secNotifications = document.getElementById('sec-notifications');
         const secSettings = document.getElementById('sec-settings');
 
-        const allMenuBtns = [menuHome, menuDuesTransactions, menuArrears, menuLevy, menuAttendance, menuProjInfo, menuNotifications, menuSettings];
-        const allSections = [secMemberOverview, secDuesTransactions, secArrears, secLevy, secAttendance, secProjInfo, secNotifications, secSettings];
+        const allMenuBtns = [menuHome, menuTrackDues, menuDuesTransactions, menuArrears, menuLevy, menuAttendance, menuProjInfo, menuNotifications, menuSettings];
+        const allSections = [secMemberOverview, secTrackDues, secDuesTransactions, secArrears, secLevy, secAttendance, secProjInfo, secNotifications, secSettings];
 
         function hideAllMemberSections() { allSections.forEach(sec => sec.style.display = 'none'); }
         function resetSidebarActive() { allMenuBtns.forEach(item => item.classList.remove('active-item')); }
@@ -839,6 +881,17 @@
                 hideAllMemberSections();
                 secMemberOverview.style.display = 'block';
                 loadMemberOverviewData(currentUser);
+            }
+            closeSidebar();
+        });
+
+        menuTrackDues.addEventListener('click', () => {
+            resetSidebarActive();
+            menuTrackDues.classList.add('active-item');
+            if (currentUser && currentUser.role === 'member') {
+                hideAllMemberSections();
+                secTrackDues.style.display = 'block';
+                trackMemberDues(currentUser.member_id);
             }
             closeSidebar();
         });
@@ -915,6 +968,14 @@
                 secSettings.style.display = 'block';
             }
             closeSidebar();
+        });
+
+        document.getElementById('track-year-select').addEventListener('change', () => {
+            if (currentUser) trackMemberDues(currentUser.member_id);
+        });
+
+        document.getElementById('track-month-select').addEventListener('change', () => {
+            if (currentUser) trackMemberDues(currentUser.member_id);
         });
 
         const themeToggleBtn = document.getElementById('theme-toggle');
@@ -1082,7 +1143,6 @@
         // LOAD MEMBER OVERVIEW DATA & CHART
         async function loadMemberOverviewData(user) {
             try {
-                // 1. Fetch Dues Payments
                 const { data: payments } = await _supabase
                     .from('dues_payments')
                     .select('*')
@@ -1112,7 +1172,6 @@
                 document.getElementById('card-total-dues').textContent = '₦' + compulsoryPaid.toLocaleString();
                 document.getElementById('card-total-project').textContent = '₦' + projectPaid.toLocaleString();
 
-                // 2. Calculate Arrears
                 const MONTHLY_RATE = 500;
                 const regDate = new Date(user.created_at || Date.now());
                 const now = new Date();
@@ -1122,7 +1181,6 @@
 
                 document.getElementById('card-total-arrears').textContent = '₦' + arrears.toLocaleString();
 
-                // 3. Fetch Meeting Attendance
                 const { data: att } = await _supabase
                     .from('attendance')
                     .select('*')
@@ -1132,7 +1190,6 @@
                 const meetingsPresent = att ? att.length : 0;
                 document.getElementById('card-total-meetings').textContent = meetingsPresent;
 
-                // 4. Render Chart
                 renderDuesChart(monthlySums);
 
             } catch (err) {
@@ -1168,6 +1225,79 @@
                     }
                 }
             });
+        }
+
+        // TRACK MY DUES (Starting 2025)
+        async function trackMemberDues(memberId) {
+            const container = document.getElementById('track-results-container');
+            const selectedYear = document.getElementById('track-year-select').value;
+            const selectedMonth = document.getElementById('track-month-select').value;
+
+            container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Tracking dues...</p>';
+
+            try {
+                const { data: payments } = await _supabase
+                    .from('dues_payments')
+                    .select('*')
+                    .eq('member_id', memberId)
+                    .eq('payment_type', 'compulsory_dues');
+
+                const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                
+                // Track from 2025 up to current date (Oct 2026)
+                const startYear = 2025;
+                const endYear = 2026;
+                const currentMonth = 9; // October (0-indexed)
+
+                let totalPaidCount = payments ? Math.floor(payments.reduce((s, p) => s + Number(p.amount), 0) / 500) : 0;
+                let monthList = [];
+
+                for (let yr = startYear; yr <= endYear; yr++) {
+                    const maxM = (yr === endYear) ? currentMonth : 11;
+                    for (let m = 0; m <= maxM; m++) {
+                        monthList.push({ year: yr, monthIndex: m, monthName: monthNames[m] });
+                    }
+                }
+
+                // Filter by year/month if requested
+                let filteredList = monthList.filter(item => {
+                    if (selectedYear !== 'ALL' && item.year !== Number(selectedYear)) return false;
+                    if (selectedMonth !== 'ALL' && item.monthIndex !== Number(selectedMonth)) return false;
+                    return true;
+                });
+
+                if (filteredList.length === 0) {
+                    container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">No months match search query.</p>';
+                    return;
+                }
+
+                container.innerHTML = '';
+
+                // Map paid months sequentially
+                filteredList.forEach((item, index) => {
+                    const isPaid = (index < totalPaidCount);
+
+                    const div = document.createElement('div');
+                    div.className = 'track-item';
+                    div.style.borderColor = isPaid ? 'rgba(34, 197, 94, 0.4)' : 'rgba(239, 68, 68, 0.4)';
+                    div.style.background = isPaid ? 'rgba(34, 197, 94, 0.05)' : 'rgba(239, 68, 68, 0.05)';
+
+                    div.innerHTML = `
+                        <div class="history-row">
+                            <div class="history-title">${item.monthName} ${item.year}</div>
+                            <div>
+                                ${isPaid 
+                                    ? '<span style="color:#86efac; font-weight:800; font-size:0.85rem;">✅ Paid ₦500</span>' 
+                                    : '<span style="color:#fca5a5; font-weight:800; font-size:0.85rem;">❌ Not Paid</span>'}
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+
+            } catch (err) {
+                container.innerHTML = '<p style="font-size:0.75rem; color:#ef4444; text-align:center;">Network error.</p>';
+            }
         }
 
         async function fetchMemberDuesHistory(memberId) {
@@ -1584,3 +1714,4 @@
     </script>
 </body>
 </html>
+
