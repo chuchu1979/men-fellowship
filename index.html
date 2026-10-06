@@ -7,20 +7,44 @@
     <link rel="manifest" href="/manifest.json">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #131d38;
+            --text-color: #ffffff;
+            --subtext-color: #94a3b8;
+            --border-color: #1e293b;
+            --accent-color: #38bdf8;
+            --sidebar-bg: #0f172a;
+            --input-bg: #0f172a;
+        }
+
+        /* Light Theme Variable Overrides */
+        body.light-theme {
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-color: #0f172a;
+            --subtext-color: #64748b;
+            --border-color: #cbd5e1;
+            --accent-color: #2563eb;
+            --sidebar-bg: #e2e8f0;
+            --input-bg: #f8fafc;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         body {
-            background: linear-gradient(135deg, #0f172a, #1e1b4b, #020617);
+            background: var(--bg-color);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #ffffff;
+            color: var(--text-color);
             padding: 20px 12px;
         }
 
@@ -40,7 +64,7 @@
             font-size: 1.3rem;
             font-weight: 800;
             letter-spacing: 1px;
-            color: #f8fafc;
+            color: var(--text-color);
             text-transform: uppercase;
         }
 
@@ -64,16 +88,16 @@
         .slogan {
             font-size: 0.95rem;
             font-style: italic;
-            color: #cbd5e1;
+            color: var(--subtext-color);
         }
 
         .sub-detail {
             font-size: 0.75rem;
             font-weight: 600;
             letter-spacing: 1.5px;
-            color: #94a3b8;
+            color: var(--subtext-color);
             text-transform: uppercase;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid var(--border-color);
             padding-top: 15px;
             margin-top: 5px;
             width: 100%;
@@ -84,26 +108,25 @@
             display: none;
             width: 100%;
             max-width: 420px;
-            background: rgba(30, 41, 59, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 20px;
             padding: 28px 22px;
             backdrop-filter: blur(12px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
             opacity: 0;
             transition: opacity 0.6s ease;
             max-height: 90vh;
             overflow-y: auto;
         }
 
-        /* Login Toggle Tabs */
         .login-tabs {
             display: flex;
-            background: #0f172a;
+            background: var(--input-bg);
             border-radius: 12px;
             padding: 4px;
             margin-bottom: 20px;
-            border: 1px solid #334155;
+            border: 1px solid var(--border-color);
         }
 
         .tab-btn {
@@ -114,7 +137,7 @@
             font-weight: 600;
             border-radius: 8px;
             cursor: pointer;
-            color: #94a3b8;
+            color: var(--subtext-color);
             transition: all 0.2s ease;
         }
 
@@ -130,14 +153,14 @@
 
         .auth-header h2 {
             font-size: 1.35rem;
-            color: #38bdf8;
+            color: var(--accent-color);
             margin-bottom: 6px;
             font-weight: 700;
         }
 
         .auth-header p {
             font-size: 0.82rem;
-            color: #94a3b8;
+            color: var(--subtext-color);
         }
 
         .form-group {
@@ -147,7 +170,7 @@
         .form-group label {
             display: block;
             font-size: 0.8rem;
-            color: #cbd5e1;
+            color: var(--text-color);
             margin-bottom: 6px;
             font-weight: 500;
         }
@@ -156,16 +179,11 @@
             width: 100%;
             padding: 12px 14px;
             border-radius: 10px;
-            border: 1px solid #334155;
-            background: #0f172a;
-            color: #ffffff;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-color);
             font-size: 0.9rem;
             outline: none;
-            transition: border-color 0.2s ease;
-        }
-
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            border-color: #38bdf8;
         }
 
         .btn-primary {
@@ -179,18 +197,17 @@
             font-size: 0.95rem;
             cursor: pointer;
             margin-top: 10px;
-            transition: background 0.2s ease;
         }
 
         .toggle-text {
             text-align: center;
             font-size: 0.82rem;
-            color: #94a3b8;
+            color: var(--subtext-color);
             margin-top: 18px;
         }
 
         .toggle-text span {
-            color: #38bdf8;
+            color: var(--accent-color);
             cursor: pointer;
             font-weight: 600;
         }
@@ -212,13 +229,13 @@
             display: none;
             width: 100%;
             max-width: 480px;
-            background: #0b1329;
+            background: var(--bg-color);
             min-height: 100vh;
             position: relative;
             padding-bottom: 30px;
             border-radius: 20px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
         }
 
         /* Sidebar Navigation */
@@ -237,16 +254,16 @@
         .sidebar {
             position: fixed;
             top: 0;
-            left: -220px;
-            width: 220px;
+            left: -250px;
+            width: 250px;
             height: 100%;
-            background: #0f172a;
+            background: var(--sidebar-bg);
             z-index: 101;
             transition: left 0.25s ease-in-out;
-            padding: 16px 10px;
+            padding: 18px 12px;
             display: flex;
             flex-direction: column;
-            border-right: 1px solid #1e293b;
+            border-right: 1px solid var(--border-color);
             overflow-y: auto;
         }
 
@@ -256,48 +273,48 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #1e293b;
+            margin-bottom: 18px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .sidebar-close {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             cursor: pointer;
-            color: #94a3b8;
+            color: var(--subtext-color);
         }
 
         .sidebar-menu {
             list-style: none;
             display: flex;
             flex-direction: column;
-            gap: 6px;
-        }
-
-        .sidebar-menu li {
-            padding: 10px 12px;
-            border-radius: 8px;
-            background: #1e293b;
-            color: #f8fafc;
-            font-size: 0.78rem;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
             gap: 8px;
         }
 
-        .sidebar-menu li:hover { background: #334155; }
-        .sidebar-menu li.active-item { background: #2563eb; color: #ffffff; }
+        .sidebar-menu li {
+            padding: 11px 14px;
+            border-radius: 10px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid var(--border-color);
+        }
 
-        /* Dashboard Header */
+        .sidebar-menu li:hover { opacity: 0.9; }
+        .sidebar-menu li.active-item { background: #2563eb; color: #ffffff; border-color: #2563eb; }
+
         .header {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 14px 16px;
-            background: #0b1329;
-            border-bottom: 1px solid #1e293b;
+            background: var(--bg-color);
+            border-bottom: 1px solid var(--border-color);
             margin-bottom: 16px;
         }
 
@@ -318,54 +335,49 @@
             font-weight: bold;
             font-size: 0.75rem;
             color: #fff;
-            border: 2px solid #38bdf8;
         }
 
         .header-title-text {
             font-size: 0.8rem;
             font-weight: 800;
-            color: #f8fafc;
+            color: var(--text-color);
         }
 
         .header-user-info { text-align: right; }
-        .header-user-name { font-size: 0.8rem; font-weight: 700; color: #38bdf8; }
-        .header-user-phone { font-size: 0.68rem; color: #cbd5e1; font-weight: 500; }
+        .header-user-name { font-size: 0.8rem; font-weight: 700; color: var(--accent-color); }
+        .header-user-phone { font-size: 0.68rem; color: var(--subtext-color); font-weight: 500; }
 
         .icon-btn {
             background: none;
             border: none;
-            color: #f8fafc;
+            color: var(--text-color);
             font-size: 1.2rem;
             cursor: pointer;
         }
 
-        /* Stat Cards */
         .summary-card {
-            background: linear-gradient(135deg, #1e1b4b, #1e293b);
-            border: 1px solid #38bdf8;
+            background: var(--card-bg);
+            border: 1px solid var(--accent-color);
             border-radius: 12px;
             padding: 16px;
             margin: 0 16px 14px;
             text-align: center;
-            user-select: none;
         }
 
-        .summary-label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+        .summary-label { font-size: 0.75rem; color: var(--subtext-color); text-transform: uppercase; letter-spacing: 1px; }
         .summary-amount { font-size: 1.5rem; font-weight: 800; color: #10b981; margin-top: 4px; }
 
-        /* Inner Sections Style */
         .card-box {
-            background: #131d38;
+            background: var(--card-bg);
             border-radius: 12px;
             padding: 14px;
-            border: 1px solid #1e293b;
+            border: 1px solid var(--border-color);
             margin: 0 16px 16px;
         }
 
-        /* Search & History Items */
         .search-item, .history-item, .levy-item {
-            background: #0f172a;
-            border: 1px solid #334155;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
             padding: 12px;
             border-radius: 10px;
             margin-top: 10px;
@@ -374,20 +386,14 @@
             gap: 6px;
         }
 
-        .search-item:hover {
-            border-color: #38bdf8;
-            background: #1e293b;
-            cursor: pointer;
-        }
-
         .history-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .history-date { font-size: 0.68rem; color: #94a3b8; }
-        .history-title { font-size: 0.85rem; font-weight: 700; color: #f8fafc; }
+        .history-date { font-size: 0.68rem; color: var(--subtext-color); }
+        .history-title { font-size: 0.85rem; font-weight: 700; color: var(--text-color); }
         .history-amount { font-size: 0.9rem; font-weight: 700; color: #10b981; }
 
         .levy-badge {
@@ -395,7 +401,6 @@
             font-weight: 700;
             padding: 3px 8px;
             border-radius: 12px;
-            display: inline-block;
         }
         .badge-paid { background: rgba(34, 197, 94, 0.2); color: #86efac; border: 1px solid #22c55e; }
         .badge-partial { background: rgba(234, 179, 8, 0.2); color: #fde047; border: 1px solid #eab308; }
@@ -405,12 +410,25 @@
             display: flex;
             justify-content: space-between;
             padding: 8px 0;
-            border-bottom: 1px solid #1e293b;
+            border-bottom: 1px solid var(--border-color);
             font-size: 0.8rem;
         }
         .profile-row:last-child { border-bottom: none; }
-        .profile-key { color: #94a3b8; }
-        .profile-val { color: #f8fafc; font-weight: 600; }
+        .profile-key { color: var(--subtext-color); }
+        .profile-val { color: var(--text-color); font-weight: 600; }
+
+        /* Theme Toggle Button Style */
+        .theme-toggle-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -431,7 +449,6 @@
 
         <!-- Auth Section -->
         <div id="auth-view-wrapper">
-            <!-- Tabs to Switch Form Type -->
             <div class="login-tabs">
                 <div class="tab-btn active" id="tab-member">Member Login</div>
                 <div class="tab-btn" id="tab-admin">Admin Login</div>
@@ -530,15 +547,18 @@
         <div class="sidebar-overlay" id="sidebar-overlay"></div>
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <span style="font-weight:700; color:#38bdf8; font-size:0.75rem;">NAVIGATION MENU</span>
+                <span style="font-weight:700; color:var(--accent-color); font-size:0.75rem;">NAVIGATION MENU</span>
                 <span class="sidebar-close" id="sidebar-close">&times;</span>
             </div>
             <ul class="sidebar-menu">
                 <li id="menu-home" class="active-item">📊 Dashboard</li>
-                <li id="menu-dues-record">📜 My Dues Record</li>
+                <li id="menu-dues-record">📋 My Dues Record</li>
                 <li id="menu-arrears">⚠️ My Arrears Dues</li>
-                <li id="menu-levy">🏗️ Project Levy</li>
-                <li id="sidebar-logout" style="background:#7f1d1d; color:#fca5a5; margin-top: 15px;">🚪 Logout</li>
+                <li id="menu-levy">🏛️ My Levy View</li>
+                <li id="menu-proj-info">🏗️ Project Information</li>
+                <li id="menu-notifications">🔔 Notifications</li>
+                <li id="menu-settings">⚙️ Settings</li>
+                <li id="sidebar-logout" style="background:#7f1d1d; color:#fca5a5; margin-top: 15px; border-color:#991b1b;">🚪 Logout</li>
             </ul>
         </div>
 
@@ -572,7 +592,7 @@
         <!-- ADMIN DASHBOARD SECTION -->
         <div id="admin-dashboard-section" style="display: none;">
             <div class="card-box">
-                <h3 style="font-size: 0.95rem; color:#38bdf8; margin-bottom: 12px;">🔍 Search & Record Member Dues</h3>
+                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 12px;">🔍 Search & Record Member Dues</h3>
                 
                 <div class="form-group">
                     <label>Search Member by Name</label>
@@ -581,8 +601,7 @@
 
                 <div id="admin-search-results"></div>
 
-                <!-- Record Dues Form -->
-                <div id="admin-payment-form" style="display: none; margin-top: 18px; border-top: 1px solid #334155; padding-top: 14px;">
+                <div id="admin-payment-form" style="display: none; margin-top: 18px; border-top: 1px solid var(--border-color); padding-top: 14px;">
                     <h4 style="font-size: 0.85rem; color:#10b981; margin-bottom: 10px;" id="selected-member-title">Selected Member: </h4>
 
                     <div class="form-group">
@@ -598,25 +617,11 @@
                             <option value="4000">₦4,000</option>
                             <option value="4500">₦4,500</option>
                             <option value="5000">₦5,000</option>
-                            <option value="5500">₦5,500</option>
-                            <option value="6000">₦6,000</option>
-                            <option value="6500">₦6,500</option>
-                            <option value="7000">₦7,000</option>
-                            <option value="7500">₦7,500</option>
-                            <option value="8000">₦8,000</option>
-                            <option value="8500">₦8,500</option>
-                            <option value="9000">₦9,000</option>
-                            <option value="9500">₦9,500</option>
-                            <option value="10000">₦10,000</option>
-                            <option value="10500">₦10,500</option>
-                            <option value="11000">₦11,000</option>
-                            <option value="11500">₦11,500</option>
-                            <option value="12000">₦12,000</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label>Dues Type (Compulsory)</label>
+                        <label>Dues Type</label>
                         <select id="admin-dues-type" disabled>
                             <option value="compulsory_dues" selected>Compulsory Dues</option>
                         </select>
@@ -628,7 +633,7 @@
 
             <!-- Admin Create Levy Card -->
             <div class="card-box">
-                <h3 style="font-size: 0.95rem; color:#38bdf8; margin-bottom: 12px;">➕ Create New Project Levy</h3>
+                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 12px;">➕ Create New Project Levy</h3>
                 <div class="form-group">
                     <label>Levy Title (e.g. PASTOR BIRTHDAY)</label>
                     <input type="text" id="admin-levy-title" placeholder="e.g. PASTOR BIRTHDAY">
@@ -649,7 +654,7 @@
         <div id="member-dashboard-section" style="display: none;">
             <!-- Profile Info (Read Only) -->
             <div id="sec-profile" class="card-box">
-                <h3 style="font-size: 0.95rem; color:#38bdf8; margin-bottom: 10px;">👤 Profile Summary</h3>
+                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">👤 Profile Summary</h3>
                 <div class="profile-row">
                     <span class="profile-key">Full Name</span>
                     <span class="profile-val" id="mem-profile-name">-</span>
@@ -666,9 +671,9 @@
 
             <!-- 1. MY DUES RECORD VIEW -->
             <div id="sec-dues-record" class="card-box">
-                <h3 style="font-size: 0.95rem; color:#38bdf8; margin-bottom: 10px;">📜 My Dues Record</h3>
+                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">📋 My Dues Record</h3>
                 <div id="member-history-container">
-                    <p style="font-size:0.75rem; color:#94a3b8; text-align:center; padding:10px;">Loading payment history...</p>
+                    <p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Loading payment history...</p>
                 </div>
             </div>
 
@@ -676,15 +681,46 @@
             <div id="sec-arrears" class="card-box" style="display:none;">
                 <h3 style="font-size: 0.95rem; color:#f87171; margin-bottom: 10px;">⚠️ My Arrears Dues</h3>
                 <div id="arrears-container">
-                    <p style="font-size:0.75rem; color:#94a3b8; text-align:center; padding:10px;">Calculating arrears...</p>
+                    <p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Calculating arrears...</p>
                 </div>
             </div>
 
-            <!-- 3. PROJECT LEVY VIEW -->
+            <!-- 3. MY LEVY VIEW -->
             <div id="sec-levy" class="card-box" style="display:none;">
-                <h3 style="font-size: 0.95rem; color:#38bdf8; margin-bottom: 10px;">🏗️ Project Levies</h3>
+                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">🏛️ My Levy View</h3>
                 <div id="levies-container">
-                    <p style="font-size:0.75rem; color:#94a3b8; text-align:center; padding:10px;">Loading project levies...</p>
+                    <p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Loading project levies...</p>
+                </div>
+            </div>
+
+            <!-- 4. PROJECT INFORMATION VIEW -->
+            <div id="sec-proj-info" class="card-box" style="display:none;">
+                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">🏗️ Project Information</h3>
+                <div id="project-info-container">
+                    <p style="font-size:0.8rem; color:var(--subtext-color); text-align:center; padding:15px;">
+                        Welcome to the Fellowship Building & Expansion Project portal. Active projects and timeline details will appear here.
+                    </p>
+                </div>
+            </div>
+
+            <!-- 5. NOTIFICATIONS VIEW -->
+            <div id="sec-notifications" class="card-box" style="display:none;">
+                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">🔔 Notifications</h3>
+                <div class="history-item">
+                    <div class="history-title">Welcome to Men Fellowship</div>
+                    <div class="history-date">System Notification</div>
+                    <p style="font-size:0.75rem; color:var(--subtext-color); margin-top:4px;">Stay updated on all dues, levies, and fellowship announcements right here.</p>
+                </div>
+            </div>
+
+            <!-- 6. SETTINGS VIEW -->
+            <div id="sec-settings" class="card-box" style="display:none;">
+                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">⚙️ Settings</h3>
+                <p style="font-size:0.8rem; color:var(--subtext-color); margin-bottom:12px;">App Theme Customization</p>
+                
+                <div class="theme-toggle-btn" id="theme-toggle">
+                    <span style="font-size:0.85rem; font-weight:600;">Theme Mode</span>
+                    <span id="theme-status-text" style="font-size:0.85rem; font-weight:700; color:var(--accent-color);">🌙 Dark Mode</span>
                 </div>
             </div>
         </div>
@@ -782,29 +818,41 @@
         closeBtn.addEventListener('click', closeSidebar);
         overlay.addEventListener('click', closeSidebar);
 
-        // Sidebar Navigation Handling
+        // Navigation Menu Handling
         const menuHome = document.getElementById('menu-home');
         const menuDuesRecord = document.getElementById('menu-dues-record');
         const menuArrears = document.getElementById('menu-arrears');
         const menuLevy = document.getElementById('menu-levy');
+        const menuProjInfo = document.getElementById('menu-proj-info');
+        const menuNotifications = document.getElementById('menu-notifications');
+        const menuSettings = document.getElementById('menu-settings');
 
         const secProfile = document.getElementById('sec-profile');
         const secDuesRecord = document.getElementById('sec-dues-record');
         const secArrears = document.getElementById('sec-arrears');
         const secLevy = document.getElementById('sec-levy');
+        const secProjInfo = document.getElementById('sec-proj-info');
+        const secNotifications = document.getElementById('sec-notifications');
+        const secSettings = document.getElementById('sec-settings');
+
+        const allMenuBtns = [menuHome, menuDuesRecord, menuArrears, menuLevy, menuProjInfo, menuNotifications, menuSettings];
+        const allSections = [secProfile, secDuesRecord, secArrears, secLevy, secProjInfo, secNotifications, secSettings];
+
+        function hideAllMemberSections() {
+            allSections.forEach(sec => sec.style.display = 'none');
+        }
 
         function resetSidebarActive() {
-            [menuHome, menuDuesRecord, menuArrears, menuLevy].forEach(item => item.classList.remove('active-item'));
+            allMenuBtns.forEach(item => item.classList.remove('active-item'));
         }
 
         menuHome.addEventListener('click', () => {
             resetSidebarActive();
             menuHome.classList.add('active-item');
             if (currentUser && currentUser.role === 'member') {
+                hideAllMemberSections();
                 secProfile.style.display = 'block';
                 secDuesRecord.style.display = 'block';
-                secArrears.style.display = 'none';
-                secLevy.style.display = 'none';
             }
             closeSidebar();
         });
@@ -813,10 +861,8 @@
             resetSidebarActive();
             menuDuesRecord.classList.add('active-item');
             if (currentUser && currentUser.role === 'member') {
-                secProfile.style.display = 'none';
+                hideAllMemberSections();
                 secDuesRecord.style.display = 'block';
-                secArrears.style.display = 'none';
-                secLevy.style.display = 'none';
             }
             closeSidebar();
         });
@@ -825,10 +871,8 @@
             resetSidebarActive();
             menuArrears.classList.add('active-item');
             if (currentUser && currentUser.role === 'member') {
-                secProfile.style.display = 'none';
-                secDuesRecord.style.display = 'none';
+                hideAllMemberSections();
                 secArrears.style.display = 'block';
-                secLevy.style.display = 'none';
                 calculateMemberArrears(currentUser.member_id, currentUser.created_at);
             }
             closeSidebar();
@@ -838,13 +882,51 @@
             resetSidebarActive();
             menuLevy.classList.add('active-item');
             if (currentUser && currentUser.role === 'member') {
-                secProfile.style.display = 'none';
-                secDuesRecord.style.display = 'none';
-                secArrears.style.display = 'none';
+                hideAllMemberSections();
                 secLevy.style.display = 'block';
                 fetchProjectLevies(currentUser.member_id);
             }
             closeSidebar();
+        });
+
+        menuProjInfo.addEventListener('click', () => {
+            resetSidebarActive();
+            menuProjInfo.classList.add('active-item');
+            if (currentUser && currentUser.role === 'member') {
+                hideAllMemberSections();
+                secProjInfo.style.display = 'block';
+            }
+            closeSidebar();
+        });
+
+        menuNotifications.addEventListener('click', () => {
+            resetSidebarActive();
+            menuNotifications.classList.add('active-item');
+            if (currentUser && currentUser.role === 'member') {
+                hideAllMemberSections();
+                secNotifications.style.display = 'block';
+            }
+            closeSidebar();
+        });
+
+        menuSettings.addEventListener('click', () => {
+            resetSidebarActive();
+            menuSettings.classList.add('active-item');
+            if (currentUser && currentUser.role === 'member') {
+                hideAllMemberSections();
+                secSettings.style.display = 'block';
+            }
+            closeSidebar();
+        });
+
+        // Theme Toggle Logic (Dark / Light)
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeStatusText = document.getElementById('theme-status-text');
+
+        themeToggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('light-theme');
+            const isLight = document.body.classList.contains('light-theme');
+            themeStatusText.textContent = isLight ? '☀️ Light Mode' : '🌙 Dark Mode';
         });
 
         // Registration Logic
@@ -949,12 +1031,10 @@
                     document.getElementById('admin-dashboard-section').style.display = 'none';
                     document.getElementById('member-dashboard-section').style.display = 'block';
 
-                    // Profile Details
                     document.getElementById('mem-profile-name').textContent = data.full_name || '-';
                     document.getElementById('mem-profile-id').textContent = data.member_id || '-';
                     document.getElementById('mem-profile-phone').textContent = data.phone_number || '-';
 
-                    // Fetch Member Dues History
                     fetchMemberDuesHistory(data.member_id);
                 }
             } catch (err) {
@@ -1014,7 +1094,7 @@
             }
         });
 
-        // Fetch Member Dues History & Total
+        // Fetch Member Dues History
         async function fetchMemberDuesHistory(memberId) {
             const container = document.getElementById('member-history-container');
             const totalDisplay = document.getElementById('member-total-paid');
@@ -1026,13 +1106,8 @@
                     .eq('member_id', memberId)
                     .order('created_at', { ascending: false });
 
-                if (error) {
-                    container.innerHTML = '<p style="font-size:0.75rem; color:#ef4444; text-align:center;">Failed to load payments.</p>';
-                    return;
-                }
-
-                if (!data || data.length === 0) {
-                    container.innerHTML = '<p style="font-size:0.75rem; color:#94a3b8; text-align:center; padding:10px;">No payment records found.</p>';
+                if (error || !data || data.length === 0) {
+                    container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">No payment records found.</p>';
                     totalDisplay.textContent = '₦0';
                     return;
                 }
@@ -1042,7 +1117,6 @@
 
                 data.forEach(item => {
                     totalPaid += Number(item.amount);
-
                     const dateFormatted = new Date(item.created_at).toLocaleDateString('en-GB', {
                         day: 'numeric', month: 'short', year: 'numeric'
                     });
@@ -1069,13 +1143,12 @@
         // Calculate Arrears Dues
         async function calculateMemberArrears(memberId, regDateStr) {
             const container = document.getElementById('arrears-container');
-            container.innerHTML = '<p style="font-size:0.75rem; color:#94a3b8; text-align:center;">Calculating arrears...</p>';
+            container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center;">Calculating arrears...</p>';
 
             try {
-                // Fetch total compulsory dues paid
                 const { data, error } = await _supabase
                     .from('dues_payments')
-                    .select('amount, created_at')
+                    .select('amount')
                     .eq('member_id', memberId)
                     .eq('payment_type', 'compulsory_dues');
 
@@ -1085,13 +1158,10 @@
                 }
 
                 const totalPaid = data ? data.reduce((sum, item) => sum + Number(item.amount), 0) : 0;
-
-                // Monthly dues rate = ₦500
                 const MONTHLY_RATE = 500;
                 const regDate = new Date(regDateStr || Date.now());
                 const now = new Date();
 
-                // Months elapsed from registration month to current month
                 const monthsElapsed = (now.getFullYear() - regDate.getFullYear()) * 12 + (now.getMonth() - regDate.getMonth()) + 1;
                 const totalExpectedDues = Math.max(1, monthsElapsed) * MONTHLY_RATE;
                 const totalArrears = Math.max(0, totalExpectedDues - totalPaid);
@@ -1101,7 +1171,7 @@
                         <div style="text-align:center; padding:15px;">
                             <div style="font-size:1.8rem;">🎉</div>
                             <div style="font-size:0.85rem; color:#86efac; font-weight:700; margin-top:5px;">Up to Date!</div>
-                            <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">You have no outstanding dues arrears.</div>
+                            <div style="font-size:0.75rem; color:var(--subtext-color); margin-top:4px;">You have no outstanding dues arrears.</div>
                         </div>
                     `;
                 } else {
@@ -1112,7 +1182,7 @@
                                 <div class="history-title" style="color:#fca5a5;">Total Arrears Owed</div>
                                 <div class="history-amount" style="color:#ef4444;">₦${totalArrears.toLocaleString()}</div>
                             </div>
-                            <div class="history-date" style="color:#cbd5e1; margin-top:6px;">
+                            <div class="history-date" style="color:var(--text-color); margin-top:6px;">
                                 You have <strong>${monthsOwing} month(s)</strong> outstanding up to ${now.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}.
                             </div>
                         </div>
@@ -1127,26 +1197,22 @@
         // Fetch & Render Project Levies
         async function fetchProjectLevies(memberId) {
             const container = document.getElementById('levies-container');
-            container.innerHTML = '<p style="font-size:0.75rem; color:#94a3b8; text-align:center;">Loading project levies...</p>';
+            container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center;">Loading project levies...</p>';
 
             try {
-                // Fetch all levies created by Admin
                 const { data: levies, error: levyErr } = await _supabase.from('project_levies').select('*').order('created_at', { ascending: false });
 
                 if (levyErr || !levies || levies.length === 0) {
-                    container.innerHTML = '<p style="font-size:0.75rem; color:#94a3b8; text-align:center; padding:10px;">No active project levies at the moment.</p>';
+                    container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">No active project levies at the moment.</p>';
                     return;
                 }
 
-                // Fetch member's levy payments
                 const { data: userPayments } = await _supabase.from('dues_payments').select('*').eq('member_id', memberId);
 
                 container.innerHTML = '';
 
                 levies.forEach(levy => {
                     const target = Number(levy.fixed_amount);
-                    
-                    // Sum payments for this levy
                     const paid = userPayments 
                         ? userPayments.filter(p => p.payment_type === levy.title).reduce((sum, p) => sum + Number(p.amount), 0)
                         : 0;
@@ -1166,11 +1232,11 @@
                     div.className = 'levy-item';
                     div.innerHTML = `
                         <div class="history-row">
-                            <div class="history-title" style="color:#38bdf8;">${levy.title}</div>
+                            <div class="history-title" style="color:var(--accent-color);">${levy.title}</div>
                             ${badgeHtml}
                         </div>
-                        <div style="font-size:0.75rem; color:#cbd5e1; margin-top:2px;">${levy.details || 'No description available.'}</div>
-                        <div style="border-top:1px dashed #334155; margin-top:6px; padding-top:6px;">
+                        <div style="font-size:0.75rem; color:var(--subtext-color); margin-top:2px;">${levy.details || 'No description available.'}</div>
+                        <div style="border-top:1px dashed var(--border-color); margin-top:6px; padding-top:6px;">
                             <div class="profile-row"><span class="profile-key">Target Amount:</span><span class="profile-val">₦${target.toLocaleString()}</span></div>
                             <div class="profile-row"><span class="profile-key">Amount Paid:</span><span class="profile-val" style="color:#10b981;">₦${paid.toLocaleString()}</span></div>
                             <div class="profile-row"><span class="profile-key">Remaining Balance:</span><span class="profile-val" style="color:${balance > 0 ? '#ef4444' : '#10b981'};">₦${balance.toLocaleString()}</span></div>
@@ -1184,7 +1250,7 @@
             }
         }
 
-        // Save Project Levy (Admin Action)
+        // Save Project Levy (Admin)
         document.getElementById('btn-save-levy').addEventListener('click', async () => {
             const title = document.getElementById('admin-levy-title').value.trim();
             const amount = Number(document.getElementById('admin-levy-amount').value);
@@ -1192,7 +1258,7 @@
             const saveBtn = document.getElementById('btn-save-levy');
 
             if (!title || !amount || amount <= 0) {
-                alert('Please enter a valid levy title and fixed target amount.');
+                alert('Please enter a valid levy title and target amount.');
                 return;
             }
 
@@ -1210,7 +1276,7 @@
                 if (error) {
                     alert('Error creating levy: ' + error.message);
                 } else {
-                    alert(`Project Levy "${title}" of ₦${amount.toLocaleString()} created successfully!`);
+                    alert(`Project Levy "${title}" created successfully!`);
                     document.getElementById('admin-levy-title').value = '';
                     document.getElementById('admin-levy-amount').value = '';
                     document.getElementById('admin-levy-details').value = '';
@@ -1223,20 +1289,17 @@
             }
         });
 
-        // Fetch Total Dues Collected (For Admin)
+        // Admin Search & Record Dues Logic
         async function fetchTotalDuesCollected() {
             try {
-                const { data, error } = await _supabase.from('dues_payments').select('amount');
-                if (!error && data) {
+                const { data } = await _supabase.from('dues_payments').select('amount');
+                if (data) {
                     const total = data.reduce((sum, item) => sum + Number(item.amount), 0);
                     document.getElementById('total-dues-collected').textContent = '₦' + total.toLocaleString();
                 }
-            } catch (err) {
-                console.log('Error fetching total dues:', err);
-            }
+            } catch (err) {}
         }
 
-        // Admin Search Member Logic
         document.getElementById('admin-search-input').addEventListener('input', async (e) => {
             const query = e.target.value.trim();
             const resultsContainer = document.getElementById('admin-search-results');
@@ -1246,13 +1309,13 @@
                 return;
             }
 
-            const { data, error } = await _supabase
+            const { data } = await _supabase
                 .from('members')
                 .select('*')
                 .ilike('full_name', `%${query}%`);
 
-            if (error || !data || data.length === 0) {
-                resultsContainer.innerHTML = '<p style="font-size:0.75rem; color:#94a3b8; margin-top:8px;">No member matched your search.</p>';
+            if (!data || data.length === 0) {
+                resultsContainer.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); margin-top:8px;">No member matched.</p>';
                 return;
             }
 
@@ -1263,10 +1326,10 @@
                 div.innerHTML = `
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <div>
-                            <div style="font-size:0.8rem; font-weight:700; color:#f8fafc;">${m.full_name}</div>
-                            <div style="font-size:0.68rem; color:#94a3b8;">${m.phone_number}</div>
+                            <div style="font-size:0.8rem; font-weight:700; color:var(--text-color);">${m.full_name}</div>
+                            <div style="font-size:0.68rem; color:var(--subtext-color);">${m.phone_number}</div>
                         </div>
-                        <span style="font-size:0.75rem; color:#38bdf8; font-weight:600;">Select</span>
+                        <span style="font-size:0.75rem; color:var(--accent-color); font-weight:600;">Select</span>
                     </div>
                 `;
                 div.addEventListener('click', () => {
@@ -1278,7 +1341,6 @@
             });
         });
 
-        // Save Dues Record (Admin)
         document.getElementById('btn-save-dues').addEventListener('click', async () => {
             if (!selectedMemberForDues) return;
 
@@ -1289,7 +1351,7 @@
             saveBtn.textContent = 'Saving Record...';
 
             try {
-                const { data, error } = await _supabase
+                const { error } = await _supabase
                     .from('dues_payments')
                     .insert([{
                         member_id: selectedMemberForDues.member_id,
@@ -1302,7 +1364,7 @@
                 if (error) {
                     alert('Failed to save record: ' + error.message);
                 } else {
-                    alert(`Dues payment of ₦${amount.toLocaleString()} recorded for ${selectedMemberForDues.full_name}!`);
+                    alert(`Dues payment of ₦${amount.toLocaleString()} recorded!`);
                     document.getElementById('admin-search-input').value = '';
                     document.getElementById('admin-search-results').innerHTML = '';
                     document.getElementById('admin-payment-form').style.display = 'none';
