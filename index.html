@@ -338,8 +338,8 @@
             cursor: pointer;
         }
 
-        /* Non-clickable Admin Total Dues Card */
-        .admin-total-card {
+        /* Stat Cards */
+        .summary-card {
             background: linear-gradient(135deg, #1e1b4b, #1e293b);
             border: 1px solid #38bdf8;
             border-radius: 12px;
@@ -347,11 +347,10 @@
             margin: 0 16px 14px;
             text-align: center;
             user-select: none;
-            pointer-events: none; /* Non-clickable */
         }
 
-        .admin-total-label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
-        .admin-total-amount { font-size: 1.5rem; font-weight: 800; color: #10b981; margin-top: 4px; }
+        .summary-label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+        .summary-amount { font-size: 1.5rem; font-weight: 800; color: #10b981; margin-top: 4px; }
 
         /* Inner Sections Style */
         .card-box {
@@ -362,14 +361,13 @@
             margin: 0 16px 16px;
         }
 
-        /* Member Search Result Items */
-        .search-item {
+        /* Search & History Items */
+        .search-item, .history-item {
             background: #0f172a;
             border: 1px solid #334155;
-            padding: 10px;
+            padding: 10px 12px;
             border-radius: 8px;
             margin-top: 8px;
-            cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -378,7 +376,23 @@
         .search-item:hover {
             border-color: #38bdf8;
             background: #1e293b;
+            cursor: pointer;
         }
+
+        .history-date { font-size: 0.68rem; color: #94a3b8; }
+        .history-title { font-size: 0.8rem; font-weight: 700; color: #f8fafc; }
+        .history-amount { font-size: 0.85rem; font-weight: 700; color: #10b981; }
+
+        .profile-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #1e293b;
+            font-size: 0.8rem;
+        }
+        .profile-row:last-child { border-bottom: none; }
+        .profile-key { color: #94a3b8; }
+        .profile-val { color: #f8fafc; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -522,13 +536,19 @@
             </div>
         </div>
 
-        <!-- Admin Total Dues Collected Card (Shown for Admins) -->
-        <div class="admin-total-card" id="admin-total-card-wrapper" style="display: none;">
-            <div class="admin-total-label">Total Dues Collected So Far</div>
-            <div class="admin-total-amount" id="total-dues-collected">₦0</div>
+        <!-- Admin Total Dues Card -->
+        <div class="summary-card" id="admin-total-card-wrapper" style="display: none; pointer-events: none;">
+            <div class="summary-label">Total Dues Collected So Far</div>
+            <div class="summary-amount" id="total-dues-collected">₦0</div>
         </div>
 
-        <!-- Admin Search & Record Dues Section -->
+        <!-- Member Total Paid Card -->
+        <div class="summary-card" id="member-total-card-wrapper" style="display: none; pointer-events: none; border-color: #10b981;">
+            <div class="summary-label">My Total Dues Paid</div>
+            <div class="summary-amount" id="member-total-paid">₦0</div>
+        </div>
+
+        <!-- ADMIN DASHBOARD SECTION -->
         <div id="admin-dashboard-section" style="display: none;">
             <div class="card-box">
                 <h3 style="font-size: 0.95rem; color:#38bdf8; margin-bottom: 12px;">🔍 Search & Record Member Dues</h3>
@@ -586,11 +606,31 @@
             </div>
         </div>
 
-        <!-- Member Dashboard View -->
+        <!-- MEMBER DASHBOARD SECTION -->
         <div id="member-dashboard-section" style="display: none;">
+            <!-- Profile Info (Read Only) -->
             <div class="card-box">
-                <h3 style="font-size: 0.95rem; color:#38bdf8; margin-bottom: 8px;">Welcome Member</h3>
-                <p style="font-size: 0.8rem; color:#cbd5e1;">Your member dashboard content goes here.</p>
+                <h3 style="font-size: 0.95rem; color:#38bdf8; margin-bottom: 10px;">👤 Profile Summary</h3>
+                <div class="profile-row">
+                    <span class="profile-key">Full Name</span>
+                    <span class="profile-val" id="mem-profile-name">-</span>
+                </div>
+                <div class="profile-row">
+                    <span class="profile-key">Member ID</span>
+                    <span class="profile-val" id="mem-profile-id">-</span>
+                </div>
+                <div class="profile-row">
+                    <span class="profile-key">Phone Number</span>
+                    <span class="profile-val" id="mem-profile-phone">-</span>
+                </div>
+            </div>
+
+            <!-- Payment History List -->
+            <div class="card-box">
+                <h3 style="font-size: 0.95rem; color:#38bdf8; margin-bottom: 10px;">📜 My Payment History</h3>
+                <div id="member-history-container">
+                    <p style="font-size:0.75rem; color:#94a3b8; text-align:center; padding:10px;">Loading payment history...</p>
+                </div>
             </div>
         </div>
 
@@ -619,7 +659,7 @@
             }, 3000);
         });
 
-        // UI Controls & Switching Tabs
+        // UI Controls
         const authViewWrapper = document.getElementById('auth-view-wrapper');
         const registerView = document.getElementById('register-view');
         const authContainer = document.getElementById('auth-container');
@@ -785,8 +825,17 @@
                     document.getElementById('dashboard-role-title').textContent = 'MEMBER DASHBOARD';
                     document.getElementById('header-logo-badge').textContent = 'MF';
                     document.getElementById('admin-total-card-wrapper').style.display = 'none';
+                    document.getElementById('member-total-card-wrapper').style.display = 'block';
                     document.getElementById('admin-dashboard-section').style.display = 'none';
                     document.getElementById('member-dashboard-section').style.display = 'block';
+
+                    // Fill Profile Details
+                    document.getElementById('mem-profile-name').textContent = data.full_name || '-';
+                    document.getElementById('mem-profile-id').textContent = data.member_id || '-';
+                    document.getElementById('mem-profile-phone').textContent = data.phone_number || '-';
+
+                    // Fetch Member Dues History
+                    fetchMemberDuesHistory(data.member_id);
                 }
             } catch (err) {
                 showMessage('Network error. Check connection.');
@@ -831,6 +880,7 @@
                     document.getElementById('dashboard-role-title').textContent = 'ADMIN DASHBOARD';
                     document.getElementById('header-logo-badge').textContent = 'ADM';
                     document.getElementById('admin-total-card-wrapper').style.display = 'block';
+                    document.getElementById('member-total-card-wrapper').style.display = 'none';
                     document.getElementById('admin-dashboard-section').style.display = 'block';
                     document.getElementById('member-dashboard-section').style.display = 'none';
 
@@ -844,7 +894,59 @@
             }
         });
 
-        // Fetch Total Dues Collected
+        // Fetch Member Dues History & Total
+        async function fetchMemberDuesHistory(memberId) {
+            const container = document.getElementById('member-history-container');
+            const totalDisplay = document.getElementById('member-total-paid');
+
+            try {
+                const { data, error } = await _supabase
+                    .from('dues_payments')
+                    .select('*')
+                    .eq('member_id', memberId)
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    container.innerHTML = '<p style="font-size:0.75rem; color:#ef4444; text-align:center;">Failed to load payments.</p>';
+                    return;
+                }
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p style="font-size:0.75rem; color:#94a3b8; text-align:center; padding:10px;">No payment records found.</p>';
+                    totalDisplay.textContent = '₦0';
+                    return;
+                }
+
+                let totalPaid = 0;
+                container.innerHTML = '';
+
+                data.forEach(item => {
+                    totalPaid += Number(item.amount);
+
+                    const dateFormatted = new Date(item.created_at).toLocaleDateString('en-GB', {
+                        day: 'numeric', month: 'short', year: 'numeric'
+                    });
+
+                    const div = document.createElement('div');
+                    div.className = 'history-item';
+                    div.innerHTML = `
+                        <div>
+                            <div class="history-title">Compulsory Dues</div>
+                            <div class="history-date">${dateFormatted} • Rec. by: ${item.recorded_by || 'Admin'}</div>
+                        </div>
+                        <div class="history-amount">₦${Number(item.amount).toLocaleString()}</div>
+                    `;
+                    container.appendChild(div);
+                });
+
+                totalDisplay.textContent = '₦' + totalPaid.toLocaleString();
+
+            } catch (err) {
+                container.innerHTML = '<p style="font-size:0.75rem; color:#ef4444; text-align:center;">Network error.</p>';
+            }
+        }
+
+        // Fetch Total Dues Collected (For Admin)
         async function fetchTotalDuesCollected() {
             try {
                 const { data, error } = await _supabase.from('dues_payments').select('amount');
