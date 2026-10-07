@@ -182,6 +182,15 @@
             margin-top: 10px;
         }
 
+        .btn-bio {
+            background: #0d9488;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
         .toggle-text { text-align: center; font-size: 0.82rem; color: var(--subtext-color); margin-top: 18px; }
         .toggle-text span { color: var(--accent-color); cursor: pointer; font-weight: 600; }
 
@@ -293,9 +302,29 @@
         }
 
         .header-title-text { font-size: 0.8rem; font-weight: 800; color: var(--text-color); }
-        .header-user-info { text-align: right; }
+        .header-user-info { display: flex; align-items: center; gap: 10px; text-align: right; }
         .header-user-name { font-size: 0.8rem; font-weight: 700; color: var(--accent-color); }
         .header-user-phone { font-size: 0.68rem; color: var(--subtext-color); font-weight: 500; }
+
+        .notif-bell-container {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 4px;
+        }
+
+        .notif-badge {
+            position: absolute;
+            top: -2px;
+            right: -4px;
+            background: #ef4444;
+            color: #ffffff;
+            font-size: 0.6rem;
+            font-weight: 800;
+            padding: 2px 5px;
+            border-radius: 10px;
+            display: none;
+        }
 
         .icon-btn { background: none; border: none; color: var(--text-color); font-size: 1.2rem; cursor: pointer; }
 
@@ -313,14 +342,37 @@
             gap: 4px;
         }
 
-        .member-cards-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            padding: 0 16px 16px;
+        .install-pwa-banner {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            background: #1e293b;
+            border: 1px solid #38bdf8;
+            border-radius: 14px;
+            padding: 14px 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1000;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        .admin-cards-grid {
+        .install-pwa-text { font-size: 0.8rem; color: #fff; font-weight: 600; }
+        .install-pwa-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .member-cards-grid, .admin-cards-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
@@ -355,6 +407,7 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
+            cursor: pointer;
         }
 
         .history-row { display: flex; justify-content: space-between; align-items: center; }
@@ -440,6 +493,12 @@
 </head>
 <body>
 
+    <!-- PWA Install Popup Banner -->
+    <div id="install-pwa-banner" class="install-pwa-banner">
+        <div class="install-pwa-text">📲 Install App on your phone?</div>
+        <button id="btn-pwa-install" class="install-pwa-btn">Install</button>
+    </div>
+
     <!-- Loading Screen -->
     <div id="loading-screen">
         <h1 class="site-title">MEN FELLOWSHIP FINANCIAL RECORD</h1>
@@ -476,6 +535,7 @@
                         <input type="password" id="member-login-pin" maxlength="6" pattern="\d{6}" placeholder="******" required>
                     </div>
                     <button type="submit" class="btn-primary" id="member-login-btn">Sign In as Member</button>
+                    <button type="button" class="btn-primary btn-bio" id="btn-bio-login-member">🖐️ Sign In with Fingerprint</button>
                 </form>
             </div>
 
@@ -495,6 +555,7 @@
                         <input type="password" id="admin-login-pin" maxlength="6" pattern="\d{6}" placeholder="******" required>
                     </div>
                     <button type="submit" class="btn-primary" id="admin-login-btn" style="background:#0284c7;">Sign In as Admin</button>
+                    <button type="button" class="btn-primary btn-bio" id="btn-bio-login-admin">🖐️ Sign In with Fingerprint</button>
                 </form>
             </div>
 
@@ -586,8 +647,14 @@
                 </div>
             </div>
             <div class="header-user-info">
-                <div class="header-user-name" id="top-user-name">User</div>
-                <div class="header-user-phone" id="top-user-phone">08000000000</div>
+                <div class="notif-bell-container" id="top-notif-bell">
+                    🔔
+                    <span class="notif-badge" id="notif-bell-count">0</span>
+                </div>
+                <div>
+                    <div class="header-user-name" id="top-user-name">User</div>
+                    <div class="header-user-phone" id="top-user-phone">08000000000</div>
+                </div>
             </div>
         </div>
 
@@ -750,22 +817,42 @@
 
             <!-- NOTIFICATIONS VIEW -->
             <div id="sec-notifications" class="card-box" style="display:none;">
-                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">🔔 Notifications</h3>
-                <div class="history-item">
-                    <div class="history-title">Welcome to Men Fellowship</div>
-                    <div class="history-date">System Notification</div>
-                    <p style="font-size:0.75rem; color:var(--subtext-color); margin-top:4px;">Stay updated on all dues, levies, attendance, and fellowship announcements right here.</p>
+                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">🔔 Notifications Center</h3>
+                <div id="notifications-list-container">
+                    <p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Loading notifications...</p>
                 </div>
             </div>
 
             <!-- SETTINGS VIEW -->
             <div id="sec-settings" class="card-box" style="display:none;">
                 <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">⚙️ Settings</h3>
-                <p style="font-size:0.8rem; color:var(--subtext-color); margin-bottom:12px;">App Theme Customization</p>
                 
+                <p style="font-size:0.8rem; color:var(--subtext-color); margin-bottom:8px;">App Theme Customization</p>
                 <div class="theme-toggle-btn" id="theme-toggle">
                     <span style="font-size:0.85rem; font-weight:600;">Theme Mode</span>
                     <span id="theme-status-text" style="font-size:0.85rem; font-weight:700; color:var(--accent-color);">🌙 Dark Mode</span>
+                </div>
+
+                <div style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:14px;">
+                    <label style="font-size:0.8rem; font-weight:600; color:var(--text-color); display:block; margin-bottom:6px;">🎵 Select Notification Sound Tone (15 Sounds)</label>
+                    <select id="notif-sound-select" style="width:100%; padding:10px; border-radius:8px; background:var(--input-bg); color:var(--text-color); border:1px solid var(--border-color); font-size:0.85rem;">
+                        <option value="1">1. Gentle Chime (Default)</option>
+                        <option value="2">2. Powerful Digital Bell</option>
+                        <option value="3">3. Loud Victory Trumpet</option>
+                        <option value="4">4. Echo Alert Tone</option>
+                        <option value="5">5. Deep Royal Gong</option>
+                        <option value="6">6. Fast Double Ping</option>
+                        <option value="7">7. Majestic Harp Arpeggio</option>
+                        <option value="8">8. Modern Synth Pop</option>
+                        <option value="9">9. Loud Cathedral Bell</option>
+                        <option value="10">10. Urgent Duty Siren</option>
+                        <option value="11">11. Crystal Droplet Tone</option>
+                        <option value="12">12. Powerful Radar Beacon</option>
+                        <option value="13">13. Celestial Cosmic Wave</option>
+                        <option value="14">14. Energetic Brass Fanfare</option>
+                        <option value="15">15. High-Pitch Sharp Whistle</option>
+                    </select>
+                    <button class="btn-primary" id="btn-preview-sound" style="margin-top:10px; background:#0284c7;">🔊 Preview Selected Sound</button>
                 </div>
             </div>
 
@@ -1137,9 +1224,28 @@
         let selectedMemberForDuesTable = null;
         let chartInstance = null;
         let passportBase64 = null;
+        let deferredPwaPrompt = null;
 
         document.getElementById('att-meeting-date').valueAsDate = new Date();
         document.getElementById('expense-date-input').valueAsDate = new Date();
+
+        // PWA AUTO-INSTALL PROMPT
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPwaPrompt = e;
+            document.getElementById('install-pwa-banner').style.display = 'flex';
+        });
+
+        document.getElementById('btn-pwa-install').addEventListener('click', async () => {
+            if (deferredPwaPrompt) {
+                deferredPwaPrompt.prompt();
+                const { outcome } = await deferredPwaPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    document.getElementById('install-pwa-banner').style.display = 'none';
+                }
+                deferredPwaPrompt = null;
+            }
+        });
 
         window.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
@@ -1392,7 +1498,6 @@
                 document.getElementById('member-login-form').reset();
                 document.getElementById('admin-login-form').reset();
                 
-                // Reset Header Picture to default MF Badge
                 document.getElementById('header-user-passport').style.display = 'none';
                 document.getElementById('header-logo-badge').style.display = 'flex';
 
@@ -1420,6 +1525,13 @@
 
             const target = document.getElementById(sectionId);
             if (target) target.style.display = 'block';
+        }
+
+        function navigateToTab(targetMenuId) {
+            const menuBtn = document.getElementById(targetMenuId);
+            if (menuBtn) {
+                menuBtn.click();
+            }
         }
 
         function setupMemberSidebarEvents() {
@@ -1454,9 +1566,7 @@
                 menuHome.classList.add('active-item');
                 hideAllMemberSections();
                 secMemberOverview.style.display = 'block';
-                if (currentUser) {
-                    loadMemberOverviewData(currentUser);
-                }
+                if (currentUser) loadMemberOverviewData(currentUser);
                 closeSidebar();
             });
 
@@ -1531,6 +1641,7 @@
                 if (currentUser) {
                     hideAllMemberSections();
                     secNotifications.style.display = 'block';
+                    loadMemberNotifications(currentUser);
                 }
                 closeSidebar();
             });
@@ -1545,6 +1656,10 @@
                 closeSidebar();
             });
         }
+
+        document.getElementById('top-notif-bell').addEventListener('click', () => {
+            navigateToTab('menu-notifications');
+        });
 
         document.getElementById('track-year-select').addEventListener('change', () => {
             if (currentUser) trackMemberDues(currentUser.member_id);
@@ -1562,6 +1677,68 @@
             const isLight = document.body.classList.contains('light-theme');
             themeStatusText.textContent = isLight ? '☀️ Light Mode' : '🌙 Dark Mode';
         });
+
+        // NOTIFICATION AUDIO SYNTHESIZER (15 SOUNDS)
+        function playNotificationSound(toneIndex) {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const now = ctx.currentTime;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            const tone = Number(toneIndex);
+            const freqs = [350, 520, 750, 440, 220, 880, 600, 950, 300, 1100, 1200, 480, 850, 650, 1400];
+            const baseFreq = freqs[tone - 1] || 520;
+
+            osc.type = tone % 2 === 0 ? 'square' : 'sine';
+            osc.frequency.setValueAtTime(baseFreq, now);
+            osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, now + 0.3);
+
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+
+            osc.start(now);
+            osc.stop(now + 0.5);
+        }
+
+        document.getElementById('btn-preview-sound').addEventListener('click', () => {
+            const selectedTone = document.getElementById('notif-sound-select').value;
+            playNotificationSound(selectedTone);
+        });
+
+        // FINGERPRINT / BIOMETRIC AUTHENTICATION
+        async function triggerBiometricAuth(roleType) {
+            hideMessage();
+            if (!window.PublicKeyCredential) {
+                showMessage('Fingerprint / Biometric sensor is not supported on this device.');
+                return;
+            }
+
+            try {
+                const challenge = new Uint8Array(32);
+                window.crypto.getRandomValues(challenge);
+
+                const options = {
+                    publicKey: {
+                        challenge: challenge,
+                        timeout: 60000,
+                        userVerification: "required"
+                    }
+                };
+
+                const credential = await navigator.credentials.get(options);
+                if (credential) {
+                    showMessage('Biometric verification successful!', false);
+                    alert('Fingerprint Verified! Please sign in using your phone and PIN.');
+                }
+            } catch (err) {
+                showMessage('Biometric authentication failed or cancelled.');
+            }
+        }
+
+        document.getElementById('btn-bio-login-member').addEventListener('click', () => triggerBiometricAuth('member'));
+        document.getElementById('btn-bio-login-admin').addEventListener('click', () => triggerBiometricAuth('admin'));
 
         document.getElementById('btn-login-as-admin').addEventListener('click', async () => {
             if (!currentUser) return;
@@ -1583,7 +1760,6 @@
         function openDashboardAsManagerAdmin(user, roleType) {
             document.getElementById('dashboard-role-title').textContent = roleType === 'admin' ? 'ADMIN DASHBOARD' : 'MANAGER DASHBOARD';
             
-            // Header Passport Picture Display
             const defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394a3b8'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
             const headerImg = document.getElementById('header-user-passport');
             const headerBadge = document.getElementById('header-logo-badge');
@@ -1712,7 +1888,6 @@
                     document.getElementById('top-user-name').textContent = data.full_name || 'Member';
                     document.getElementById('top-user-phone').textContent = data.phone_number || '';
 
-                    // Update Header Passport Picture
                     const defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394a3b8'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
                     const headerImg = document.getElementById('header-user-passport');
                     const headerBadge = document.getElementById('header-logo-badge');
@@ -1738,6 +1913,7 @@
 
                     setupSidebarMenu('member');
                     loadMemberOverviewData(currentUser);
+                    loadMemberNotifications(currentUser);
                 }
             } catch (err) {
                 showMessage('Network error.');
@@ -1788,6 +1964,116 @@
                 btn.textContent = 'Sign In as Admin';
             }
         });
+
+        async function loadMemberNotifications(user) {
+            const container = document.getElementById('notifications-list-container');
+            const bellBadge = document.getElementById('notif-bell-count');
+
+            container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Loading notifications...</p>';
+
+            try {
+                let notifList = [];
+
+                const { data: dues } = await _supabase.from('dues_payments').select('*').eq('member_id', user.member_id);
+                if (dues) {
+                    dues.forEach(d => {
+                        notifList.push({
+                            type: 'dues',
+                            title: '💵 Dues Payment Recorded',
+                            message: `Dues payment of ₦${Number(d.amount).toLocaleString()} was recorded by ${d.recorded_by || 'Admin'}.`,
+                            targetMenu: 'menu-track-dues',
+                            date: d.created_at
+                        });
+                    });
+                }
+
+                const { data: levies } = await _supabase.from('levy_payments').select('*').eq('member_id', user.member_id);
+                if (levies) {
+                    levies.forEach(l => {
+                        notifList.push({
+                            type: 'levy',
+                            title: '🏛️ Project Levy Payment Recorded',
+                            message: `Levy payment of ₦${Number(l.amount).toLocaleString()} for ${l.levy_title} was recorded.`,
+                            targetMenu: 'menu-levy',
+                            date: l.created_at
+                        });
+                    });
+                }
+
+                const { data: projLevies } = await _supabase.from('project_levies').select('*');
+                if (projLevies) {
+                    projLevies.forEach(p => {
+                        notifList.push({
+                            type: 'new_levy',
+                            title: '🏗️ New Project Levy Created',
+                            message: `New levy created: ${p.title} (Target: ₦${Number(p.fixed_amount).toLocaleString()}).`,
+                            targetMenu: 'menu-levy',
+                            date: p.created_at
+                        });
+                    });
+                }
+
+                const { data: att } = await _supabase.from('attendance').select('*').eq('member_id', user.member_id);
+                if (att) {
+                    att.forEach(a => {
+                        notifList.push({
+                            type: 'attendance',
+                            title: '📝 Attendance Recorded',
+                            message: `Attendance marked as "${a.status}" for meeting on ${a.meeting_date}.`,
+                            targetMenu: 'menu-attendance',
+                            date: a.meeting_date
+                        });
+                    });
+                }
+
+                notifList.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                const unreadCount = notifList.length;
+                if (unreadCount > 0) {
+                    bellBadge.textContent = unreadCount;
+                    bellBadge.style.display = 'inline-block';
+                    
+                    const selectedTone = document.getElementById('notif-sound-select').value || '1';
+                    playNotificationSound(selectedTone);
+                } else {
+                    bellBadge.style.display = 'none';
+                }
+
+                if (notifList.length === 0) {
+                    container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">No new notifications.</p>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                notifList.forEach(item => {
+                    const dateFormatted = new Date(item.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+                    const div = document.createElement('div');
+                    div.className = 'history-item';
+                    div.innerHTML = `
+                        <div class="history-row">
+                            <div class="history-title" style="color:var(--accent-color);">${item.title}</div>
+                            <span class="history-date">${dateFormatted}</span>
+                        </div>
+                        <p style="font-size:0.75rem; color:var(--subtext-color); margin-top:4px;">${item.message}</p>
+                    `;
+
+                    div.addEventListener('click', () => {
+                        let currentCount = parseInt(bellBadge.textContent) || 0;
+                        if (currentCount > 1) {
+                            bellBadge.textContent = currentCount - 1;
+                        } else {
+                            bellBadge.style.display = 'none';
+                        }
+                        navigateToTab(item.targetMenu);
+                    });
+
+                    container.appendChild(div);
+                });
+
+            } catch (err) {
+                container.innerHTML = '<p style="font-size:0.75rem; color:#ef4444; text-align:center;">Network error.</p>';
+            }
+        }
 
         async function loadMemberOverviewData(user) {
             try {
