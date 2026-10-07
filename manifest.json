@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Men Fellowship Financial Record</title>
     <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0f172a">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -1259,6 +1260,15 @@
 
         document.getElementById('att-meeting-date').valueAsDate = new Date();
         document.getElementById('expense-date-input').valueAsDate = new Date();
+
+        // REGISTER SERVICE WORKER FOR RELIABLE PWA PROMPT
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').then(() => {
+                console.log('Service Worker registered successfully.');
+            }).catch(err => {
+                console.log('Service Worker registration failed:', err);
+            });
+        }
 
         // PWA AUTO-INSTALL PROMPT
         window.addEventListener('beforeinstallprompt', (e) => {
