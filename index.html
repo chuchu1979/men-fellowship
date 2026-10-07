@@ -335,6 +335,7 @@
         .badge-paid, .status-present { background: rgba(34, 197, 94, 0.2); color: #86efac; border: 1px solid #22c55e; }
         .badge-partial, .status-excused { background: rgba(234, 179, 8, 0.2); color: #fde047; border: 1px solid #eab308; }
         .badge-unpaid, .status-absent { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid #ef4444; }
+        .badge-overpaid { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid #a855f7; }
 
         .profile-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border-color); font-size: 0.8rem; }
         .profile-row:last-child { border-bottom: none; }
@@ -829,6 +830,51 @@
                 </div>
                 <button class="btn-primary" id="btn-save-levy">Save Project Levy</button>
             </div>
+
+            <!-- ADMIN PAY PROJECT LEVY SECTION -->
+            <div id="sec-admin-pay-levy" class="card-box" style="display: none;">
+                <h3 style="font-size: 0.95rem; color:#10b981; margin-bottom: 12px;">💳 Record Member Levy Payment</h3>
+                
+                <div class="form-group">
+                    <label>Search Member by Full Name</label>
+                    <input type="text" id="admin-levy-pay-search" placeholder="Type member name...">
+                </div>
+
+                <div id="admin-levy-pay-results"></div>
+
+                <div id="admin-levy-pay-form" style="display: none; margin-top: 18px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+                    <h4 style="font-size: 0.85rem; color:#10b981; margin-bottom: 10px;" id="selected-levy-member-title">Selected Member: </h4>
+
+                    <div class="form-group">
+                        <label>Select Project Levy</label>
+                        <select id="admin-levy-select">
+                            <option value="">Loading levies...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Enter Payment Amount (₦)</label>
+                        <input type="number" id="admin-levy-payment-amount" placeholder="e.g. 5000">
+                    </div>
+
+                    <button class="btn-primary" id="btn-save-levy-payment" style="background:#10b981;">Save Levy Payment</button>
+                </div>
+            </div>
+
+            <!-- ADMIN LEVY HISTORY SECTION -->
+            <div id="sec-admin-levy-history" class="card-box" style="display: none;">
+                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 12px;">📖 Members Levy History & Balances</h3>
+                
+                <div class="form-group">
+                    <label>Search Member Levy Record</label>
+                    <input type="text" id="admin-levy-history-search" placeholder="Type member name...">
+                </div>
+
+                <div id="admin-levy-history-container">
+                    <p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Loading members levy history...</p>
+                </div>
+            </div>
+
         </div>
 
     </div>
@@ -842,6 +888,7 @@
         let selectedMemberForDues = null;
         let selectedMemberForOldDues = null;
         let selectedMemberForAtt = null;
+        let selectedMemberForLevyPay = null;
         let chartInstance = null;
 
         document.getElementById('att-meeting-date').valueAsDate = new Date();
@@ -932,6 +979,8 @@
                     <li id="menu-admin-view-expenses">📖 View Expenses</li>
                     <li id="menu-admin-attendance">📝 Mark Attendance</li>
                     <li id="menu-admin-levy">➕ Create Project Levy</li>
+                    <li id="menu-admin-pay-levy">💳 Add Paid Levy</li>
+                    <li id="menu-admin-levy-history">📖 Levy History</li>
                     <li id="sidebar-logout" style="background:#7f1d1d; color:#fca5a5; margin-top: 15px; border-color:#991b1b;">🚪 Logout</li>
                 `;
 
@@ -978,6 +1027,22 @@
                     closeSidebar();
                 });
 
+                document.getElementById('menu-admin-pay-levy').addEventListener('click', () => {
+                    resetAdminSidebarActive();
+                    document.getElementById('menu-admin-pay-levy').classList.add('active-item');
+                    showAdminSection('sec-admin-pay-levy');
+                    loadLevyDropdown();
+                    closeSidebar();
+                });
+
+                document.getElementById('menu-admin-levy-history').addEventListener('click', () => {
+                    resetAdminSidebarActive();
+                    document.getElementById('menu-admin-levy-history').classList.add('active-item');
+                    showAdminSection('sec-admin-levy-history');
+                    fetchAdminLevyHistory();
+                    closeSidebar();
+                });
+
             } else {
                 menuList.innerHTML = `
                     <li id="menu-home" class="active-item">📊 Dashboard Overview</li>
@@ -1018,6 +1083,8 @@
             document.getElementById('sec-admin-view-expenses').style.display = 'none';
             document.getElementById('sec-admin-attendance').style.display = 'none';
             document.getElementById('sec-admin-levy').style.display = 'none';
+            document.getElementById('sec-admin-pay-levy').style.display = 'none';
+            document.getElementById('sec-admin-levy-history').style.display = 'none';
 
             document.getElementById(sectionId).style.display = 'block';
         }
@@ -1341,8 +1408,6 @@
                     .eq('member_id', user.member_id);
 
                 let compulsoryPaid = 0;
-                let projectPaid = 0;
-
                 const monthlySums = { Jan:0, Feb:0, Mar:0, Apr:0, May:0, Jun:0, Jul:0, Aug:0, Sep:0, Oct:0, Nov:0, Dec:0 };
 
                 if (payments) {
@@ -1355,14 +1420,20 @@
                             if (monthlySums[mStr] !== undefined) {
                                 monthlySums[mStr] += amt;
                             }
-                        } else {
-                            projectPaid += amt;
                         }
                     });
                 }
 
+                // FETCH LEVY PAYMENTS FOR PROJECT TOTAL
+                const { data: levyPayments } = await _supabase
+                    .from('levy_payments')
+                    .select('amount')
+                    .eq('member_id', user.member_id);
+
+                let totalProjectPaid = levyPayments ? levyPayments.reduce((s, l) => s + Number(l.amount), 0) : 0;
+
                 document.getElementById('card-total-dues').textContent = '₦' + compulsoryPaid.toLocaleString();
-                document.getElementById('card-total-project').textContent = '₦' + projectPaid.toLocaleString();
+                document.getElementById('card-total-project').textContent = '₦' + totalProjectPaid.toLocaleString();
 
                 const { data: oldDuesData } = await _supabase
                     .from('old_dues')
@@ -1453,15 +1524,12 @@
                 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
                 const startYear = 2025;
-                const currentYear = new Date().getFullYear(); // e.g. 2026
+                const currentYear = new Date().getFullYear();
                 
-                // Calculate max year based on member payments (or at least currentYear + 5)
                 const monthsPaidYears = Math.floor((totalMonthsPaidCount - 1) / 12);
                 const maxPaidYear = startYear + monthsPaidYears;
                 const endYear = Math.max(currentYear + 5, maxPaidYear + 2);
 
-                // Dynamically update Year dropdown if needed
-                const currentlySelectedYear = yearSelect.value;
                 const existingYears = Array.from(yearSelect.options).map(o => o.value);
 
                 for (let yr = startYear; yr <= endYear; yr++) {
@@ -1613,6 +1681,7 @@
             }
         }
 
+        // ACCURATE MEMBER LEVY VIEW (BALANCE & OVERPAID CALCULATIONS)
         async function fetchProjectLevies(memberId) {
             const container = document.getElementById('levies-container');
             container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center;">Loading project levies...</p>';
@@ -1625,21 +1694,33 @@
                     return;
                 }
 
-                const { data: userPayments } = await _supabase.from('dues_payments').select('*').eq('member_id', memberId);
+                const { data: userLevyPayments } = await _supabase.from('levy_payments').select('*').eq('member_id', memberId);
 
                 container.innerHTML = '';
 
                 levies.forEach(levy => {
                     const target = Number(levy.fixed_amount);
-                    const paid = userPayments 
-                        ? userPayments.filter(p => p.payment_type === levy.title).reduce((sum, p) => sum + Number(p.amount), 0)
+                    const paid = userLevyPayments 
+                        ? userLevyPayments.filter(p => p.levy_title === levy.title).reduce((sum, p) => sum + Number(p.amount), 0)
                         : 0;
 
-                    const balance = Math.max(0, target - paid);
+                    let badgeHtml = '';
+                    let balanceHtml = '';
 
-                    let badgeHtml = paid >= target 
-                        ? '<span class="levy-badge badge-paid">Fully Paid</span>' 
-                        : (paid > 0 ? '<span class="levy-badge badge-partial">Partially Paid</span>' : '<span class="levy-badge badge-unpaid">Not Paid</span>');
+                    if (paid > target) {
+                        const overpaid = paid - target;
+                        badgeHtml = '<span class="levy-badge badge-overpaid">Overpaid</span>';
+                        balanceHtml = `<div class="profile-row"><span class="profile-key">Overpaid Amount:</span><span class="profile-val" style="color:#c084fc;">+₦${overpaid.toLocaleString()}</span></div>`;
+                    } else if (paid === target && target > 0) {
+                        badgeHtml = '<span class="levy-badge badge-paid">Paid</span>';
+                        balanceHtml = `<div class="profile-row"><span class="profile-key">To Balance:</span><span class="profile-val" style="color:#10b981;">₦0 (Fully Paid)</span></div>`;
+                    } else {
+                        const toBalance = target - paid;
+                        badgeHtml = paid > 0 
+                            ? '<span class="levy-badge badge-partial">Partially Paid</span>' 
+                            : '<span class="levy-badge badge-unpaid">Not Paid</span>';
+                        balanceHtml = `<div class="profile-row"><span class="profile-key">To Balance:</span><span class="profile-val" style="color:#ef4444;">₦${toBalance.toLocaleString()}</span></div>`;
+                    }
 
                     const div = document.createElement('div');
                     div.className = 'levy-item';
@@ -1650,9 +1731,9 @@
                         </div>
                         <div style="font-size:0.75rem; color:var(--subtext-color); margin-top:2px;">${levy.details || 'No description available.'}</div>
                         <div style="border-top:1px dashed var(--border-color); margin-top:6px; padding-top:6px;">
-                            <div class="profile-row"><span class="profile-key">Target Amount:</span><span class="profile-val">₦${target.toLocaleString()}</span></div>
+                            <div class="profile-row"><span class="profile-key">Levy Amount:</span><span class="profile-val">₦${target.toLocaleString()}</span></div>
                             <div class="profile-row"><span class="profile-key">Amount Paid:</span><span class="profile-val" style="color:#10b981;">₦${paid.toLocaleString()}</span></div>
-                            <div class="profile-row"><span class="profile-key">Remaining Balance:</span><span class="profile-val" style="color:${balance > 0 ? '#ef4444' : '#10b981'};">₦${balance.toLocaleString()}</span></div>
+                            ${balanceHtml}
                         </div>
                     `;
                     container.appendChild(div);
@@ -1755,6 +1836,195 @@
             }
         });
 
+        // LOAD LEVIES DROPDOWN FOR PAY LEVY
+        async function loadLevyDropdown() {
+            const select = document.getElementById('admin-levy-select');
+            select.innerHTML = '<option value="">Loading levies...</option>';
+
+            try {
+                const { data } = await _supabase.from('project_levies').select('*').order('created_at', { ascending: false });
+
+                if (!data || data.length === 0) {
+                    select.innerHTML = '<option value="">No levies created yet</option>';
+                    return;
+                }
+
+                select.innerHTML = '<option value="">-- Select Project Levy --</option>';
+                data.forEach(l => {
+                    const opt = document.createElement('option');
+                    opt.value = l.title;
+                    opt.textContent = `${l.title} (Target: ₦${Number(l.fixed_amount).toLocaleString()})`;
+                    select.appendChild(opt);
+                });
+            } catch (err) {
+                select.innerHTML = '<option value="">Error loading levies</option>';
+            }
+        }
+
+        // ADMIN SEARCH MEMBER FOR LEVY PAYMENT
+        document.getElementById('admin-levy-pay-search').addEventListener('input', async (e) => {
+            const query = e.target.value.trim();
+            const container = document.getElementById('admin-levy-pay-results');
+
+            if (query.length < 2) {
+                container.innerHTML = '';
+                return;
+            }
+
+            const { data } = await _supabase
+                .from('members')
+                .select('*')
+                .ilike('full_name', `%${query}%`);
+
+            if (!data || data.length === 0) {
+                container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); margin-top:8px;">No member matched.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            data.forEach(m => {
+                const div = document.createElement('div');
+                div.className = 'search-item';
+                div.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div style="font-size:0.8rem; font-weight:700; color:var(--text-color);">${m.full_name}</div>
+                            <div style="font-size:0.68rem; color:var(--subtext-color);">${m.phone_number}</div>
+                        </div>
+                        <span style="font-size:0.75rem; color:#10b981; font-weight:600;">Select</span>
+                    </div>
+                `;
+                div.addEventListener('click', () => {
+                    selectedMemberForLevyPay = m;
+                    document.getElementById('selected-levy-member-title').textContent = `Selected Member: ${m.full_name} (${m.phone_number})`;
+                    document.getElementById('admin-levy-pay-form').style.display = 'block';
+                });
+                container.appendChild(div);
+            });
+        });
+
+        // ADMIN SAVE LEVY PAYMENT
+        document.getElementById('btn-save-levy-payment').addEventListener('click', async () => {
+            if (!selectedMemberForLevyPay) return;
+
+            const levyTitle = document.getElementById('admin-levy-select').value;
+            const amount = Number(document.getElementById('admin-levy-payment-amount').value);
+            const saveBtn = document.getElementById('btn-save-levy-payment');
+
+            if (!levyTitle) {
+                alert('Please select a project levy.');
+                return;
+            }
+
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid amount.');
+                return;
+            }
+
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving Levy Payment...';
+
+            try {
+                const { error } = await _supabase
+                    .from('levy_payments')
+                    .insert([{
+                        member_id: selectedMemberForLevyPay.member_id,
+                        member_name: selectedMemberForLevyPay.full_name,
+                        levy_title: levyTitle,
+                        amount: amount,
+                        recorded_by: currentUser.full_name
+                    }]);
+
+                if (error) {
+                    alert('Failed to save levy payment: ' + error.message);
+                } else {
+                    alert(`Levy payment of ₦${amount.toLocaleString()} recorded for ${selectedMemberForLevyPay.full_name}!`);
+                    document.getElementById('admin-levy-pay-search').value = '';
+                    document.getElementById('admin-levy-pay-results').innerHTML = '';
+                    document.getElementById('admin-levy-payment-amount').value = '';
+                    document.getElementById('admin-levy-pay-form').style.display = 'none';
+                    selectedMemberForLevyPay = null;
+                    calculateAdminFinancialSummary();
+                }
+            } catch (err) {
+                alert('Network error.');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Levy Payment';
+            }
+        });
+
+        // ADMIN VIEW ALL MEMBERS LEVY HISTORY & SEARCH
+        async function fetchAdminLevyHistory(searchQuery = '') {
+            const container = document.getElementById('admin-levy-history-container');
+            container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Loading members levy history...</p>';
+
+            try {
+                let memberQuery = _supabase.from('members').select('*');
+                if (searchQuery.trim().length > 0) {
+                    memberQuery = memberQuery.ilike('full_name', `%${searchQuery.trim()}%`);
+                }
+
+                const { data: members } = await memberQuery;
+                const { data: levies } = await _supabase.from('project_levies').select('*');
+                const { data: allLevyPayments } = await _supabase.from('levy_payments').select('*');
+
+                if (!members || members.length === 0 || !levies || levies.length === 0) {
+                    container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">No levy history records found.</p>';
+                    return;
+                }
+
+                container.innerHTML = '';
+
+                members.forEach(member => {
+                    levies.forEach(levy => {
+                        const target = Number(levy.fixed_amount);
+                        const userPayments = allLevyPayments ? allLevyPayments.filter(p => p.member_id === member.member_id && p.levy_title === levy.title) : [];
+                        const totalPaid = userPayments.reduce((s, p) => s + Number(p.amount), 0);
+
+                        let badgeHtml = '';
+                        let balanceText = '';
+
+                        if (totalPaid > target) {
+                            const overpaid = totalPaid - target;
+                            badgeHtml = '<span class="levy-badge badge-overpaid">Overpaid</span>';
+                            balanceText = `<span style="color:#c084fc;">+₦${overpaid.toLocaleString()} (Overpaid)</span>`;
+                        } else if (totalPaid === target && target > 0) {
+                            badgeHtml = '<span class="levy-badge badge-paid">Fully Paid</span>';
+                            balanceText = `<span style="color:#10b981;">₦0 (Fully Paid)</span>`;
+                        } else {
+                            const balance = target - totalPaid;
+                            badgeHtml = totalPaid > 0 
+                                ? '<span class="levy-badge badge-partial">Partially Paid</span>' 
+                                : '<span class="levy-badge badge-unpaid">Not Paid</span>';
+                            balanceText = `<span style="color:#ef4444;">₦${balance.toLocaleString()} to balance</span>`;
+                        }
+
+                        const div = document.createElement('div');
+                        div.className = 'history-item';
+                        div.innerHTML = `
+                            <div class="history-row">
+                                <div class="history-title">${member.full_name}</div>
+                                ${badgeHtml}
+                            </div>
+                            <div style="font-size:0.75rem; color:var(--accent-color); font-weight:600; margin-top:2px;">${levy.title}</div>
+                            <div class="profile-row" style="margin-top:6px;"><span class="profile-key">Levy Amount:</span><span class="profile-val">₦${target.toLocaleString()}</span></div>
+                            <div class="profile-row"><span class="profile-key">Amount Paid:</span><span class="profile-val" style="color:#10b981;">₦${totalPaid.toLocaleString()}</span></div>
+                            <div class="profile-row"><span class="profile-key">Status/Balance:</span><span class="profile-val">${balanceText}</span></div>
+                        `;
+                        container.appendChild(div);
+                    });
+                });
+
+            } catch (err) {
+                container.innerHTML = '<p style="font-size:0.75rem; color:#ef4444; text-align:center;">Network error.</p>';
+            }
+        }
+
+        document.getElementById('admin-levy-history-search').addEventListener('input', (e) => {
+            fetchAdminLevyHistory(e.target.value);
+        });
+
         async function calculateAdminFinancialSummary() {
             try {
                 const { data: payments } = await _supabase.from('dues_payments').select('amount');
@@ -1763,7 +2033,10 @@
                 const { data: oldDues } = await _supabase.from('old_dues').select('amount');
                 const oldDuesTotal = oldDues ? oldDues.reduce((sum, item) => sum + Number(item.amount), 0) : 0;
 
-                const totalInflow = duesTotal + oldDuesTotal;
+                const { data: levyPayments } = await _supabase.from('levy_payments').select('amount');
+                const levyTotal = levyPayments ? levyPayments.reduce((sum, item) => sum + Number(item.amount), 0) : 0;
+
+                const totalInflow = duesTotal + oldDuesTotal + levyTotal;
 
                 const { data: expenses } = await _supabase.from('expenses').select('amount');
                 const totalExpenses = expenses ? expenses.reduce((sum, item) => sum + Number(item.amount), 0) : 0;
