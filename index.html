@@ -280,8 +280,8 @@
         .header-brand { display: flex; align-items: center; gap: 8px; }
 
         .header-logo {
-            width: 34px;
-            height: 34px;
+            width: 38px;
+            height: 38px;
             background: linear-gradient(135deg, #2563eb, #38bdf8);
             border-radius: 50%;
             display: flex;
@@ -579,6 +579,7 @@
             <div class="header-brand">
                 <button class="icon-btn" id="sidebar-toggle">☰</button>
                 <button class="btn-manager-login" id="btn-login-as-admin">🔑 Login as Admin</button>
+                <img id="header-user-passport" class="passport-preview" style="width:38px; height:38px; border-width:2px; display:none;" alt="User Passport">
                 <div class="header-logo" id="header-logo-badge">MF</div>
                 <div>
                     <div class="header-title-text" id="dashboard-role-title">DASHBOARD</div>
@@ -612,7 +613,8 @@
                 <div class="card-label">Total Balance</div>
                 <div class="card-val" id="admin-total-balance" style="color:#38bdf8;">₦0</div>
             </div>
-        </div>        <!-- MEMBER DASHBOARD SECTION -->
+        </div>
+        <!-- MEMBER DASHBOARD SECTION -->
         <div id="member-dashboard-section" style="display: none;">
             
             <!-- Member Overview (Home) Tab -->
@@ -716,7 +718,7 @@
             <div id="sec-attendance" class="card-box" style="display:none;">
                 <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">📅 Attendance Performance</h3>
                 
-                <div id="att-summary-box" style="margin-bottom: 14px; padding: 12px; background: var(--input-bg); border-radius:10px; border:1px solid var(--border-color); display:flex; justify-style:space-around; text-align:center;">
+                <div id="att-summary-box" style="margin-bottom: 14px; padding: 12px; background: var(--input-bg); border-radius:10px; border:1px solid var(--border-color); display:flex; justify-content:space-around; text-align:center;">
                     <div>
                         <div style="font-size:0.7rem; color:var(--subtext-color);">Total Meetings</div>
                         <div id="att-total-cnt" style="font-size:1.1rem; font-weight:800; color:var(--text-color);">0</div>
@@ -1389,6 +1391,11 @@
                 dashboardView.style.display = 'none';
                 document.getElementById('member-login-form').reset();
                 document.getElementById('admin-login-form').reset();
+                
+                // Reset Header Picture to default MF Badge
+                document.getElementById('header-user-passport').style.display = 'none';
+                document.getElementById('header-logo-badge').style.display = 'flex';
+
                 authContainer.style.display = 'block';
                 currentUser = null;
             });
@@ -1575,7 +1582,16 @@
 
         function openDashboardAsManagerAdmin(user, roleType) {
             document.getElementById('dashboard-role-title').textContent = roleType === 'admin' ? 'ADMIN DASHBOARD' : 'MANAGER DASHBOARD';
-            document.getElementById('header-logo-badge').textContent = roleType === 'admin' ? 'ADM' : 'MGR';
+            
+            // Header Passport Picture Display
+            const defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394a3b8'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
+            const headerImg = document.getElementById('header-user-passport');
+            const headerBadge = document.getElementById('header-logo-badge');
+
+            headerImg.src = user.passport_url ? user.passport_url : defaultAvatar;
+            headerImg.style.display = 'block';
+            headerBadge.style.display = 'none';
+
             document.getElementById('admin-total-card-wrapper').style.display = 'grid';
             document.getElementById('admin-dashboard-section').style.display = 'block';
             document.getElementById('member-dashboard-section').style.display = 'none';
@@ -1696,11 +1712,19 @@
                     document.getElementById('top-user-name').textContent = data.full_name || 'Member';
                     document.getElementById('top-user-phone').textContent = data.phone_number || '';
 
+                    // Update Header Passport Picture
+                    const defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394a3b8'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
+                    const headerImg = document.getElementById('header-user-passport');
+                    const headerBadge = document.getElementById('header-logo-badge');
+
+                    headerImg.src = data.passport_url ? data.passport_url : defaultAvatar;
+                    headerImg.style.display = 'block';
+                    headerBadge.style.display = 'none';
+
                     authContainer.style.display = 'none';
                     dashboardView.style.display = 'block';
 
                     document.getElementById('dashboard-role-title').textContent = 'MEMBER DASHBOARD';
-                    document.getElementById('header-logo-badge').textContent = 'MF';
                     document.getElementById('admin-total-card-wrapper').style.display = 'none';
                     document.getElementById('admin-dashboard-section').style.display = 'none';
                     document.getElementById('member-dashboard-section').style.display = 'block';
