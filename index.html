@@ -282,6 +282,20 @@
 
         .icon-btn { background: none; border: none; color: var(--text-color); font-size: 1.2rem; cursor: pointer; }
 
+        .btn-manager-login {
+            background: #0284c7;
+            color: #ffffff;
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            gap: 4px;
+        }
+
         .member-cards-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -353,6 +367,27 @@
             cursor: pointer;
             margin-top: 10px;
         }
+
+        .roles-checkbox-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            margin-top: 8px;
+            background: var(--input-bg);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .roles-checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .roles-checkbox-item input { width: auto; }
     </style>
 </head>
 <body>
@@ -482,6 +517,7 @@
         <div class="header">
             <div class="header-brand">
                 <button class="icon-btn" id="sidebar-toggle">☰</button>
+                <button class="btn-manager-login" id="btn-login-as-admin">🔑 Login as Admin</button>
                 <div class="header-logo" id="header-logo-badge">MF</div>
                 <div>
                     <div class="header-title-text" id="dashboard-role-title">DASHBOARD</div>
@@ -781,7 +817,7 @@
             </div>
 
             <!-- Admin Mark Attendance Card -->
-            <div id="sec-admin-attendance" class="card-box">
+            <div id="sec-admin-attendance" class="card-box" style="display: none;">
                 <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 12px;">📝 Mark Member Attendance</h3>
                 
                 <div class="form-group">
@@ -814,7 +850,7 @@
             </div>
 
             <!-- Admin Create Levy Card -->
-            <div id="sec-admin-levy" class="card-box">
+            <div id="sec-admin-levy" class="card-box" style="display: none;">
                 <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 12px;">➕ Create New Project Levy</h3>
                 <div class="form-group">
                     <label>Levy Title (e.g. PASTOR BIRTHDAY)</label>
@@ -875,6 +911,61 @@
                 </div>
             </div>
 
+            <!-- ADMIN MEMBERS LIST & MAKE MANAGER SECTION -->
+            <div id="sec-admin-members" class="card-box" style="display: none;">
+                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 12px;">👥 All Members & Manager Elevation</h3>
+                
+                <div class="form-group">
+                    <label>Search Member by Name</label>
+                    <input type="text" id="admin-members-list-search" placeholder="Type member name...">
+                </div>
+
+                <div id="admin-members-list-container">
+                    <p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Loading members list...</p>
+                </div>
+            </div>
+
+            <!-- ADMIN MANAGERS CONTROL SECTION -->
+            <div id="sec-admin-managers" class="card-box" style="display: none;">
+                <h3 style="font-size: 0.95rem; color:#0284c7; margin-bottom: 12px;">🛡️ Managers Management & Role Assign</h3>
+                
+                <div class="form-group">
+                    <label>Search Managers</label>
+                    <input type="text" id="admin-managers-search" placeholder="Type manager name...">
+                </div>
+
+                <div id="admin-managers-list-container">
+                    <p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Loading managers...</p>
+                </div>
+
+                <div id="admin-manager-action-card" style="display:none; margin-top:16px; border-top:1px solid var(--border-color); padding-top:14px;">
+                    <h4 style="font-size: 0.85rem; color:#38bdf8; margin-bottom: 10px;" id="selected-manager-title">Selected Manager: </h4>
+
+                    <div class="form-group">
+                        <label>6-Digit Manager Login PIN</label>
+                        <input type="password" id="mgr-pin-input" maxlength="6" pattern="\d{6}" placeholder="Enter 6-digit PIN">
+                        <button class="btn-primary" id="btn-save-mgr-pin" style="margin-top:6px; background:#0284c7;">Assign / Reset PIN</button>
+                    </div>
+
+                    <div class="form-group" style="margin-top:14px;">
+                        <label>Assign Roles (Sidebar Permissions)</label>
+                        <div class="roles-checkbox-grid">
+                            <label class="roles-checkbox-item"><input type="checkbox" class="role-chk" value="current_dues"> 🔍 Search & Record Member Dues</label>
+                            <label class="roles-checkbox-item"><input type="checkbox" class="role-chk" value="old_dues"> 📜 Record Old Dues</label>
+                            <label class="roles-checkbox-item"><input type="checkbox" class="role-chk" value="record_expense"> 💸 Record Expenses</label>
+                            <label class="roles-checkbox-item"><input type="checkbox" class="role-chk" value="view_expenses"> 📖 View Expenses</label>
+                            <label class="roles-checkbox-item"><input type="checkbox" class="role-chk" value="attendance"> 📝 Mark Attendance</label>
+                            <label class="roles-checkbox-item"><input type="checkbox" class="role-chk" value="levy"> ➕ Create Project Levy</label>
+                            <label class="roles-checkbox-item"><input type="checkbox" class="role-chk" value="pay_levy"> 💳 Add Paid Levy</label>
+                            <label class="roles-checkbox-item"><input type="checkbox" class="role-chk" value="levy_history"> 📖 Levy History</label>
+                        </div>
+                        <button class="btn-primary" id="btn-save-mgr-roles" style="margin-top:8px; background:#10b981;">Save Roles</button>
+                    </div>
+
+                    <button class="btn-primary" id="btn-remove-manager" style="background:#ef4444; margin-top:12px;">Remove Manager Status</button>
+                </div>
+            </div>
+
         </div>
 
     </div>
@@ -889,6 +980,7 @@
         let selectedMemberForOldDues = null;
         let selectedMemberForAtt = null;
         let selectedMemberForLevyPay = null;
+        let selectedManagerObj = null;
         let chartInstance = null;
 
         document.getElementById('att-meeting-date').valueAsDate = new Date();
@@ -967,81 +1059,126 @@
         closeBtn.addEventListener('click', closeSidebar);
         overlay.addEventListener('click', closeSidebar);
 
-        function setupSidebarMenu(role) {
+        function setupSidebarMenu(role, assignedRoles = []) {
             const menuList = document.getElementById('sidebar-menu-list');
             menuList.innerHTML = '';
 
-            if (role === 'admin') {
-                menuList.innerHTML = `
-                    <li id="menu-admin-home" class="active-item">📊 Admin Overview</li>
-                    <li id="menu-admin-old-dues">📜 Record Old Dues</li>
-                    <li id="menu-admin-record-expense">💸 Record Expenses</li>
-                    <li id="menu-admin-view-expenses">📖 View Expenses</li>
-                    <li id="menu-admin-attendance">📝 Mark Attendance</li>
-                    <li id="menu-admin-levy">➕ Create Project Levy</li>
-                    <li id="menu-admin-pay-levy">💳 Add Paid Levy</li>
-                    <li id="menu-admin-levy-history">📖 Levy History</li>
-                    <li id="sidebar-logout" style="background:#7f1d1d; color:#fca5a5; margin-top: 15px; border-color:#991b1b;">🚪 Logout</li>
-                `;
+            if (role === 'admin' || role === 'manager') {
+                let html = '';
 
-                document.getElementById('menu-admin-home').addEventListener('click', () => {
-                    resetAdminSidebarActive();
-                    document.getElementById('menu-admin-home').classList.add('active-item');
-                    showAdminSection('sec-admin-current-dues');
-                    closeSidebar();
-                });
+                const hasRole = (r) => role === 'admin' || (Array.isArray(assignedRoles) && assignedRoles.includes(r));
 
-                document.getElementById('menu-admin-old-dues').addEventListener('click', () => {
-                    resetAdminSidebarActive();
-                    document.getElementById('menu-admin-old-dues').classList.add('active-item');
-                    showAdminSection('sec-admin-old-dues');
-                    closeSidebar();
-                });
+                if (hasRole('current_dues')) html += `<li id="menu-admin-home" class="active-item">📊 Admin Overview</li>`;
+                if (hasRole('old_dues')) html += `<li id="menu-admin-old-dues">📜 Record Old Dues</li>`;
+                if (hasRole('record_expense')) html += `<li id="menu-admin-record-expense">💸 Record Expenses</li>`;
+                if (hasRole('view_expenses')) html += `<li id="menu-admin-view-expenses">📖 View Expenses</li>`;
+                if (hasRole('attendance')) html += `<li id="menu-admin-attendance">📝 Mark Attendance</li>`;
+                if (hasRole('levy')) html += `<li id="menu-admin-levy">➕ Create Project Levy</li>`;
+                if (hasRole('pay_levy')) html += `<li id="menu-admin-pay-levy">💳 Add Paid Levy</li>`;
+                if (hasRole('levy_history')) html += `<li id="menu-admin-levy-history">📖 Levy History</li>`;
 
-                document.getElementById('menu-admin-record-expense').addEventListener('click', () => {
-                    resetAdminSidebarActive();
-                    document.getElementById('menu-admin-record-expense').classList.add('active-item');
-                    showAdminSection('sec-admin-record-expenses');
-                    closeSidebar();
-                });
+                if (role === 'admin') {
+                    html += `<li id="menu-admin-members">👥 Members</li>`;
+                    html += `<li id="menu-admin-managers">🛡️ Managers</li>`;
+                }
 
-                document.getElementById('menu-admin-view-expenses').addEventListener('click', () => {
-                    resetAdminSidebarActive();
-                    document.getElementById('menu-admin-view-expenses').classList.add('active-item');
-                    showAdminSection('sec-admin-view-expenses');
-                    fetchAdminExpensesHistory();
-                    closeSidebar();
-                });
+                html += `<li id="sidebar-logout" style="background:#7f1d1d; color:#fca5a5; margin-top: 15px; border-color:#991b1b;">🚪 Logout</li>`;
+                menuList.innerHTML = html;
 
-                document.getElementById('menu-admin-attendance').addEventListener('click', () => {
-                    resetAdminSidebarActive();
-                    document.getElementById('menu-admin-attendance').classList.add('active-item');
-                    showAdminSection('sec-admin-attendance');
-                    closeSidebar();
-                });
+                if (document.getElementById('menu-admin-home')) {
+                    document.getElementById('menu-admin-home').addEventListener('click', () => {
+                        resetAdminSidebarActive();
+                        document.getElementById('menu-admin-home').classList.add('active-item');
+                        showAdminSection('sec-admin-current-dues');
+                        closeSidebar();
+                    });
+                }
 
-                document.getElementById('menu-admin-levy').addEventListener('click', () => {
-                    resetAdminSidebarActive();
-                    document.getElementById('menu-admin-levy').classList.add('active-item');
-                    showAdminSection('sec-admin-levy');
-                    closeSidebar();
-                });
+                if (document.getElementById('menu-admin-old-dues')) {
+                    document.getElementById('menu-admin-old-dues').addEventListener('click', () => {
+                        resetAdminSidebarActive();
+                        document.getElementById('menu-admin-old-dues').classList.add('active-item');
+                        showAdminSection('sec-admin-old-dues');
+                        closeSidebar();
+                    });
+                }
 
-                document.getElementById('menu-admin-pay-levy').addEventListener('click', () => {
-                    resetAdminSidebarActive();
-                    document.getElementById('menu-admin-pay-levy').classList.add('active-item');
-                    showAdminSection('sec-admin-pay-levy');
-                    loadLevyDropdown();
-                    closeSidebar();
-                });
+                if (document.getElementById('menu-admin-record-expense')) {
+                    document.getElementById('menu-admin-record-expense').addEventListener('click', () => {
+                        resetAdminSidebarActive();
+                        document.getElementById('menu-admin-record-expense').classList.add('active-item');
+                        showAdminSection('sec-admin-record-expenses');
+                        closeSidebar();
+                    });
+                }
 
-                document.getElementById('menu-admin-levy-history').addEventListener('click', () => {
-                    resetAdminSidebarActive();
-                    document.getElementById('menu-admin-levy-history').classList.add('active-item');
-                    showAdminSection('sec-admin-levy-history');
-                    fetchAdminLevyHistory();
-                    closeSidebar();
-                });
+                if (document.getElementById('menu-admin-view-expenses')) {
+                    document.getElementById('menu-admin-view-expenses').addEventListener('click', () => {
+                        resetAdminSidebarActive();
+                        document.getElementById('menu-admin-view-expenses').classList.add('active-item');
+                        showAdminSection('sec-admin-view-expenses');
+                        fetchAdminExpensesHistory();
+                        closeSidebar();
+                    });
+                }
+
+                if (document.getElementById('menu-admin-attendance')) {
+                    document.getElementById('menu-admin-attendance').addEventListener('click', () => {
+                        resetAdminSidebarActive();
+                        document.getElementById('menu-admin-attendance').classList.add('active-item');
+                        showAdminSection('sec-admin-attendance');
+                        closeSidebar();
+                    });
+                }
+
+                if (document.getElementById('menu-admin-levy')) {
+                    document.getElementById('menu-admin-levy').addEventListener('click', () => {
+                        resetAdminSidebarActive();
+                        document.getElementById('menu-admin-levy').classList.add('active-item');
+                        showAdminSection('sec-admin-levy');
+                        closeSidebar();
+                    });
+                }
+
+                if (document.getElementById('menu-admin-pay-levy')) {
+                    document.getElementById('menu-admin-pay-levy').addEventListener('click', () => {
+                        resetAdminSidebarActive();
+                        document.getElementById('menu-admin-pay-levy').classList.add('active-item');
+                        showAdminSection('sec-admin-pay-levy');
+                        loadLevyDropdown();
+                        closeSidebar();
+                    });
+                }
+
+                if (document.getElementById('menu-admin-levy-history')) {
+                    document.getElementById('menu-admin-levy-history').addEventListener('click', () => {
+                        resetAdminSidebarActive();
+                        document.getElementById('menu-admin-levy-history').classList.add('active-item');
+                        showAdminSection('sec-admin-levy-history');
+                        fetchAdminLevyHistory();
+                        closeSidebar();
+                    });
+                }
+
+                if (document.getElementById('menu-admin-members')) {
+                    document.getElementById('menu-admin-members').addEventListener('click', () => {
+                        resetAdminSidebarActive();
+                        document.getElementById('menu-admin-members').classList.add('active-item');
+                        showAdminSection('sec-admin-members');
+                        fetchAdminMembersList();
+                        closeSidebar();
+                    });
+                }
+
+                if (document.getElementById('menu-admin-managers')) {
+                    document.getElementById('menu-admin-managers').addEventListener('click', () => {
+                        resetAdminSidebarActive();
+                        document.getElementById('menu-admin-managers').classList.add('active-item');
+                        showAdminSection('sec-admin-managers');
+                        fetchAdminManagersList();
+                        closeSidebar();
+                    });
+                }
 
             } else {
                 menuList.innerHTML = `
@@ -1077,16 +1214,18 @@
         }
 
         function showAdminSection(sectionId) {
-            document.getElementById('sec-admin-current-dues').style.display = 'none';
-            document.getElementById('sec-admin-old-dues').style.display = 'none';
-            document.getElementById('sec-admin-record-expenses').style.display = 'none';
-            document.getElementById('sec-admin-view-expenses').style.display = 'none';
-            document.getElementById('sec-admin-attendance').style.display = 'none';
-            document.getElementById('sec-admin-levy').style.display = 'none';
-            document.getElementById('sec-admin-pay-levy').style.display = 'none';
-            document.getElementById('sec-admin-levy-history').style.display = 'none';
+            const adminSecs = [
+                'sec-admin-current-dues', 'sec-admin-old-dues', 'sec-admin-record-expenses',
+                'sec-admin-view-expenses', 'sec-admin-attendance', 'sec-admin-levy',
+                'sec-admin-pay-levy', 'sec-admin-levy-history', 'sec-admin-members', 'sec-admin-managers'
+            ];
+            adminSecs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
 
-            document.getElementById(sectionId).style.display = 'block';
+            const target = document.getElementById(sectionId);
+            if (target) target.style.display = 'block';
         }
 
         function setupMemberSidebarEvents() {
@@ -1121,7 +1260,7 @@
             menuHome.addEventListener('click', () => {
                 resetSidebarActive();
                 menuHome.classList.add('active-item');
-                if (currentUser && currentUser.role === 'member') {
+                if (currentUser && (currentUser.role === 'member' || currentUser.role === 'manager')) {
                     hideAllMemberSections();
                     secMemberOverview.style.display = 'block';
                     loadMemberOverviewData(currentUser);
@@ -1132,7 +1271,7 @@
             menuExpenses.addEventListener('click', () => {
                 resetSidebarActive();
                 menuExpenses.classList.add('active-item');
-                if (currentUser && currentUser.role === 'member') {
+                if (currentUser) {
                     hideAllMemberSections();
                     secMemberExpenses.style.display = 'block';
                     fetchMemberExpensesHistory();
@@ -1143,7 +1282,7 @@
             menuTrackDues.addEventListener('click', () => {
                 resetSidebarActive();
                 menuTrackDues.classList.add('active-item');
-                if (currentUser && currentUser.role === 'member') {
+                if (currentUser) {
                     hideAllMemberSections();
                     secTrackDues.style.display = 'block';
                     trackMemberDues(currentUser.member_id);
@@ -1154,7 +1293,7 @@
             menuDuesTransactions.addEventListener('click', () => {
                 resetSidebarActive();
                 menuDuesTransactions.classList.add('active-item');
-                if (currentUser && currentUser.role === 'member') {
+                if (currentUser) {
                     hideAllMemberSections();
                     secDuesTransactions.style.display = 'block';
                     fetchMemberDuesHistory(currentUser.member_id);
@@ -1165,7 +1304,7 @@
             menuArrears.addEventListener('click', () => {
                 resetSidebarActive();
                 menuArrears.classList.add('active-item');
-                if (currentUser && currentUser.role === 'member') {
+                if (currentUser) {
                     hideAllMemberSections();
                     secArrears.style.display = 'block';
                     calculateMemberArrears(currentUser.member_id, currentUser.created_at);
@@ -1176,7 +1315,7 @@
             menuLevy.addEventListener('click', () => {
                 resetSidebarActive();
                 menuLevy.classList.add('active-item');
-                if (currentUser && currentUser.role === 'member') {
+                if (currentUser) {
                     hideAllMemberSections();
                     secLevy.style.display = 'block';
                     fetchProjectLevies(currentUser.member_id);
@@ -1187,7 +1326,7 @@
             menuAttendance.addEventListener('click', () => {
                 resetSidebarActive();
                 menuAttendance.classList.add('active-item');
-                if (currentUser && currentUser.role === 'member') {
+                if (currentUser) {
                     hideAllMemberSections();
                     secAttendance.style.display = 'block';
                     fetchMemberAttendance(currentUser.member_id);
@@ -1198,7 +1337,7 @@
             menuProjInfo.addEventListener('click', () => {
                 resetSidebarActive();
                 menuProjInfo.classList.add('active-item');
-                if (currentUser && currentUser.role === 'member') {
+                if (currentUser) {
                     hideAllMemberSections();
                     secProjInfo.style.display = 'block';
                 }
@@ -1208,7 +1347,7 @@
             menuNotifications.addEventListener('click', () => {
                 resetSidebarActive();
                 menuNotifications.classList.add('active-item');
-                if (currentUser && currentUser.role === 'member') {
+                if (currentUser) {
                     hideAllMemberSections();
                     secNotifications.style.display = 'block';
                 }
@@ -1218,7 +1357,7 @@
             menuSettings.addEventListener('click', () => {
                 resetSidebarActive();
                 menuSettings.classList.add('active-item');
-                if (currentUser && currentUser.role === 'member') {
+                if (currentUser) {
                     hideAllMemberSections();
                     secSettings.style.display = 'block';
                 }
@@ -1242,6 +1381,50 @@
             const isLight = document.body.classList.contains('light-theme');
             themeStatusText.textContent = isLight ? '☀️ Light Mode' : '🌙 Dark Mode';
         });
+
+        // LOGIN AS ADMIN/MANAGER FROM MEMBER DASHBOARD
+        document.getElementById('btn-login-as-admin').addEventListener('click', async () => {
+            if (!currentUser) return;
+
+            const pinPrompt = prompt("Enter 6-Digit Manager / Admin PIN to access Admin Mode:");
+            if (!pinPrompt) return;
+
+            if (currentUser.manager_pin && pinPrompt.trim() === currentUser.manager_pin) {
+                alert("Manager Authentication Successful!");
+                openDashboardAsManagerAdmin(currentUser, 'manager');
+            } else if (currentUser.pin_hash && pinPrompt.trim() === currentUser.pin_hash && currentUser.role === 'admin') {
+                alert("Admin Authentication Successful!");
+                openDashboardAsManagerAdmin(currentUser, 'admin');
+            } else {
+                alert("Invalid Security PIN.");
+            }
+        });
+
+        function openDashboardAsManagerAdmin(user, roleType) {
+            document.getElementById('dashboard-role-title').textContent = roleType === 'admin' ? 'ADMIN DASHBOARD' : 'MANAGER DASHBOARD';
+            document.getElementById('header-logo-badge').textContent = roleType === 'admin' ? 'ADM' : 'MGR';
+            document.getElementById('admin-total-card-wrapper').style.display = 'grid';
+            document.getElementById('admin-dashboard-section').style.display = 'block';
+            document.getElementById('member-dashboard-section').style.display = 'none';
+            document.getElementById('btn-login-as-admin').style.display = 'none';
+
+            setupSidebarMenu(roleType, user.assigned_roles || []);
+            
+            const firstAvailableRole = (user.assigned_roles && user.assigned_roles.length > 0) ? user.assigned_roles[0] : 'current_dues';
+            const roleToSecMap = {
+                'current_dues': 'sec-admin-current-dues',
+                'old_dues': 'sec-admin-old-dues',
+                'record_expense': 'sec-admin-record-expenses',
+                'view_expenses': 'sec-admin-view-expenses',
+                'attendance': 'sec-admin-attendance',
+                'levy': 'sec-admin-levy',
+                'pay_levy': 'sec-admin-pay-levy',
+                'levy_history': 'sec-admin-levy-history'
+            };
+
+            showAdminSection(roleType === 'admin' ? 'sec-admin-current-dues' : (roleToSecMap[firstAvailableRole] || 'sec-admin-current-dues'));
+            calculateAdminFinancialSummary();
+        }
 
         document.getElementById('register-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1323,8 +1506,6 @@
 
                 if (error || !data) {
                     showMessage('Invalid Phone Number or PIN.');
-                } else if (data.role !== 'member') {
-                    showMessage('Switch to Admin Login tab.');
                 } else {
                     currentUser = data;
                     document.getElementById('top-user-name').textContent = data.full_name || 'Member';
@@ -1338,6 +1519,14 @@
                     document.getElementById('admin-total-card-wrapper').style.display = 'none';
                     document.getElementById('admin-dashboard-section').style.display = 'none';
                     document.getElementById('member-dashboard-section').style.display = 'block';
+
+                    // SHOW LOGIN AS ADMIN IF MEMBER IS A MANAGER OR ADMIN
+                    const loginAsAdminBtn = document.getElementById('btn-login-as-admin');
+                    if (data.role === 'manager' || data.role === 'admin') {
+                        loginAsAdminBtn.style.display = 'flex';
+                    } else {
+                        loginAsAdminBtn.style.display = 'none';
+                    }
 
                     setupSidebarMenu('member');
                     loadMemberOverviewData(currentUser);
@@ -1366,13 +1555,13 @@
                     .from('members')
                     .select('*')
                     .eq('phone_number', phone)
-                    .eq('pin_hash', pin)
+                    .or(`pin_hash.eq.${pin},manager_pin.eq.${pin}`)
                     .single();
 
                 if (error || !data) {
-                    showMessage('Invalid Admin credentials.');
-                } else if (data.role !== 'admin') {
-                    showMessage('You are not registered as an Admin.');
+                    showMessage('Invalid Admin/Manager credentials.');
+                } else if (data.role !== 'admin' && data.role !== 'manager') {
+                    showMessage('You are not registered as an Admin or Manager.');
                 } else {
                     currentUser = data;
                     document.getElementById('top-user-name').textContent = data.full_name || 'Admin';
@@ -1381,15 +1570,8 @@
                     authContainer.style.display = 'none';
                     dashboardView.style.display = 'block';
 
-                    document.getElementById('dashboard-role-title').textContent = 'ADMIN DASHBOARD';
-                    document.getElementById('header-logo-badge').textContent = 'ADM';
-                    document.getElementById('admin-total-card-wrapper').style.display = 'grid';
-                    document.getElementById('admin-dashboard-section').style.display = 'block';
-                    document.getElementById('member-dashboard-section').style.display = 'none';
-
-                    setupSidebarMenu('admin');
-                    showAdminSection('sec-admin-current-dues');
-                    calculateAdminFinancialSummary();
+                    document.getElementById('btn-login-as-admin').style.display = 'none';
+                    openDashboardAsManagerAdmin(data, data.role);
                 }
             } catch (err) {
                 showMessage('Network error.');
@@ -1424,7 +1606,6 @@
                     });
                 }
 
-                // FETCH LEVY PAYMENTS FOR PROJECT TOTAL
                 const { data: levyPayments } = await _supabase
                     .from('levy_payments')
                     .select('amount')
@@ -1446,7 +1627,6 @@
                 }
                 document.getElementById('card-old-dues').textContent = '₦' + totalOldDues.toLocaleString();
 
-                // DUES CALCULATED CHRONOLOGICALLY FROM JAN 2025 UP TO CURRENT MONTH
                 const MONTHLY_RATE = 500;
                 const startYear = 2025;
                 const now = new Date();
@@ -1503,7 +1683,6 @@
             });
         }
 
-        // ACCURATE CHRONOLOGICAL DUES TRACKER WITH DYNAMIC/UNLIMITED FUTURE YEARS
         async function trackMemberDues(memberId) {
             const container = document.getElementById('track-results-container');
             const yearSelect = document.getElementById('track-year-select');
@@ -1681,7 +1860,6 @@
             }
         }
 
-        // ACCURATE MEMBER LEVY VIEW (BALANCE & OVERPAID CALCULATIONS)
         async function fetchProjectLevies(memberId) {
             const container = document.getElementById('levies-container');
             container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center;">Loading project levies...</p>';
@@ -1799,6 +1977,181 @@
             }
         }
 
+        // ADMIN MEMBERS LIST & MAKE MANAGER
+        async function fetchAdminMembersList(searchQuery = '') {
+            const container = document.getElementById('admin-members-list-container');
+            container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Loading members...</p>';
+
+            try {
+                let query = _supabase.from('members').select('*').order('full_name', { ascending: true });
+                if (searchQuery.trim().length > 0) {
+                    query = query.ilike('full_name', `%${searchQuery.trim()}%`);
+                }
+
+                const { data } = await query;
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">No members found.</p>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                data.forEach(m => {
+                    const isMgr = m.role === 'manager';
+                    const isAdm = m.role === 'admin';
+
+                    const div = document.createElement('div');
+                    div.className = 'history-item';
+                    div.innerHTML = `
+                        <div class="history-row">
+                            <div class="history-title">${m.full_name}</div>
+                            <span class="status-badge ${isAdm ? 'status-present' : (isMgr ? 'badge-partial' : 'status-excused')}">
+                                ${m.role.toUpperCase()}
+                            </span>
+                        </div>
+                        <div class="profile-row" style="margin-top:6px;"><span class="profile-key">Phone:</span><span class="profile-val">${m.phone_number}</span></div>
+                        <div class="profile-row"><span class="profile-key">Residence:</span><span class="profile-val">${m.state_of_residence || 'N/A'}</span></div>
+                        <div class="profile-row"><span class="profile-key">Origin:</span><span class="profile-val">${m.state_of_origin || 'N/A'}</span></div>
+                        <div class="profile-row"><span class="profile-key">Nationality:</span><span class="profile-val">${m.nationality || 'Nigerian'}</span></div>
+                        
+                        ${!isAdm ? `
+                            <button class="btn-primary btn-make-mgr" data-id="${m.id}" data-role="${m.role}" style="margin-top:8px; padding:8px; font-size:0.75rem; background:${isMgr ? '#ef4444' : '#0284c7'};">
+                                ${isMgr ? 'Demote to Member' : 'Make Manager'}
+                            </button>
+                        ` : ''}
+                    `;
+                    container.appendChild(div);
+                });
+
+                document.querySelectorAll('.btn-make-mgr').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const targetId = e.target.getAttribute('data-id');
+                        const currentRole = e.target.getAttribute('data-role');
+                        const newRole = currentRole === 'manager' ? 'member' : 'manager';
+
+                        const { error } = await _supabase.from('members').update({ role: newRole }).eq('id', targetId);
+                        if (error) alert('Error updating role: ' + error.message);
+                        else {
+                            alert(`Member role updated to ${newRole}!`);
+                            fetchAdminMembersList(document.getElementById('admin-members-list-search').value);
+                        }
+                    });
+                });
+
+            } catch (err) {
+                container.innerHTML = '<p style="font-size:0.75rem; color:#ef4444; text-align:center;">Network error.</p>';
+            }
+        }
+
+        document.getElementById('admin-members-list-search').addEventListener('input', (e) => {
+            fetchAdminMembersList(e.target.value);
+        });
+
+        // ADMIN MANAGERS CONTROL
+        async function fetchAdminManagersList(searchQuery = '') {
+            const container = document.getElementById('admin-managers-list-container');
+            container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Loading managers...</p>';
+
+            try {
+                let query = _supabase.from('members').select('*').eq('role', 'manager').order('full_name', { ascending: true });
+                if (searchQuery.trim().length > 0) {
+                    query = query.ilike('full_name', `%${searchQuery.trim()}%`);
+                }
+
+                const { data } = await query;
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">No managers found.</p>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                data.forEach(m => {
+                    const rolesArr = m.assigned_roles || [];
+                    const div = document.createElement('div');
+                    div.className = 'search-item';
+                    div.innerHTML = `
+                        <div class="history-row">
+                            <div>
+                                <div style="font-size:0.85rem; font-weight:700; color:var(--text-color);">${m.full_name}</div>
+                                <div style="font-size:0.7rem; color:var(--subtext-color);">${m.phone_number}</div>
+                            </div>
+                            <span style="font-size:0.75rem; color:#38bdf8; font-weight:700;">Manage</span>
+                        </div>
+                        <div style="font-size:0.7rem; color:var(--subtext-color); margin-top:4px;">
+                            Active Roles: ${rolesArr.length > 0 ? rolesArr.join(', ') : 'None assigned'}
+                        </div>
+                    `;
+                    div.addEventListener('click', () => {
+                        selectedManagerObj = m;
+                        document.getElementById('selected-manager-title').textContent = `Selected Manager: ${m.full_name} (${m.phone_number})`;
+                        document.getElementById('admin-manager-action-card').style.display = 'block';
+
+                        // Check role boxes
+                        document.querySelectorAll('.role-chk').forEach(chk => {
+                            chk.checked = rolesArr.includes(chk.value);
+                        });
+                    });
+                    container.appendChild(div);
+                });
+
+            } catch (err) {
+                container.innerHTML = '<p style="font-size:0.75rem; color:#ef4444; text-align:center;">Network error.</p>';
+            }
+        }
+
+        document.getElementById('admin-managers-search').addEventListener('input', (e) => {
+            fetchAdminManagersList(e.target.value);
+        });
+
+        // SAVE MANAGER PIN
+        document.getElementById('btn-save-mgr-pin').addEventListener('click', async () => {
+            if (!selectedManagerObj) return;
+
+            const newPin = document.getElementById('mgr-pin-input').value.trim();
+            if (newPin.length !== 6 || isNaN(newPin)) {
+                alert('PIN must be exactly 6 digits.');
+                return;
+            }
+
+            const { error } = await _supabase.from('members').update({ manager_pin: newPin }).eq('id', selectedManagerObj.id);
+            if (error) alert('Failed to update PIN: ' + error.message);
+            else {
+                alert(`6-Digit Manager PIN updated for ${selectedManagerObj.full_name}!`);
+                document.getElementById('mgr-pin-input').value = '';
+            }
+        });
+
+        // SAVE MANAGER ROLES
+        document.getElementById('btn-save-mgr-roles').addEventListener('click', async () => {
+            if (!selectedManagerObj) return;
+
+            const checkedRoles = Array.from(document.querySelectorAll('.role-chk:checked')).map(c => c.value);
+
+            const { error } = await _supabase.from('members').update({ assigned_roles: checkedRoles }).eq('id', selectedManagerObj.id);
+            if (error) alert('Failed to update roles: ' + error.message);
+            else {
+                alert(`Roles updated successfully for ${selectedManagerObj.full_name}!`);
+                fetchAdminManagersList(document.getElementById('admin-managers-search').value);
+            }
+        });
+
+        // REMOVE MANAGER STATUS
+        document.getElementById('btn-remove-manager').addEventListener('click', async () => {
+            if (!selectedManagerObj) return;
+
+            if (!confirm(`Are you sure you want to remove Manager status from ${selectedManagerObj.full_name}?`)) return;
+
+            const { error } = await _supabase.from('members').update({ role: 'member', assigned_roles: [], manager_pin: null }).eq('id', selectedManagerObj.id);
+            if (error) alert('Failed to remove manager status: ' + error.message);
+            else {
+                alert(`${selectedManagerObj.full_name} is now a regular Member.`);
+                document.getElementById('admin-manager-action-card').style.display = 'none';
+                selectedManagerObj = null;
+                fetchAdminManagersList();
+            }
+        });
+
         document.getElementById('btn-save-levy').addEventListener('click', async () => {
             const title = document.getElementById('admin-levy-title').value.trim();
             const amount = Number(document.getElementById('admin-levy-amount').value);
@@ -1836,7 +2189,6 @@
             }
         });
 
-        // LOAD LEVIES DROPDOWN FOR PAY LEVY
         async function loadLevyDropdown() {
             const select = document.getElementById('admin-levy-select');
             select.innerHTML = '<option value="">Loading levies...</option>';
@@ -1861,7 +2213,6 @@
             }
         }
 
-        // ADMIN SEARCH MEMBER FOR LEVY PAYMENT
         document.getElementById('admin-levy-pay-search').addEventListener('input', async (e) => {
             const query = e.target.value.trim();
             const container = document.getElementById('admin-levy-pay-results');
@@ -1903,7 +2254,6 @@
             });
         });
 
-        // ADMIN SAVE LEVY PAYMENT
         document.getElementById('btn-save-levy-payment').addEventListener('click', async () => {
             if (!selectedMemberForLevyPay) return;
 
@@ -1954,7 +2304,6 @@
             }
         });
 
-        // ADMIN VIEW ALL MEMBERS LEVY HISTORY & SEARCH
         async function fetchAdminLevyHistory(searchQuery = '') {
             const container = document.getElementById('admin-levy-history-container');
             container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Loading members levy history...</p>';
