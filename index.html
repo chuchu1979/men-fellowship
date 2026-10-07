@@ -849,6 +849,20 @@
                 </div>
             </div>
 
+            <!-- ADMIN VIEW ATTENDANCE SECTION -->
+            <div id="sec-admin-view-attendance" class="card-box" style="display: none;">
+                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 12px;">📋 View All Members Attendance</h3>
+                
+                <div class="form-group">
+                    <label>Search Member Attendance Record</label>
+                    <input type="text" id="admin-view-att-search" placeholder="Type member name...">
+                </div>
+
+                <div id="admin-view-att-container">
+                    <p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Loading attendance records...</p>
+                </div>
+            </div>
+
             <!-- Admin Create Levy Card -->
             <div id="sec-admin-levy" class="card-box" style="display: none;">
                 <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 12px;">➕ Create New Project Levy</h3>
@@ -955,6 +969,7 @@
                             <label class="roles-checkbox-item"><input type="checkbox" class="role-chk" value="record_expense"> 💸 Record Expenses</label>
                             <label class="roles-checkbox-item"><input type="checkbox" class="role-chk" value="view_expenses"> 📖 View Expenses</label>
                             <label class="roles-checkbox-item"><input type="checkbox" class="role-chk" value="attendance"> 📝 Mark Attendance</label>
+                            <label class="roles-checkbox-item"><input type="checkbox" class="role-chk" value="view_attendance"> 📋 View Attendance</label>
                             <label class="roles-checkbox-item"><input type="checkbox" class="role-chk" value="levy"> ➕ Create Project Levy</label>
                             <label class="roles-checkbox-item"><input type="checkbox" class="role-chk" value="pay_levy"> 💳 Add Paid Levy</label>
                             <label class="roles-checkbox-item"><input type="checkbox" class="role-chk" value="levy_history"> 📖 Levy History</label>
@@ -1073,6 +1088,7 @@
                 if (hasRole('record_expense')) html += `<li id="menu-admin-record-expense">💸 Record Expenses</li>`;
                 if (hasRole('view_expenses')) html += `<li id="menu-admin-view-expenses">📖 View Expenses</li>`;
                 if (hasRole('attendance')) html += `<li id="menu-admin-attendance">📝 Mark Attendance</li>`;
+                if (hasRole('view_attendance')) html += `<li id="menu-admin-view-attendance">📋 View Attendance</li>`;
                 if (hasRole('levy')) html += `<li id="menu-admin-levy">➕ Create Project Levy</li>`;
                 if (hasRole('pay_levy')) html += `<li id="menu-admin-pay-levy">💳 Add Paid Levy</li>`;
                 if (hasRole('levy_history')) html += `<li id="menu-admin-levy-history">📖 Levy History</li>`;
@@ -1127,6 +1143,16 @@
                         resetAdminSidebarActive();
                         document.getElementById('menu-admin-attendance').classList.add('active-item');
                         showAdminSection('sec-admin-attendance');
+                        closeSidebar();
+                    });
+                }
+
+                if (document.getElementById('menu-admin-view-attendance')) {
+                    document.getElementById('menu-admin-view-attendance').addEventListener('click', () => {
+                        resetAdminSidebarActive();
+                        document.getElementById('menu-admin-view-attendance').classList.add('active-item');
+                        showAdminSection('sec-admin-view-attendance');
+                        fetchAdminAttendanceHistory();
                         closeSidebar();
                     });
                 }
@@ -1216,8 +1242,9 @@
         function showAdminSection(sectionId) {
             const adminSecs = [
                 'sec-admin-current-dues', 'sec-admin-old-dues', 'sec-admin-record-expenses',
-                'sec-admin-view-expenses', 'sec-admin-attendance', 'sec-admin-levy',
-                'sec-admin-pay-levy', 'sec-admin-levy-history', 'sec-admin-members', 'sec-admin-managers'
+                'sec-admin-view-expenses', 'sec-admin-attendance', 'sec-admin-view-attendance',
+                'sec-admin-levy', 'sec-admin-pay-levy', 'sec-admin-levy-history',
+                'sec-admin-members', 'sec-admin-managers'
             ];
             adminSecs.forEach(id => {
                 const el = document.getElementById(id);
@@ -1382,7 +1409,6 @@
             themeStatusText.textContent = isLight ? '☀️ Light Mode' : '🌙 Dark Mode';
         });
 
-        // LOGIN AS ADMIN/MANAGER FROM MEMBER DASHBOARD
         document.getElementById('btn-login-as-admin').addEventListener('click', async () => {
             if (!currentUser) return;
 
@@ -1417,6 +1443,7 @@
                 'record_expense': 'sec-admin-record-expenses',
                 'view_expenses': 'sec-admin-view-expenses',
                 'attendance': 'sec-admin-attendance',
+                'view_attendance': 'sec-admin-view-attendance',
                 'levy': 'sec-admin-levy',
                 'pay_levy': 'sec-admin-pay-levy',
                 'levy_history': 'sec-admin-levy-history'
@@ -1520,7 +1547,6 @@
                     document.getElementById('admin-dashboard-section').style.display = 'none';
                     document.getElementById('member-dashboard-section').style.display = 'block';
 
-                    // SHOW LOGIN AS ADMIN IF MEMBER IS A MANAGER OR ADMIN
                     const loginAsAdminBtn = document.getElementById('btn-login-as-admin');
                     if (data.role === 'manager' || data.role === 'admin') {
                         loginAsAdminBtn.style.display = 'flex';
@@ -1977,6 +2003,56 @@
             }
         }
 
+        // ADMIN VIEW ATTENDANCE HISTORY
+        async function fetchAdminAttendanceHistory(searchQuery = '') {
+            const container = document.getElementById('admin-view-att-container');
+            container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Loading attendance records...</p>';
+
+            try {
+                let query = _supabase.from('attendance').select('*').order('meeting_date', { ascending: false });
+                if (searchQuery.trim().length > 0) {
+                    query = query.ilike('member_name', `%${searchQuery.trim()}%`);
+                }
+
+                const { data } = await query;
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">No attendance records found.</p>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                data.forEach(item => {
+                    const dateFormatted = new Date(item.meeting_date).toLocaleDateString('en-GB', {
+                        day: 'numeric', month: 'short', year: 'numeric'
+                    });
+
+                    let statusBadge = item.status === 'Present' 
+                        ? '<span class="status-badge status-present">Present</span>' 
+                        : (item.status === 'Absent' ? '<span class="status-badge status-absent">Absent</span>' : '<span class="status-badge status-excused">Excused</span>');
+
+                    const div = document.createElement('div');
+                    div.className = 'history-item';
+                    div.innerHTML = `
+                        <div class="history-row">
+                            <div class="history-title">${item.member_name}</div>
+                            ${statusBadge}
+                        </div>
+                        <div style="font-size:0.75rem; color:var(--accent-color); font-weight:600; margin-top:2px;">${item.meeting_title}</div>
+                        <div class="history-date" style="margin-top:4px;">Date: ${dateFormatted} • Marked by: ${item.recorded_by || 'Admin'}</div>
+                    `;
+                    container.appendChild(div);
+                });
+
+            } catch (err) {
+                container.innerHTML = '<p style="font-size:0.75rem; color:#ef4444; text-align:center;">Network error.</p>';
+            }
+        }
+
+        document.getElementById('admin-view-att-search').addEventListener('input', (e) => {
+            fetchAdminAttendanceHistory(e.target.value);
+        });
+
         // ADMIN MEMBERS LIST & MAKE MANAGER
         async function fetchAdminMembersList(searchQuery = '') {
             const container = document.getElementById('admin-members-list-container');
@@ -2087,7 +2163,6 @@
                         document.getElementById('selected-manager-title').textContent = `Selected Manager: ${m.full_name} (${m.phone_number})`;
                         document.getElementById('admin-manager-action-card').style.display = 'block';
 
-                        // Check role boxes
                         document.querySelectorAll('.role-chk').forEach(chk => {
                             chk.checked = rolesArr.includes(chk.value);
                         });
@@ -2786,4 +2861,3 @@
     </script>
 </body>
 </html>
-
