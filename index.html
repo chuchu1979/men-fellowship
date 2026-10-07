@@ -388,6 +388,38 @@
         }
 
         .roles-checkbox-item input { width: auto; }
+
+        /* Table Styling */
+        .dues-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.78rem;
+            text-align: left;
+        }
+
+        .custom-table th, .custom-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .custom-table th {
+            background: var(--input-bg);
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+
+        .clickable-name {
+            color: #38bdf8;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -754,6 +786,83 @@
                 </div>
             </div>
 
+            <!-- ADMIN VIEW MEMBERS DUES SECTION -->
+            <div id="sec-admin-view-members-dues" class="card-box" style="display: none;">
+                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 12px;">📊 View All Members Dues</h3>
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom: 12px;">
+                    <div>
+                        <label style="font-size:0.75rem; color:var(--subtext-color);">Filter Year</label>
+                        <select id="admin-dues-year-select" style="width:100%; padding:8px; border-radius:8px; background:var(--input-bg); color:var(--text-color); border:1px solid var(--border-color);">
+                            <option value="2025">2025</option>
+                            <option value="2026" selected>2026</option>
+                            <option value="2027">2027</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size:0.75rem; color:var(--subtext-color);">Filter Month</label>
+                        <select id="admin-dues-month-select" style="width:100%; padding:8px; border-radius:8px; background:var(--input-bg); color:var(--text-color); border:1px solid var(--border-color);">
+                            <option value="ALL" selected>All Months</option>
+                            <option value="0">January</option>
+                            <option value="1">February</option>
+                            <option value="2">March</option>
+                            <option value="3">April</option>
+                            <option value="4">May</option>
+                            <option value="5">June</option>
+                            <option value="6">July</option>
+                            <option value="7">August</option>
+                            <option value="8">September</option>
+                            <option value="9">October</option>
+                            <option value="10">November</option>
+                            <option value="11">December</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="dues-table-wrapper">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Full Name</th>
+                                <th>Period</th>
+                                <th>Paid</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-members-dues-tbody">
+                            <tr><td colspan="4" style="text-align:center;">Loading dues data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- MEMBER DUES DETAIL MODAL / CONTAINER -->
+                <div id="admin-single-member-dues-detail" style="display:none; margin-top:16px; border-top:1px solid var(--border-color); padding-top:14px;">
+                    <h4 style="font-size:0.85rem; color:var(--accent-color);" id="admin-dues-detail-name">Member Dues History</h4>
+                    
+                    <div style="display:flex; gap:8px; margin: 10px 0;">
+                        <div style="flex:1;">
+                            <label style="font-size:0.7rem; color:var(--subtext-color);">Select Calendar Date</label>
+                            <input type="date" id="admin-dues-cal-filter" style="width:100%; padding:6px; font-size:0.75rem; border-radius:6px; background:var(--input-bg); color:var(--text-color); border:1px solid var(--border-color);">
+                        </div>
+                    </div>
+
+                    <div class="dues-table-wrapper">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Period</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-single-dues-tbody">
+                                <tr><td colspan="3" style="text-align:center;">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <!-- ADMIN RECORD OLD DUES SECTION -->
             <div id="sec-admin-old-dues" class="card-box" style="display: none;">
                 <h3 style="font-size: 0.95rem; color:#fde047; margin-bottom: 12px;">📜 Record Old Dues (Pre-App Dues)</h3>
@@ -965,6 +1074,7 @@
                         <label>Assign Roles (Sidebar Permissions)</label>
                         <div class="roles-checkbox-grid">
                             <label class="roles-checkbox-item"><input type="checkbox" class="role-chk" value="current_dues"> 🔍 Search & Record Member Dues</label>
+                            <label class="roles-checkbox-item"><input type="checkbox" class="role-chk" value="view_members_dues"> 📊 View Members Dues</label>
                             <label class="roles-checkbox-item"><input type="checkbox" class="role-chk" value="old_dues"> 📜 Record Old Dues</label>
                             <label class="roles-checkbox-item"><input type="checkbox" class="role-chk" value="record_expense"> 💸 Record Expenses</label>
                             <label class="roles-checkbox-item"><input type="checkbox" class="role-chk" value="view_expenses"> 📖 View Expenses</label>
@@ -996,6 +1106,7 @@
         let selectedMemberForAtt = null;
         let selectedMemberForLevyPay = null;
         let selectedManagerObj = null;
+        let selectedMemberForDuesTable = null;
         let chartInstance = null;
 
         document.getElementById('att-meeting-date').valueAsDate = new Date();
@@ -1084,6 +1195,7 @@
                 const hasRole = (r) => role === 'admin' || (Array.isArray(assignedRoles) && assignedRoles.includes(r));
 
                 if (hasRole('current_dues')) html += `<li id="menu-admin-home" class="active-item">📊 Admin Overview</li>`;
+                if (hasRole('view_members_dues')) html += `<li id="menu-admin-view-members-dues">📊 View Members Dues</li>`;
                 if (hasRole('old_dues')) html += `<li id="menu-admin-old-dues">📜 Record Old Dues</li>`;
                 if (hasRole('record_expense')) html += `<li id="menu-admin-record-expense">💸 Record Expenses</li>`;
                 if (hasRole('view_expenses')) html += `<li id="menu-admin-view-expenses">📖 View Expenses</li>`;
@@ -1106,6 +1218,16 @@
                         resetAdminSidebarActive();
                         document.getElementById('menu-admin-home').classList.add('active-item');
                         showAdminSection('sec-admin-current-dues');
+                        closeSidebar();
+                    });
+                }
+
+                if (document.getElementById('menu-admin-view-members-dues')) {
+                    document.getElementById('menu-admin-view-members-dues').addEventListener('click', () => {
+                        resetAdminSidebarActive();
+                        document.getElementById('menu-admin-view-members-dues').classList.add('active-item');
+                        showAdminSection('sec-admin-view-members-dues');
+                        fetchAdminMembersDuesTable();
                         closeSidebar();
                     });
                 }
@@ -1241,10 +1363,10 @@
 
         function showAdminSection(sectionId) {
             const adminSecs = [
-                'sec-admin-current-dues', 'sec-admin-old-dues', 'sec-admin-record-expenses',
-                'sec-admin-view-expenses', 'sec-admin-attendance', 'sec-admin-view-attendance',
-                'sec-admin-levy', 'sec-admin-pay-levy', 'sec-admin-levy-history',
-                'sec-admin-members', 'sec-admin-managers'
+                'sec-admin-current-dues', 'sec-admin-view-members-dues', 'sec-admin-old-dues', 
+                'sec-admin-record-expenses', 'sec-admin-view-expenses', 'sec-admin-attendance', 
+                'sec-admin-view-attendance', 'sec-admin-levy', 'sec-admin-pay-levy', 
+                'sec-admin-levy-history', 'sec-admin-members', 'sec-admin-managers'
             ];
             adminSecs.forEach(id => {
                 const el = document.getElementById(id);
@@ -1439,6 +1561,7 @@
             const firstAvailableRole = (user.assigned_roles && user.assigned_roles.length > 0) ? user.assigned_roles[0] : 'current_dues';
             const roleToSecMap = {
                 'current_dues': 'sec-admin-current-dues',
+                'view_members_dues': 'sec-admin-view-members-dues',
                 'old_dues': 'sec-admin-old-dues',
                 'record_expense': 'sec-admin-record-expenses',
                 'view_expenses': 'sec-admin-view-expenses',
@@ -2002,6 +2125,127 @@
                 container.innerHTML = '<p style="font-size:0.75rem; color:#ef4444; text-align:center;">Network error.</p>';
             }
         }
+
+        // ADMIN VIEW MEMBERS DUES TABLE
+        async function fetchAdminMembersDuesTable() {
+            const tbody = document.getElementById('admin-members-dues-tbody');
+            const selectedYear = document.getElementById('admin-dues-year-select').value;
+            const selectedMonth = document.getElementById('admin-dues-month-select').value;
+
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Loading dues table...</td></tr>';
+
+            try {
+                const { data: members } = await _supabase.from('members').select('*').order('full_name', { ascending: true });
+                const { data: payments } = await _supabase.from('dues_payments').select('*').eq('payment_type', 'compulsory_dues');
+
+                if (!members || members.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No members found.</td></tr>';
+                    return;
+                }
+
+                const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                tbody.innerHTML = '';
+
+                members.forEach(member => {
+                    const userPayments = payments ? payments.filter(p => p.member_id === member.member_id) : [];
+                    const totalPaid = userPayments.reduce((s, p) => s + Number(p.amount), 0);
+                    const monthsPaidCount = Math.floor(totalPaid / 500);
+
+                    if (selectedMonth === 'ALL') {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td><span class="clickable-name" data-id="${member.member_id}" data-name="${member.full_name}">${member.full_name}</span></td>
+                            <td>${selectedYear} (Full)</td>
+                            <td style="color:#10b981; font-weight:700;">₦${totalPaid.toLocaleString()}</td>
+                            <td><span class="status-badge ${monthsPaidCount > 0 ? 'status-present' : 'status-absent'}">${monthsPaidCount} Mos Paid</span></td>
+                        `;
+                        tbody.appendChild(tr);
+                    } else {
+                        const monthIdx = Number(selectedMonth);
+                        const startYear = 2025;
+                        const targetGlobalMonthIndex = (Number(selectedYear) - startYear) * 12 + monthIdx;
+                        const isPaid = targetGlobalMonthIndex < monthsPaidCount;
+
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td><span class="clickable-name" data-id="${member.member_id}" data-name="${member.full_name}">${member.full_name}</span></td>
+                            <td>${monthNames[monthIdx]} ${selectedYear}</td>
+                            <td style="color:${isPaid ? '#10b981' : '#ef4444'}; font-weight:700;">${isPaid ? '₦500' : '₦0'}</td>
+                            <td><span class="status-badge ${isPaid ? 'status-present' : 'status-absent'}">${isPaid ? 'Paid' : 'Unpaid'}</span></td>
+                        `;
+                        tbody.appendChild(tr);
+                    }
+                });
+
+                document.querySelectorAll('.clickable-name').forEach(el => {
+                    el.addEventListener('click', (e) => {
+                        const memberId = e.target.getAttribute('data-id');
+                        const memberName = e.target.getAttribute('data-name');
+                        selectedMemberForDuesTable = { member_id: memberId, full_name: memberName };
+                        
+                        document.getElementById('admin-dues-detail-name').textContent = `${memberName} - Dues History`;
+                        document.getElementById('admin-single-member-dues-detail').style.display = 'block';
+                        fetchAdminSingleMemberDuesHistory(memberId);
+                    });
+                });
+
+            } catch (err) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#ef4444;">Error loading table.</td></tr>';
+            }
+        }
+
+        async function fetchAdminSingleMemberDuesHistory(memberId, filterDate = '') {
+            const tbody = document.getElementById('admin-single-dues-tbody');
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Loading...</td></tr>';
+
+            try {
+                let query = _supabase.from('dues_payments').select('*').eq('member_id', memberId).order('created_at', { ascending: false });
+                
+                const { data } = await query;
+
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No payment records.</td></tr>';
+                    return;
+                }
+
+                let filteredData = data;
+                if (filterDate) {
+                    filteredData = data.filter(p => new Date(p.created_at).toISOString().slice(0, 10) === filterDate);
+                }
+
+                if (filteredData.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No records on this date.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                filteredData.forEach(p => {
+                    const dateFormatted = new Date(p.created_at).toLocaleDateString('en-GB', {
+                        day: 'numeric', month: 'short', year: 'numeric'
+                    });
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${dateFormatted}</td>
+                        <td>${p.payment_type === 'compulsory_dues' ? 'Compulsory' : p.payment_type}</td>
+                        <td style="color:#10b981; font-weight:700;">₦${Number(p.amount).toLocaleString()}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+            } catch (err) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#ef4444;">Error loading details.</td></tr>';
+            }
+        }
+
+        document.getElementById('admin-dues-year-select').addEventListener('change', fetchAdminMembersDuesTable);
+        document.getElementById('admin-dues-month-select').addEventListener('change', fetchAdminMembersDuesTable);
+        
+        document.getElementById('admin-dues-cal-filter').addEventListener('change', (e) => {
+            if (selectedMemberForDuesTable) {
+                fetchAdminSingleMemberDuesHistory(selectedMemberForDuesTable.member_id, e.target.value);
+            }
+        });
 
         // ADMIN VIEW ATTENDANCE HISTORY
         async function fetchAdminAttendanceHistory(searchQuery = '') {
