@@ -1260,6 +1260,15 @@
         document.getElementById('att-meeting-date').valueAsDate = new Date();
         document.getElementById('expense-date-input').valueAsDate = new Date();
 
+        // REGISTER SERVICE WORKER FOR RELIABLE PWA PROMPT
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').then(() => {
+                console.log('Service Worker registered successfully.');
+            }).catch(err => {
+                console.log('Service Worker registration failed:', err);
+            });
+        }
+
         // PWA AUTO-INSTALL PROMPT
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
@@ -1279,6 +1288,8 @@
         });
 
         window.addEventListener('DOMContentLoaded', () => {
+            loadSavedAppLogo();
+            
             setTimeout(() => {
                 const loader = document.getElementById('loading-screen');
                 const auth = document.getElementById('auth-container');
@@ -1291,12 +1302,10 @@
                 }, 600);
             }, 3000);
 
-            // Request System Notification Permission
             if ("Notification" in window && Notification.permission !== "granted") {
                 Notification.requestPermission();
             }
 
-            // Realtime Auto-Refresh Subscriptions
             setupRealtimeSubscriptions();
         });
 
@@ -1372,6 +1381,21 @@
                 reader.readAsDataURL(file);
             }
         });
+
+        // FETCH SAVED LOGO FROM SUPABASE
+        async function loadSavedAppLogo() {
+            try {
+                const { data } = await _supabase.from('app_settings').select('logo_url').eq('id', 1).single();
+                if (data && data.logo_url) {
+                    const customLogoImg = document.getElementById('header-custom-app-logo');
+                    customLogoImg.src = data.logo_url;
+                    customLogoImg.style.display = 'block';
+                    document.getElementById('header-logo-badge').style.display = 'none';
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        }
 
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebar-overlay');
@@ -1769,7 +1793,6 @@
             playNotificationSound(selectedTone);
         });
 
-        // SYSTEM PHONE NOTIFICATION
         function sendPhoneNotification(title, message) {
             const selectedTone = document.getElementById('notif-sound-select').value || '1';
             playNotificationSound(selectedTone);
@@ -1782,11 +1805,11 @@
             }
         }
 
-        // SUPABASE REALTIME AUTOMATIC BACKGROUND REFRESH
         function setupRealtimeSubscriptions() {
             _supabase
                 .channel('schema-db-changes')
                 .on('postgres_changes', { event: '*', schema: 'public' }, (payload) => {
+                    loadSavedAppLogo();
                     if (currentUser) {
                         loadMemberOverviewData(currentUser);
                         loadMemberNotifications(currentUser);
@@ -1796,7 +1819,6 @@
                 .subscribe();
         }
 
-        // WEBAUTHN PASSKEY REGISTER & LOGIN
         function bufferToBase64(buffer) {
             return btoa(String.fromCharCode(...new Uint8Array(buffer)));
         }
@@ -1921,19 +1943,37 @@
         document.getElementById('btn-bio-login-member').addEventListener('click', () => triggerBiometricAuth('member'));
         document.getElementById('btn-bio-login-admin').addEventListener('click', () => triggerBiometricAuth('admin'));
 
-        // SAVE APP LOGO
+        // SAVE APP LOGO TO SUPABASE DATABASE
         document.getElementById('btn-save-app-logo').addEventListener('click', async () => {
             if (!appLogoBase64) {
                 alert('Please select an image file first.');
                 return;
             }
 
-            const customLogoImg = document.getElementById('header-custom-app-logo');
-            customLogoImg.src = appLogoBase64;
-            customLogoImg.style.display = 'block';
-            document.getElementById('header-logo-badge').style.display = 'none';
+            const btn = document.getElementById('btn-save-app-logo');
+            btn.disabled = true;
+            btn.textContent = 'Saving Logo...';
 
-            alert('App Logo updated successfully!');
+            try {
+                const { error } = await _supabase
+                    .from('app_settings')
+                    .upsert([{ id: 1, logo_url: appLogoBase64 }]);
+
+                if (error) {
+                    alert('Failed to save logo to database: ' + error.message);
+                } else {
+                    const customLogoImg = document.getElementById('header-custom-app-logo');
+                    customLogoImg.src = appLogoBase64;
+                    customLogoImg.style.display = 'block';
+                    document.getElementById('header-logo-badge').style.display = 'none';
+                    alert('App Logo updated successfully across all devices!');
+                }
+            } catch (err) {
+                alert('Network error.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Upload & Save Logo';
+            }
         });
 
         document.getElementById('btn-login-as-admin').addEventListener('click', async () => {
