@@ -152,6 +152,23 @@
             outline: none;
         }
 
+        .passport-preview-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .passport-preview {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 3px solid var(--accent-color);
+            object-fit: cover;
+            background: var(--input-bg);
+        }
+
         .btn-primary {
             width: 100%;
             padding: 13px;
@@ -389,7 +406,6 @@
 
         .roles-checkbox-item input { width: auto; }
 
-        /* Table Styling */
         .dues-table-wrapper {
             width: 100%;
             overflow-x: auto;
@@ -492,6 +508,15 @@
                 <p>Create your fellowship account</p>
             </div>
             <form id="register-form">
+                <div class="passport-preview-wrapper">
+                    <img id="reg-passport-preview" class="passport-preview" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394a3b8'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>" alt="Passport Preview">
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-passport">Upload Round Passport Photo</label>
+                    <input type="file" id="reg-passport" accept="image/*" required>
+                </div>
+
                 <div class="form-group">
                     <label for="reg-name">Full Name</label>
                     <input type="text" id="reg-name" placeholder="John Doe" required>
@@ -515,6 +540,10 @@
                 <div class="form-group">
                     <label for="reg-residence">State of Residence</label>
                     <input type="text" id="reg-residence" placeholder="e.g. Lagos" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-address">Residence Address</label>
+                    <input type="text" id="reg-address" placeholder="e.g. 12 Allen Avenue, Ikeja" required>
                 </div>
                 <div class="form-group">
                     <label for="reg-nationality">Nationality</label>
@@ -541,7 +570,7 @@
                 <span class="sidebar-close" id="sidebar-close">&times;</span>
             </div>
             <ul class="sidebar-menu" id="sidebar-menu-list">
-                <!-- Links dynamically rendered via JavaScript based on Member vs Admin -->
+                <!-- Links dynamically rendered via JavaScript -->
             </ul>
         </div>
 
@@ -563,6 +592,14 @@
 
         <!-- ADMIN DASHBOARD FINANCIAL SUMMARY CARDS -->
         <div class="admin-cards-grid" id="admin-total-card-wrapper" style="display: none;">
+            <div class="summary-mini-card" style="border-color:#38bdf8;">
+                <div class="card-label">Total Dues</div>
+                <div class="card-val" id="admin-total-dues" style="color:#38bdf8;">₦0</div>
+            </div>
+            <div class="summary-mini-card" style="border-color:#a855f7;">
+                <div class="card-label">Total Levy</div>
+                <div class="card-val" id="admin-total-levy" style="color:#c084fc;">₦0</div>
+            </div>
             <div class="summary-mini-card" style="border-color:#10b981;">
                 <div class="card-label">Total Inflow</div>
                 <div class="card-val" id="admin-total-inflow" style="color:#10b981;">₦0</div>
@@ -575,9 +612,7 @@
                 <div class="card-label">Total Balance</div>
                 <div class="card-val" id="admin-total-balance" style="color:#38bdf8;">₦0</div>
             </div>
-        </div>
-
-        <!-- MEMBER DASHBOARD SECTION -->
+        </div>        <!-- MEMBER DASHBOARD SECTION -->
         <div id="member-dashboard-section" style="display: none;">
             
             <!-- Member Overview (Home) Tab -->
@@ -661,15 +696,7 @@
                 </div>
             </div>
 
-            <!-- 1. VIEW DUES TRANSACTIONS -->
-            <div id="sec-dues-transactions" class="card-box" style="display:none;">
-                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">💳 View Dues Transactions History</h3>
-                <div id="member-history-container">
-                    <p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Loading dues transactions...</p>
-                </div>
-            </div>
-
-            <!-- 2. MY ARREARS DUES VIEW -->
+            <!-- MY ARREARS DUES VIEW -->
             <div id="sec-arrears" class="card-box" style="display:none;">
                 <h3 style="font-size: 0.95rem; color:#f87171; margin-bottom: 10px;">⚠️ My Arrears Dues</h3>
                 <div id="arrears-container">
@@ -677,7 +704,7 @@
                 </div>
             </div>
 
-            <!-- 3. MY LEVY VIEW -->
+            <!-- MY LEVY VIEW -->
             <div id="sec-levy" class="card-box" style="display:none;">
                 <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">🏛️ My Levy View</h3>
                 <div id="levies-container">
@@ -685,11 +712,11 @@
                 </div>
             </div>
 
-            <!-- 4. ATTENDANCE PERFORMANCE VIEW -->
+            <!-- ATTENDANCE PERFORMANCE VIEW -->
             <div id="sec-attendance" class="card-box" style="display:none;">
                 <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">📅 Attendance Performance</h3>
                 
-                <div id="att-summary-box" style="margin-bottom: 14px; padding: 12px; background: var(--input-bg); border-radius:10px; border:1px solid var(--border-color); display:flex; justify-content:space-around; text-align:center;">
+                <div id="att-summary-box" style="margin-bottom: 14px; padding: 12px; background: var(--input-bg); border-radius:10px; border:1px solid var(--border-color); display:flex; justify-style:space-around; text-align:center;">
                     <div>
                         <div style="font-size:0.7rem; color:var(--subtext-color);">Total Meetings</div>
                         <div id="att-total-cnt" style="font-size:1.1rem; font-weight:800; color:var(--text-color);">0</div>
@@ -709,7 +736,7 @@
                 </div>
             </div>
 
-            <!-- 5. PROJECT INFORMATION VIEW -->
+            <!-- PROJECT INFORMATION VIEW -->
             <div id="sec-proj-info" class="card-box" style="display:none;">
                 <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">🏗️ Project Information</h3>
                 <div id="project-info-container">
@@ -719,7 +746,7 @@
                 </div>
             </div>
 
-            <!-- 6. NOTIFICATIONS VIEW -->
+            <!-- NOTIFICATIONS VIEW -->
             <div id="sec-notifications" class="card-box" style="display:none;">
                 <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">🔔 Notifications</h3>
                 <div class="history-item">
@@ -729,7 +756,7 @@
                 </div>
             </div>
 
-            <!-- 7. SETTINGS VIEW -->
+            <!-- SETTINGS VIEW -->
             <div id="sec-settings" class="card-box" style="display:none;">
                 <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 10px;">⚙️ Settings</h3>
                 <p style="font-size:0.8rem; color:var(--subtext-color); margin-bottom:12px;">App Theme Customization</p>
@@ -1036,7 +1063,7 @@
 
             <!-- ADMIN MEMBERS LIST & MAKE MANAGER SECTION -->
             <div id="sec-admin-members" class="card-box" style="display: none;">
-                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 12px;">👥 All Members & Manager Elevation</h3>
+                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 12px;">👥 All Members & Details</h3>
                 
                 <div class="form-group">
                     <label>Search Member by Name</label>
@@ -1094,7 +1121,6 @@
         </div>
 
     </div>
-
     <script>
         const SUPABASE_URL = 'https://dgoanvhtgdkoqowwbddh.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_Msx99khN4c2O5hxMcdpfUw_7zB1U4LY';
@@ -1108,6 +1134,7 @@
         let selectedManagerObj = null;
         let selectedMemberForDuesTable = null;
         let chartInstance = null;
+        let passportBase64 = null;
 
         document.getElementById('att-meeting-date').valueAsDate = new Date();
         document.getElementById('expense-date-input').valueAsDate = new Date();
@@ -1173,6 +1200,19 @@
 
         function hideMessage() { msgBox.style.display = 'none'; }
 
+        // PASSPORT IMAGE UPLOAD PREVIEW & CONVERT TO BASE64
+        document.getElementById('reg-passport').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    passportBase64 = evt.target.result;
+                    document.getElementById('reg-passport-preview').src = passportBase64;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebar-overlay');
         const toggleBtn = document.getElementById('sidebar-toggle');
@@ -1191,7 +1231,6 @@
 
             if (role === 'admin' || role === 'manager') {
                 let html = '';
-
                 const hasRole = (r) => role === 'admin' || (Array.isArray(assignedRoles) && assignedRoles.includes(r));
 
                 if (hasRole('current_dues')) html += `<li id="menu-admin-home" class="active-item">📊 Admin Overview</li>`;
@@ -1333,7 +1372,6 @@
                     <li id="menu-home" class="active-item">📊 Dashboard Overview</li>
                     <li id="menu-member-expenses">💸 Expenses History</li>
                     <li id="menu-track-dues">🎯 Track My Dues</li>
-                    <li id="menu-dues-transactions">💳 View Dues Transactions</li>
                     <li id="menu-arrears">⚠️ My Arrears Dues</li>
                     <li id="menu-levy">🏛️ My Levy View</li>
                     <li id="menu-attendance">📅 Attendance Performance</li>
@@ -1381,7 +1419,6 @@
             const menuHome = document.getElementById('menu-home');
             const menuExpenses = document.getElementById('menu-member-expenses');
             const menuTrackDues = document.getElementById('menu-track-dues');
-            const menuDuesTransactions = document.getElementById('menu-dues-transactions');
             const menuArrears = document.getElementById('menu-arrears');
             const menuLevy = document.getElementById('menu-levy');
             const menuAttendance = document.getElementById('menu-attendance');
@@ -1392,7 +1429,6 @@
             const secMemberOverview = document.getElementById('sec-member-overview');
             const secMemberExpenses = document.getElementById('sec-member-expenses');
             const secTrackDues = document.getElementById('sec-track-dues');
-            const secDuesTransactions = document.getElementById('sec-dues-transactions');
             const secArrears = document.getElementById('sec-arrears');
             const secLevy = document.getElementById('sec-levy');
             const secAttendance = document.getElementById('sec-attendance');
@@ -1400,8 +1436,8 @@
             const secNotifications = document.getElementById('sec-notifications');
             const secSettings = document.getElementById('sec-settings');
 
-            const allMenuBtns = [menuHome, menuExpenses, menuTrackDues, menuDuesTransactions, menuArrears, menuLevy, menuAttendance, menuProjInfo, menuNotifications, menuSettings];
-            const allSections = [secMemberOverview, secMemberExpenses, secTrackDues, secDuesTransactions, secArrears, secLevy, secAttendance, secProjInfo, secNotifications, secSettings];
+            const allMenuBtns = [menuHome, menuExpenses, menuTrackDues, menuArrears, menuLevy, menuAttendance, menuProjInfo, menuNotifications, menuSettings];
+            const allSections = [secMemberOverview, secMemberExpenses, secTrackDues, secArrears, secLevy, secAttendance, secProjInfo, secNotifications, secSettings];
 
             function hideAllMemberSections() { allSections.forEach(sec => sec.style.display = 'none'); }
             function resetSidebarActive() { allMenuBtns.forEach(item => item.classList.remove('active-item')); }
@@ -1409,9 +1445,9 @@
             menuHome.addEventListener('click', () => {
                 resetSidebarActive();
                 menuHome.classList.add('active-item');
-                if (currentUser && (currentUser.role === 'member' || currentUser.role === 'manager')) {
-                    hideAllMemberSections();
-                    secMemberOverview.style.display = 'block';
+                hideAllMemberSections();
+                secMemberOverview.style.display = 'block';
+                if (currentUser) {
                     loadMemberOverviewData(currentUser);
                 }
                 closeSidebar();
@@ -1435,17 +1471,6 @@
                     hideAllMemberSections();
                     secTrackDues.style.display = 'block';
                     trackMemberDues(currentUser.member_id);
-                }
-                closeSidebar();
-            });
-
-            menuDuesTransactions.addEventListener('click', () => {
-                resetSidebarActive();
-                menuDuesTransactions.classList.add('active-item');
-                if (currentUser) {
-                    hideAllMemberSections();
-                    secDuesTransactions.style.display = 'block';
-                    fetchMemberDuesHistory(currentUser.member_id);
                 }
                 closeSidebar();
             });
@@ -1586,9 +1611,15 @@
             const whatsapp = document.getElementById('reg-whatsapp').value.trim();
             const origin = document.getElementById('reg-origin').value.trim();
             const residence = document.getElementById('reg-residence').value.trim();
+            const address = document.getElementById('reg-address').value.trim();
             const nationality = document.getElementById('reg-nationality').value.trim();
             const pin = document.getElementById('reg-pin').value.trim();
             const regBtn = document.getElementById('reg-btn');
+
+            if (!passportBase64) {
+                showMessage('Please upload a passport photograph.');
+                return;
+            }
 
             if (pin.length !== 6 || isNaN(pin)) {
                 showMessage('PIN must be exactly 6 numbers.');
@@ -1610,6 +1641,8 @@
                         whatsapp_number: whatsapp,
                         state_of_origin: origin,
                         state_of_residence: residence,
+                        residence_address: address,
+                        passport_url: passportBase64,
                         nationality: nationality,
                         pin_hash: pin,
                         member_id: memberId,
@@ -1622,6 +1655,8 @@
                 } else {
                     showMessage(`Account created! Member ID: ${memberId}. Please login.`, false);
                     document.getElementById('register-form').reset();
+                    passportBase64 = null;
+                    document.getElementById('reg-passport-preview').src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394a3b8'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
                     setTimeout(() => {
                         registerView.style.display = 'none';
                         authViewWrapper.style.display = 'block';
@@ -1730,7 +1765,6 @@
             }
         });
 
-        // LOAD MEMBER OVERVIEW DATA & CHART
         async function loadMemberOverviewData(user) {
             try {
                 const { data: payments } = await _supabase
@@ -1923,44 +1957,6 @@
             }
         }
 
-        async function fetchMemberDuesHistory(memberId) {
-            const container = document.getElementById('member-history-container');
-
-            try {
-                const { data, error } = await _supabase
-                    .from('dues_payments')
-                    .select('*')
-                    .eq('member_id', memberId)
-                    .order('created_at', { ascending: false });
-
-                if (error || !data || data.length === 0) {
-                    container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">No transaction records found.</p>';
-                    return;
-                }
-
-                container.innerHTML = '';
-                data.forEach(item => {
-                    const dateFormatted = new Date(item.created_at).toLocaleDateString('en-GB', {
-                        day: 'numeric', month: 'short', year: 'numeric'
-                    });
-
-                    const div = document.createElement('div');
-                    div.className = 'history-item';
-                    div.innerHTML = `
-                        <div class="history-row">
-                            <div class="history-title">${item.payment_type === 'compulsory_dues' ? 'Compulsory Dues' : item.payment_type}</div>
-                            <div class="history-amount">₦${Number(item.amount).toLocaleString()}</div>
-                        </div>
-                        <div class="history-date">${dateFormatted} • Rec. by: ${item.recorded_by || 'Admin'}</div>
-                    `;
-                    container.appendChild(div);
-                });
-
-            } catch (err) {
-                container.innerHTML = '<p style="font-size:0.75rem; color:#ef4444; text-align:center;">Network error.</p>';
-            }
-        }
-
         async function calculateMemberArrears(memberId, regDateStr) {
             const container = document.getElementById('arrears-container');
             container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center;">Calculating arrears...</p>';
@@ -2125,6 +2121,7 @@
                 container.innerHTML = '<p style="font-size:0.75rem; color:#ef4444; text-align:center;">Network error.</p>';
             }
         }
+
         // ADMIN VIEW MEMBERS DUES TABLE
         async function fetchAdminMembersDuesTable() {
             const tbody = document.getElementById('admin-members-dues-tbody');
@@ -2199,7 +2196,6 @@
 
             try {
                 let query = _supabase.from('dues_payments').select('*').eq('member_id', memberId).order('created_at', { ascending: false });
-                
                 const { data } = await query;
 
                 if (!data || data.length === 0) {
@@ -2296,7 +2292,7 @@
             fetchAdminAttendanceHistory(e.target.value);
         });
 
-        // ADMIN MEMBERS LIST & MAKE MANAGER
+        // ADMIN MEMBERS LIST (DETAILS VIEW & MAKE MANAGER)
         async function fetchAdminMembersList(searchQuery = '') {
             const container = document.getElementById('admin-members-list-container');
             container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Loading members...</p>';
@@ -2318,21 +2314,29 @@
                 data.forEach(m => {
                     const isMgr = m.role === 'manager';
                     const isAdm = m.role === 'admin';
+                    const defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394a3b8'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
 
                     const div = document.createElement('div');
                     div.className = 'history-item';
                     div.innerHTML = `
-                        <div class="history-row">
-                            <div class="history-title">${m.full_name}</div>
+                        <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+                            <img src="${m.passport_url || defaultAvatar}" class="passport-preview" style="width:55px; height:55px; border-width:2px;" alt="Passport">
+                            <div style="flex:1;">
+                                <div class="history-title">${m.full_name}</div>
+                                <div style="font-size:0.7rem; color:var(--subtext-color);">${m.email || 'No Email'}</div>
+                            </div>
                             <span class="status-badge ${isAdm ? 'status-present' : (isMgr ? 'badge-partial' : 'status-excused')}">
                                 ${m.role.toUpperCase()}
                             </span>
                         </div>
-                        <div class="profile-row" style="margin-top:6px;"><span class="profile-key">Phone:</span><span class="profile-val">${m.phone_number}</span></div>
-                        <div class="profile-row"><span class="profile-key">Residence:</span><span class="profile-val">${m.state_of_residence || 'N/A'}</span></div>
-                        <div class="profile-row"><span class="profile-key">Origin:</span><span class="profile-val">${m.state_of_origin || 'N/A'}</span></div>
+
+                        <div class="profile-row"><span class="profile-key">Phone:</span><span class="profile-val">${m.phone_number}</span></div>
+                        <div class="profile-row"><span class="profile-key">WhatsApp:</span><span class="profile-val">${m.whatsapp_number || 'N/A'}</span></div>
+                        <div class="profile-row"><span class="profile-key">State of Residence:</span><span class="profile-val">${m.state_of_residence || 'N/A'}</span></div>
+                        <div class="profile-row"><span class="profile-key">Residence Address:</span><span class="profile-val">${m.residence_address || 'N/A'}</span></div>
+                        <div class="profile-row"><span class="profile-key">State of Origin:</span><span class="profile-val">${m.state_of_origin || 'N/A'}</span></div>
                         <div class="profile-row"><span class="profile-key">Nationality:</span><span class="profile-val">${m.nationality || 'Nigerian'}</span></div>
-                        
+
                         ${!isAdm ? `
                             <button class="btn-primary btn-make-mgr" data-id="${m.id}" data-role="${m.role}" style="margin-top:8px; padding:8px; font-size:0.75rem; background:${isMgr ? '#ef4444' : '#0284c7'};">
                                 ${isMgr ? 'Demote to Member' : 'Make Manager'}
@@ -2710,6 +2714,8 @@
 
                 const totalBalance = totalInflow - totalExpenses;
 
+                document.getElementById('admin-total-dues').textContent = '₦' + duesTotal.toLocaleString();
+                document.getElementById('admin-total-levy').textContent = '₦' + levyTotal.toLocaleString();
                 document.getElementById('admin-total-inflow').textContent = '₦' + totalInflow.toLocaleString();
                 document.getElementById('admin-total-expenses').textContent = '₦' + totalExpenses.toLocaleString();
                 document.getElementById('admin-total-balance').textContent = '₦' + totalBalance.toLocaleString();
