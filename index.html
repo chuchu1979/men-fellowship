@@ -1375,11 +1375,11 @@
                 }
                 document.getElementById('card-old-dues').textContent = '₦' + totalOldDues.toLocaleString();
 
-                // DUES CALCULATED CHRONOLOGICALLY FROM JAN 2025 UP TO NOW (OCT 2026 = 22 MONTHS)
+                // DUES CALCULATED CHRONOLOGICALLY FROM JAN 2025 UP TO CURRENT MONTH
                 const MONTHLY_RATE = 500;
                 const startYear = 2025;
-                const now = new Date(); // Oct 2026
-                const totalMonthsToCurrent = (now.getFullYear() - startYear) * 12 + (now.getMonth() + 1); // 12 + 10 = 22 months
+                const now = new Date();
+                const totalMonthsToCurrent = (now.getFullYear() - startYear) * 12 + (now.getMonth() + 1);
 
                 const totalExpectedDues = Math.max(1, totalMonthsToCurrent) * MONTHLY_RATE;
                 const arrears = Math.max(0, totalExpectedDues - compulsoryPaid);
@@ -1432,10 +1432,10 @@
             });
         }
 
-        // ACCURATE CHRONOLOGICAL DUES TRACKER (2025 -> 2026)
+        // ACCURATE CHRONOLOGICAL DUES TRACKER WITH DYNAMIC/UNLIMITED FUTURE YEARS
         async function trackMemberDues(memberId) {
             const container = document.getElementById('track-results-container');
-            const selectedYear = document.getElementById('track-year-select').value;
+            const yearSelect = document.getElementById('track-year-select');
             const selectedMonth = document.getElementById('track-month-select').value;
 
             container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Tracking dues...</p>';
@@ -1453,16 +1453,31 @@
                 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
                 const startYear = 2025;
-                const endYear = 2026;
-                const currentYear = 2026;
-                const currentMonthIndex = 9; // October 2026
+                const currentYear = new Date().getFullYear(); // e.g. 2026
+                
+                // Calculate max year based on member payments (or at least currentYear + 5)
+                const monthsPaidYears = Math.floor((totalMonthsPaidCount - 1) / 12);
+                const maxPaidYear = startYear + monthsPaidYears;
+                const endYear = Math.max(currentYear + 5, maxPaidYear + 2);
+
+                // Dynamically update Year dropdown if needed
+                const currentlySelectedYear = yearSelect.value;
+                const existingYears = Array.from(yearSelect.options).map(o => o.value);
+
+                for (let yr = startYear; yr <= endYear; yr++) {
+                    if (!existingYears.includes(yr.toString())) {
+                        const opt = document.createElement('option');
+                        opt.value = yr.toString();
+                        opt.textContent = yr.toString();
+                        yearSelect.appendChild(opt);
+                    }
+                }
 
                 let allMonthsSequence = [];
                 let globalIndex = 0;
 
                 for (let yr = startYear; yr <= endYear; yr++) {
-                    const maxM = (yr === currentYear) ? currentMonthIndex : 11;
-                    for (let m = 0; m <= maxM; m++) {
+                    for (let m = 0; m < 12; m++) {
                         const isPaid = (globalIndex < totalMonthsPaidCount);
                         allMonthsSequence.push({
                             year: yr,
@@ -1474,8 +1489,9 @@
                     }
                 }
 
+                const activeYear = yearSelect.value;
                 let displayList = allMonthsSequence.filter(item => {
-                    if (selectedYear !== 'ALL' && item.year !== Number(selectedYear)) return false;
+                    if (activeYear !== 'ALL' && item.year !== Number(activeYear)) return false;
                     if (selectedMonth !== 'ALL' && item.monthIndex !== Number(selectedMonth)) return false;
                     return true;
                 });
