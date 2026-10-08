@@ -288,6 +288,14 @@
 
         .header-brand { display: flex; align-items: center; gap: 8px; }
 
+        .header-logo-img {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-color);
+        }
+
         .header-logo {
             width: 38px;
             height: 38px;
@@ -640,6 +648,7 @@
             <div class="header-brand">
                 <button class="icon-btn" id="sidebar-toggle">☰</button>
                 <button class="btn-manager-login" id="btn-login-as-admin">🔑 Login as Admin</button>
+                <img id="header-custom-app-logo" class="header-logo-img" style="display:none;" alt="App Logo">
                 <img id="header-user-passport" class="passport-preview" style="width:38px; height:38px; border-width:2px; display:none;" alt="User Passport">
                 <div class="header-logo" id="header-logo-badge">MF</div>
                 <div>
@@ -834,6 +843,11 @@
                 </div>
 
                 <div style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:14px;">
+                    <label style="font-size:0.8rem; font-weight:600; color:var(--text-color); display:block; margin-bottom:6px;">🖐️ Fingerprint Registration</label>
+                    <button class="btn-primary" id="btn-register-device-fingerprint" style="background:#0d9488;">Register Fingerprint for This Device</button>
+                </div>
+
+                <div style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:14px;">
                     <label style="font-size:0.8rem; font-weight:600; color:var(--text-color); display:block; margin-bottom:6px;">🎵 Select Notification Sound Tone (15 Sounds)</label>
                     <select id="notif-sound-select" style="width:100%; padding:10px; border-radius:8px; background:var(--input-bg); color:var(--text-color); border:1px solid var(--border-color); font-size:0.85rem;">
                         <option value="1">1. Gentle Chime (Default)</option>
@@ -861,6 +875,22 @@
         <!-- ADMIN DASHBOARD SECTION -->
         <div id="admin-dashboard-section" style="display: none;">
             
+            <!-- ADMIN UPLOAD APP LOGO SECTION -->
+            <div id="sec-admin-app-logo" class="card-box" style="display: none;">
+                <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 12px;">🖼️ Upload & Change App Logo</h3>
+                
+                <div class="passport-preview-wrapper" style="margin-bottom:12px;">
+                    <img id="admin-logo-preview" class="passport-preview" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394a3b8'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>" alt="Logo Preview">
+                </div>
+
+                <div class="form-group">
+                    <label>Choose New App Logo Image</label>
+                    <input type="file" id="admin-app-logo-input" accept="image/*">
+                </div>
+
+                <button class="btn-primary" id="btn-save-app-logo" style="background:#2563eb;">Upload & Save Logo</button>
+            </div>
+
             <!-- ADMIN RECORD CURRENT DUES SECTION -->
             <div id="sec-admin-current-dues" class="card-box">
                 <h3 style="font-size: 0.95rem; color:var(--accent-color); margin-bottom: 12px;">🔍 Search & Record Member Dues</h3>
@@ -1224,6 +1254,7 @@
         let selectedMemberForDuesTable = null;
         let chartInstance = null;
         let passportBase64 = null;
+        let appLogoBase64 = null;
         let deferredPwaPrompt = null;
 
         document.getElementById('att-meeting-date').valueAsDate = new Date();
@@ -1259,6 +1290,14 @@
                     setTimeout(() => { auth.style.opacity = '1'; }, 50);
                 }, 600);
             }, 3000);
+
+            // Request System Notification Permission
+            if ("Notification" in window && Notification.permission !== "granted") {
+                Notification.requestPermission();
+            }
+
+            // Realtime Auto-Refresh Subscriptions
+            setupRealtimeSubscriptions();
         });
 
         const authViewWrapper = document.getElementById('auth-view-wrapper');
@@ -1308,7 +1347,7 @@
 
         function hideMessage() { msgBox.style.display = 'none'; }
 
-        // PASSPORT IMAGE UPLOAD PREVIEW & CONVERT TO BASE64
+        // PASSPORT IMAGE UPLOAD PREVIEW
         document.getElementById('reg-passport').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -1316,6 +1355,19 @@
                 reader.onload = function(evt) {
                     passportBase64 = evt.target.result;
                     document.getElementById('reg-passport-preview').src = passportBase64;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // ADMIN APP LOGO UPLOAD PREVIEW
+        document.getElementById('admin-app-logo-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    appLogoBase64 = evt.target.result;
+                    document.getElementById('admin-logo-preview').src = appLogoBase64;
                 };
                 reader.readAsDataURL(file);
             }
@@ -1353,6 +1405,7 @@
                 if (hasRole('levy_history')) html += `<li id="menu-admin-levy-history">📖 Levy History</li>`;
 
                 if (role === 'admin') {
+                    html += `<li id="menu-admin-app-logo">🖼️ Upload App Logo</li>`;
                     html += `<li id="menu-admin-members">👥 Members</li>`;
                     html += `<li id="menu-admin-managers">🛡️ Managers</li>`;
                 }
@@ -1365,6 +1418,15 @@
                         resetAdminSidebarActive();
                         document.getElementById('menu-admin-home').classList.add('active-item');
                         showAdminSection('sec-admin-current-dues');
+                        closeSidebar();
+                    });
+                }
+
+                if (document.getElementById('menu-admin-app-logo')) {
+                    document.getElementById('menu-admin-app-logo').addEventListener('click', () => {
+                        resetAdminSidebarActive();
+                        document.getElementById('menu-admin-app-logo').classList.add('active-item');
+                        showAdminSection('sec-admin-app-logo');
                         closeSidebar();
                     });
                 }
@@ -1513,7 +1575,7 @@
 
         function showAdminSection(sectionId) {
             const adminSecs = [
-                'sec-admin-current-dues', 'sec-admin-view-members-dues', 'sec-admin-old-dues', 
+                'sec-admin-app-logo', 'sec-admin-current-dues', 'sec-admin-view-members-dues', 'sec-admin-old-dues', 
                 'sec-admin-record-expenses', 'sec-admin-view-expenses', 'sec-admin-attendance', 
                 'sec-admin-view-attendance', 'sec-admin-levy', 'sec-admin-pay-levy', 
                 'sec-admin-levy-history', 'sec-admin-members', 'sec-admin-managers'
@@ -1707,11 +1769,52 @@
             playNotificationSound(selectedTone);
         });
 
-        // FINGERPRINT / BIOMETRIC AUTHENTICATION
-        async function triggerBiometricAuth(roleType) {
-            hideMessage();
+        // SYSTEM PHONE NOTIFICATION
+        function sendPhoneNotification(title, message) {
+            const selectedTone = document.getElementById('notif-sound-select').value || '1';
+            playNotificationSound(selectedTone);
+
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification(title, {
+                    body: message,
+                    icon: '/icon.png'
+                });
+            }
+        }
+
+        // SUPABASE REALTIME AUTOMATIC BACKGROUND REFRESH
+        function setupRealtimeSubscriptions() {
+            _supabase
+                .channel('schema-db-changes')
+                .on('postgres_changes', { event: '*', schema: 'public' }, (payload) => {
+                    if (currentUser) {
+                        loadMemberOverviewData(currentUser);
+                        loadMemberNotifications(currentUser);
+                        sendPhoneNotification("Men Fellowship Update", "Admin made an update to financial records.");
+                    }
+                })
+                .subscribe();
+        }
+
+        // WEBAUTHN PASSKEY REGISTER & LOGIN
+        function bufferToBase64(buffer) {
+            return btoa(String.fromCharCode(...new Uint8Array(buffer)));
+        }
+
+        function base64ToBuffer(base64) {
+            const binary = atob(base64);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        document.getElementById('btn-register-device-fingerprint').addEventListener('click', async () => {
+            if (!currentUser) return;
+
             if (!window.PublicKeyCredential) {
-                showMessage('Fingerprint / Biometric sensor is not supported on this device.');
+                alert('Fingerprint biometrics not supported on this device/browser.');
                 return;
             }
 
@@ -1719,18 +1822,96 @@
                 const challenge = new Uint8Array(32);
                 window.crypto.getRandomValues(challenge);
 
-                const options = {
-                    publicKey: {
-                        challenge: challenge,
-                        timeout: 60000,
-                        userVerification: "required"
-                    }
+                const userIdBytes = new Uint8Array(16);
+                window.crypto.getRandomValues(userIdBytes);
+
+                const publicKeyCredentialCreationOptions = {
+                    challenge: challenge,
+                    rp: { name: "Men Fellowship App", id: window.location.hostname },
+                    user: {
+                        id: userIdBytes,
+                        name: currentUser.phone_number,
+                        displayName: currentUser.full_name
+                    },
+                    pubKeyCredParams: [{ alg: -7, type: "public-key" }, { alg: -257, type: "public-key" }],
+                    authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
+                    timeout: 60000
                 };
 
-                const credential = await navigator.credentials.get(options);
+                const credential = await navigator.credentials.create({ publicKey: publicKeyCredentialCreationOptions });
                 if (credential) {
-                    showMessage('Biometric verification successful!', false);
-                    alert('Fingerprint Verified! Please sign in using your phone and PIN.');
+                    const rawIdBase64 = bufferToBase64(credential.rawId);
+                    localStorage.setItem('mf_passkey_raw_id', rawIdBase64);
+                    localStorage.setItem('mf_passkey_phone', currentUser.phone_number);
+                    alert('Fingerprint successfully registered for this device!');
+                }
+            } catch (err) {
+                alert('Fingerprint registration cancelled or failed: ' + err.message);
+            }
+        });
+
+        async function triggerBiometricAuth(roleType) {
+            hideMessage();
+            const savedRawId = localStorage.getItem('mf_passkey_raw_id');
+            const savedPhone = localStorage.getItem('mf_passkey_phone');
+
+            if (!savedRawId || !savedPhone) {
+                showMessage('No fingerprint passkey registered on this device yet. Login with PIN first and register under Settings.');
+                return;
+            }
+
+            try {
+                const challenge = new Uint8Array(32);
+                window.crypto.getRandomValues(challenge);
+
+                const publicKeyCredentialRequestOptions = {
+                    challenge: challenge,
+                    allowCredentials: [{
+                        id: base64ToBuffer(savedRawId),
+                        type: 'public-key'
+                    }],
+                    timeout: 60000,
+                    userVerification: "required"
+                };
+
+                const assertion = await navigator.credentials.get({ publicKey: publicKeyCredentialRequestOptions });
+                if (assertion) {
+                    const { data, error } = await _supabase
+                        .from('members')
+                        .select('*')
+                        .eq('phone_number', savedPhone)
+                        .single();
+
+                    if (error || !data) {
+                        showMessage('User not found for registered fingerprint.');
+                    } else {
+                        currentUser = data;
+                        document.getElementById('top-user-name').textContent = data.full_name || 'Member';
+                        document.getElementById('top-user-phone').textContent = data.phone_number || '';
+
+                        const defaultAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394a3b8'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
+                        const headerImg = document.getElementById('header-user-passport');
+                        const headerBadge = document.getElementById('header-logo-badge');
+
+                        headerImg.src = data.passport_url ? data.passport_url : defaultAvatar;
+                        headerImg.style.display = 'block';
+                        headerBadge.style.display = 'none';
+
+                        authContainer.style.display = 'none';
+                        dashboardView.style.display = 'block';
+
+                        if (roleType === 'admin' && (data.role === 'admin' || data.role === 'manager')) {
+                            openDashboardAsManagerAdmin(data, data.role);
+                        } else {
+                            document.getElementById('dashboard-role-title').textContent = 'MEMBER DASHBOARD';
+                            document.getElementById('admin-total-card-wrapper').style.display = 'none';
+                            document.getElementById('admin-dashboard-section').style.display = 'none';
+                            document.getElementById('member-dashboard-section').style.display = 'block';
+                            setupSidebarMenu('member');
+                            loadMemberOverviewData(currentUser);
+                            loadMemberNotifications(currentUser);
+                        }
+                    }
                 }
             } catch (err) {
                 showMessage('Biometric authentication failed or cancelled.');
@@ -1739,6 +1920,21 @@
 
         document.getElementById('btn-bio-login-member').addEventListener('click', () => triggerBiometricAuth('member'));
         document.getElementById('btn-bio-login-admin').addEventListener('click', () => triggerBiometricAuth('admin'));
+
+        // SAVE APP LOGO
+        document.getElementById('btn-save-app-logo').addEventListener('click', async () => {
+            if (!appLogoBase64) {
+                alert('Please select an image file first.');
+                return;
+            }
+
+            const customLogoImg = document.getElementById('header-custom-app-logo');
+            customLogoImg.src = appLogoBase64;
+            customLogoImg.style.display = 'block';
+            document.getElementById('header-logo-badge').style.display = 'none';
+
+            alert('App Logo updated successfully!');
+        });
 
         document.getElementById('btn-login-as-admin').addEventListener('click', async () => {
             if (!currentUser) return;
@@ -2032,9 +2228,6 @@
                 if (unreadCount > 0) {
                     bellBadge.textContent = unreadCount;
                     bellBadge.style.display = 'inline-block';
-                    
-                    const selectedTone = document.getElementById('notif-sound-select').value || '1';
-                    playNotificationSound(selectedTone);
                 } else {
                     bellBadge.style.display = 'none';
                 }
@@ -2602,7 +2795,7 @@
             fetchAdminAttendanceHistory(e.target.value);
         });
 
-        // ADMIN MEMBERS LIST (DETAILS VIEW & MAKE MANAGER)
+        // ADMIN MEMBERS LIST
         async function fetchAdminMembersList(searchQuery = '') {
             const container = document.getElementById('admin-members-list-container');
             container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center; padding:10px;">Loading members...</p>';
