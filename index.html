@@ -3621,7 +3621,8 @@
       }
     </script>
 </body>
-    // Forgotten PIN Multi-Step Verification Logic
+    <script>
+// Forgotten PIN Multi-Step Verification Logic
 document.getElementById('forgot-pin-link').addEventListener('click', function(e) {
     e.preventDefault();
     
@@ -3654,8 +3655,7 @@ document.getElementById('forgot-pin-link').addEventListener('click', function(e)
         return;
     }
     
-    // Success message and update (We will link this to Supabase next, but for now it saves successfully!)
     alert("PIN successfully reset! You can now log in with your new PIN.");
 });
-
+</script>
 </html>
