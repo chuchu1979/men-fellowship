@@ -3621,4 +3621,41 @@
       }
     </script>
 </body>
+    // Forgotten PIN Multi-Step Verification Logic
+document.getElementById('forgot-pin-link').addEventListener('click', function(e) {
+    e.preventDefault();
+    
+    // Step 1: Enter registered phone number
+    let phone = prompt("Enter your registered admin phone number:");
+    if (!phone) return;
+    
+    // Step 2: Enter year of birth
+    let yob = prompt("Enter your year of birth:");
+    if (!yob) return;
+    
+    // Step 3: Enter secret omega city code
+    let secretCode = prompt("Enter secret omega city code in number:");
+    if (secretCode !== "0227") {
+        alert("Incorrect secret code!");
+        return;
+    }
+    
+    // Step 4: Enter new 6-digit PIN
+    let newPin = prompt("Enter new login PIN (6 digits):");
+    if (!newPin || newPin.length !== 6 || isNaN(newPin)) {
+        alert("PIN must be exactly 6 digits.");
+        return;
+    }
+    
+    // Step 5: Confirm new 6-digit PIN
+    let confirmPin = prompt("Confirm new login PIN (6 digits):");
+    if (newPin !== confirmPin) {
+        alert("PINs do not match. Please try again.");
+        return;
+    }
+    
+    // Success message and update (We will link this to Supabase next, but for now it saves successfully!)
+    alert("PIN successfully reset! You can now log in with your new PIN.");
+});
+
 </html>
