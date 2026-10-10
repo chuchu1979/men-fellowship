@@ -752,7 +752,6 @@
                         <label style="font-size:0.75rem; color:var(--subtext-color);">Year</label>
                         <select id="track-year-select" style="width:100%; padding:8px; border-radius:8px; background:var(--input-bg); color:var(--text-color); border:1px solid var(--border-color);">
                             <option value="ALL">All Years</option>
-                            <option value="2025">2025</option>
                             <option value="2026" selected>2026</option>
                         </select>
                     </div>
@@ -947,7 +946,6 @@
                     <div>
                         <label style="font-size:0.75rem; color:var(--subtext-color);">Filter Year</label>
                         <select id="admin-dues-year-select" style="width:100%; padding:8px; border-radius:8px; background:var(--input-bg); color:var(--text-color); border:1px solid var(--border-color);">
-                            <option value="2025">2025</option>
                             <option value="2026" selected>2026</option>
                             <option value="2027">2027</option>
                         </select>
@@ -988,17 +986,10 @@
                     </table>
                 </div>
 
-                <!-- MEMBER DUES DETAIL MODAL / CONTAINER -->
+                <!-- MEMBER DUES DETAIL CONTAINER -->
                 <div id="admin-single-member-dues-detail" style="display:none; margin-top:16px; border-top:1px solid var(--border-color); padding-top:14px;">
-                    <h4 style="font-size:0.85rem; color:var(--accent-color);" id="admin-dues-detail-name">Member Dues History</h4>
+                    <h4 style="font-size:0.85rem; color:var(--accent-color);" id="admin-dues-detail-name">Member Dues History (2026 Record)</h4>
                     
-                    <div style="display:flex; gap:8px; margin: 10px 0;">
-                        <div style="flex:1;">
-                            <label style="font-size:0.7rem; color:var(--subtext-color);">Select Calendar Date</label>
-                            <input type="date" id="admin-dues-cal-filter" style="width:100%; padding:6px; font-size:0.75rem; border-radius:6px; background:var(--input-bg); color:var(--text-color); border:1px solid var(--border-color);">
-                        </div>
-                    </div>
-
                     <div class="dues-table-wrapper">
                         <table class="custom-table">
                             <thead>
@@ -1298,12 +1289,10 @@
                 }, 600);
             }, 3000);
 
-            // Request System Notification Permission
             if ("Notification" in window && Notification.permission !== "granted") {
                 Notification.requestPermission();
             }
 
-            // Realtime Auto-Refresh Subscriptions
             setupRealtimeSubscriptions();
         });
 
@@ -1354,7 +1343,6 @@
 
         function hideMessage() { msgBox.style.display = 'none'; }
 
-        // PASSPORT IMAGE UPLOAD PREVIEW
         document.getElementById('reg-passport').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -1367,7 +1355,6 @@
             }
         });
 
-        // ADMIN APP LOGO UPLOAD PREVIEW
         document.getElementById('admin-app-logo-input').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -1747,7 +1734,6 @@
             themeStatusText.textContent = isLight ? '☀️ Light Mode' : '🌙 Dark Mode';
         });
 
-        // NOTIFICATION AUDIO SYNTHESIZER (15 SOUNDS)
         function playNotificationSound(toneIndex) {
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
             const now = ctx.currentTime;
@@ -1776,7 +1762,6 @@
             playNotificationSound(selectedTone);
         });
 
-        // SYSTEM PHONE NOTIFICATION
         function sendPhoneNotification(title, message) {
             const selectedTone = document.getElementById('notif-sound-select').value || '1';
             playNotificationSound(selectedTone);
@@ -1789,7 +1774,6 @@
             }
         }
 
-        // SUPABASE REALTIME AUTOMATIC BACKGROUND REFRESH
         function setupRealtimeSubscriptions() {
             _supabase
                 .channel('schema-db-changes')
@@ -1803,7 +1787,6 @@
                 .subscribe();
         }
 
-        // WEBAUTHN PASSKEY REGISTER & LOGIN
         function bufferToBase64(buffer) {
             return btoa(String.fromCharCode(...new Uint8Array(buffer)));
         }
@@ -1928,7 +1911,6 @@
         document.getElementById('btn-bio-login-member').addEventListener('click', () => triggerBiometricAuth('member'));
         document.getElementById('btn-bio-login-admin').addEventListener('click', () => triggerBiometricAuth('admin'));
 
-        // SAVE APP LOGO
         document.getElementById('btn-save-app-logo').addEventListener('click', async () => {
             if (!appLogoBase64) {
                 alert('Please select an image file first.');
@@ -2282,7 +2264,8 @@
                 const { data: payments } = await _supabase
                     .from('dues_payments')
                     .select('*')
-                    .eq('member_id', user.member_id);
+                    .eq('member_id', user.member_id)
+                    .gte('created_at', '2026-01-01T00:00:00Z');
 
                 let compulsoryPaid = 0;
                 const monthlySums = { Jan:0, Feb:0, Mar:0, Apr:0, May:0, Jun:0, Jul:0, Aug:0, Sep:0, Oct:0, Nov:0, Dec:0 };
@@ -2323,11 +2306,11 @@
                 document.getElementById('card-old-dues').textContent = '₦' + totalOldDues.toLocaleString();
 
                 const MONTHLY_RATE = 500;
-                const startYear = 2025;
+                const startYear = 2026;
                 const now = new Date();
-                const totalMonthsToCurrent = (now.getFullYear() - startYear) * 12 + (now.getMonth() + 1);
+                const totalMonthsToCurrent = Math.max(0, (now.getFullYear() - startYear) * 12 + (now.getMonth() + 1));
 
-                const totalExpectedDues = Math.max(1, totalMonthsToCurrent) * MONTHLY_RATE;
+                const totalExpectedDues = totalMonthsToCurrent * MONTHLY_RATE;
                 const arrears = Math.max(0, totalExpectedDues - compulsoryPaid);
 
                 document.getElementById('card-total-arrears').textContent = '₦' + arrears.toLocaleString();
@@ -2390,14 +2373,15 @@
                     .from('dues_payments')
                     .select('amount')
                     .eq('member_id', memberId)
-                    .eq('payment_type', 'compulsory_dues');
+                    .eq('payment_type', 'compulsory_dues')
+                    .gte('created_at', '2026-01-01T00:00:00Z');
 
                 const totalPaidAmount = payments ? payments.reduce((s, p) => s + Number(p.amount), 0) : 0;
                 const totalMonthsPaidCount = Math.floor(totalPaidAmount / 500);
 
                 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-                const startYear = 2025;
+                const startYear = 2026;
                 const currentYear = new Date().getFullYear();
                 
                 const monthsPaidYears = Math.floor((totalMonthsPaidCount - 1) / 12);
@@ -2478,15 +2462,16 @@
                     .from('dues_payments')
                     .select('amount')
                     .eq('member_id', memberId)
-                    .eq('payment_type', 'compulsory_dues');
+                    .eq('payment_type', 'compulsory_dues')
+                    .gte('created_at', '2026-01-01T00:00:00Z');
 
                 const totalPaid = data ? data.reduce((sum, item) => sum + Number(item.amount), 0) : 0;
                 const MONTHLY_RATE = 500;
-                const startYear = 2025;
+                const startYear = 2026;
                 const now = new Date();
 
-                const totalMonthsToCurrent = (now.getFullYear() - startYear) * 12 + (now.getMonth() + 1);
-                const totalExpectedDues = Math.max(1, totalMonthsToCurrent) * MONTHLY_RATE;
+                const totalMonthsToCurrent = Math.max(0, (now.getFullYear() - startYear) * 12 + (now.getMonth() + 1));
+                const totalExpectedDues = totalMonthsToCurrent * MONTHLY_RATE;
                 const totalArrears = Math.max(0, totalExpectedDues - totalPaid);
 
                 if (totalArrears === 0) {
@@ -2494,7 +2479,7 @@
                         <div style="text-align:center; padding:15px;">
                             <div style="font-size:1.8rem;">🎉</div>
                             <div style="font-size:0.85rem; color:#86efac; font-weight:700; margin-top:5px;">Up to Date!</div>
-                            <div style="font-size:0.75rem; color:var(--subtext-color); margin-top:4px;">You have no outstanding dues arrears.</div>
+                            <div style="font-size:0.75rem; color:var(--subtext-color); margin-top:4px;">You have no outstanding dues arrears from 2026.</div>
                         </div>
                     `;
                 } else {
@@ -2502,7 +2487,7 @@
                     container.innerHTML = `
                         <div class="history-item" style="border-color:#f87171; background:rgba(239,68,68,0.1);">
                             <div class="history-row">
-                                <div class="history-title" style="color:#fca5a5;">Total Arrears Owed</div>
+                                <div class="history-title" style="color:#fca5a5;">Total Arrears Owed (from 2026)</div>
                                 <div class="history-amount" style="color:#ef4444;">₦${totalArrears.toLocaleString()}</div>
                             </div>
                             <div class="history-date" style="color:var(--text-color); margin-top:6px;">
@@ -2634,7 +2619,7 @@
             }
         }
 
-        // ADMIN VIEW MEMBERS DUES TABLE
+        // ADMIN VIEW MEMBERS DUES TABLE (Locked strictly to 2026 onwards)
         async function fetchAdminMembersDuesTable() {
             const tbody = document.getElementById('admin-members-dues-tbody');
             const selectedYear = document.getElementById('admin-dues-year-select').value;
@@ -2644,7 +2629,7 @@
 
             try {
                 const { data: members } = await _supabase.from('members').select('*').order('full_name', { ascending: true });
-                const { data: payments } = await _supabase.from('dues_payments').select('*').eq('payment_type', 'compulsory_dues');
+                const { data: payments } = await _supabase.from('dues_payments').select('*').eq('payment_type', 'compulsory_dues').gte('created_at', '2026-01-01T00:00:00Z');
 
                 if (!members || members.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No members found.</td></tr>';
@@ -2663,14 +2648,14 @@
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td><span class="clickable-name" data-id="${member.member_id}" data-name="${member.full_name}">${member.full_name}</span></td>
-                            <td>${selectedYear} (Full)</td>
+                            <td>${selectedYear} (From Jan)</td>
                             <td style="color:#10b981; font-weight:700;">₦${totalPaid.toLocaleString()}</td>
                             <td><span class="status-badge ${monthsPaidCount > 0 ? 'status-present' : 'status-absent'}">${monthsPaidCount} Mos Paid</span></td>
                         `;
                         tbody.appendChild(tr);
                     } else {
                         const monthIdx = Number(selectedMonth);
-                        const startYear = 2025;
+                        const startYear = 2026;
                         const targetGlobalMonthIndex = (Number(selectedYear) - startYear) * 12 + monthIdx;
                         const isPaid = targetGlobalMonthIndex < monthsPaidCount;
 
@@ -2691,7 +2676,7 @@
                         const memberName = e.target.getAttribute('data-name');
                         selectedMemberForDuesTable = { member_id: memberId, full_name: memberName };
                         
-                        document.getElementById('admin-dues-detail-name').textContent = `${memberName} - Dues History`;
+                        document.getElementById('admin-dues-detail-name').textContent = `${memberName} - Dues History (2026 Record)`;
                         document.getElementById('admin-single-member-dues-detail').style.display = 'block';
                         fetchAdminSingleMemberDuesHistory(memberId);
                     });
@@ -2702,31 +2687,25 @@
             }
         }
 
-        async function fetchAdminSingleMemberDuesHistory(memberId, filterDate = '') {
+        async function fetchAdminSingleMemberDuesHistory(memberId) {
             const tbody = document.getElementById('admin-single-dues-tbody');
             tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Loading...</td></tr>';
 
             try {
-                let query = _supabase.from('dues_payments').select('*').eq('member_id', memberId).order('created_at', { ascending: false });
-                const { data } = await query;
+                const { data } = await _supabase
+                    .from('dues_payments')
+                    .select('*')
+                    .eq('member_id', memberId)
+                    .gte('created_at', '2026-01-01T00:00:00Z')
+                    .order('created_at', { ascending: false });
 
                 if (!data || data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No payment records.</td></tr>';
-                    return;
-                }
-
-                let filteredData = data;
-                if (filterDate) {
-                    filteredData = data.filter(p => new Date(p.created_at).toISOString().slice(0, 10) === filterDate);
-                }
-
-                if (filteredData.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No records on this date.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No payment records found from 2026 onwards.</td></tr>';
                     return;
                 }
 
                 tbody.innerHTML = '';
-                filteredData.forEach(p => {
+                data.forEach(p => {
                     const dateFormatted = new Date(p.created_at).toLocaleDateString('en-GB', {
                         day: 'numeric', month: 'short', year: 'numeric'
                     });
@@ -2747,12 +2726,6 @@
 
         document.getElementById('admin-dues-year-select').addEventListener('change', fetchAdminMembersDuesTable);
         document.getElementById('admin-dues-month-select').addEventListener('change', fetchAdminMembersDuesTable);
-        
-        document.getElementById('admin-dues-cal-filter').addEventListener('change', (e) => {
-            if (selectedMemberForDuesTable) {
-                fetchAdminSingleMemberDuesHistory(selectedMemberForDuesTable.member_id, e.target.value);
-            }
-        });
 
         // ADMIN VIEW ATTENDANCE HISTORY
         async function fetchAdminAttendanceHistory(searchQuery = '') {
@@ -2939,7 +2912,6 @@
             fetchAdminManagersList(e.target.value);
         });
 
-        // SAVE MANAGER PIN
         document.getElementById('btn-save-mgr-pin').addEventListener('click', async () => {
             if (!selectedManagerObj) return;
 
@@ -2957,7 +2929,6 @@
             }
         });
 
-        // SAVE MANAGER ROLES
         document.getElementById('btn-save-mgr-roles').addEventListener('click', async () => {
             if (!selectedManagerObj) return;
 
@@ -2971,7 +2942,6 @@
             }
         });
 
-        // REMOVE MANAGER STATUS
         document.getElementById('btn-remove-manager').addEventListener('click', async () => {
             if (!selectedManagerObj) return;
 
@@ -3211,7 +3181,7 @@
 
         async function calculateAdminFinancialSummary() {
             try {
-                const { data: payments } = await _supabase.from('dues_payments').select('amount');
+                const { data: payments } = await _supabase.from('dues_payments').select('amount').gte('created_at', '2026-01-01T00:00:00Z');
                 const duesTotal = payments ? payments.reduce((sum, item) => sum + Number(item.amount), 0) : 0;
 
                 const { data: oldDues } = await _supabase.from('old_dues').select('amount');
@@ -3631,20 +3601,16 @@
       }
     </script>
     <script>
-    // Forgotten PIN Multi-Step Verification & Supabase Update Logic
     document.getElementById('forgot-admin-pin-link').addEventListener('click', async function(e) {
         e.preventDefault();
         
-        // Step 1: Enter registered phone number
         let phone = prompt("Enter your registered admin phone number:");
         if (!phone) return;
         
-        // Step 2: Enter year of birth
         let yob = prompt("Enter your year of birth (e.g. 1980):");
         if (!yob) return;
 
         try {
-            // Verify admin credentials against Supabase
             let { data: adminUser, error } = await _supabase
                 .from('members')
                 .select('*')
@@ -3656,21 +3622,18 @@
                 return;
             }
 
-            // Step 3: Enter new 6-digit PIN
             let newPin = prompt("Enter new login PIN (6 digits):");
             if (!newPin || newPin.length !== 6 || isNaN(newPin)) {
                 alert("PIN must be exactly 6 digits.");
                 return;
             }
             
-            // Step 4: Confirm new 6-digit PIN
             let confirmPin = prompt("Confirm new login PIN (6 digits):");
             if (newPin !== confirmPin) {
                 alert("PINs do not match. Please try again.");
                 return;
             }
 
-            // Step 5: Update PIN in Supabase (overwriting old PIN completely so old PIN stops working)
             let updateField = adminUser.role === 'manager' ? { manager_pin: newPin } : { pin_hash: newPin };
             let { error: updateError } = await _supabase
                 .from('members')
@@ -3690,5 +3653,3 @@
     </script>
 </body>
 </html>
-
-
