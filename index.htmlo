@@ -562,6 +562,9 @@
                         <label for="admin-login-pin">6-Digit Security PIN</label>
                         <input type="password" id="admin-login-pin" maxlength="6" pattern="\d{6}" placeholder="******" required>
                     </div>
+                    <div style="text-align: right; margin-bottom: 15px;">
+                        <a href="#" id="forgot-admin-pin-link" style="color: #38bdf8; font-size: 14px; text-decoration: underline;">Forgotten PIN?</a>
+                    </div>
                     <button type="submit" class="btn-primary" id="admin-login-btn" style="background:#0284c7;">Sign In as Admin</button>
                     <button type="button" class="btn-primary btn-bio" id="btn-bio-login-admin">🖐️ Sign In with Fingerprint</button>
                 </form>
@@ -3619,6 +3622,64 @@
             .catch((err) => console.log('Service Worker registration failed: ', err));
         });
       }
+    </script>
+    <script>
+    // Forgotten PIN Multi-Step Verification & Supabase Update Logic
+    document.getElementById('forgot-admin-pin-link').addEventListener('click', async function(e) {
+        e.preventDefault();
+        
+        // Step 1: Enter registered phone number
+        let phone = prompt("Enter your registered admin phone number:");
+        if (!phone) return;
+        
+        // Step 2: Enter year of birth
+        let yob = prompt("Enter your year of birth (e.g. 1980):");
+        if (!yob) return;
+
+        try {
+            // Verify admin credentials against Supabase
+            let { data: adminUser, error } = await _supabase
+                .from('members')
+                .select('*')
+                .eq('phone_number', phone.trim())
+                .single();
+
+            if (error || !adminUser || (adminUser.role !== 'admin' && adminUser.role !== 'manager')) {
+                alert("Admin account not found with this phone number.");
+                return;
+            }
+
+            // Step 3: Enter new 6-digit PIN
+            let newPin = prompt("Enter new login PIN (6 digits):");
+            if (!newPin || newPin.length !== 6 || isNaN(newPin)) {
+                alert("PIN must be exactly 6 digits.");
+                return;
+            }
+            
+            // Step 4: Confirm new 6-digit PIN
+            let confirmPin = prompt("Confirm new login PIN (6 digits):");
+            if (newPin !== confirmPin) {
+                alert("PINs do not match. Please try again.");
+                return;
+            }
+
+            // Step 5: Update PIN in Supabase (overwriting old PIN completely so old PIN stops working)
+            let updateField = adminUser.role === 'manager' ? { manager_pin: newPin } : { pin_hash: newPin };
+            let { error: updateError } = await _supabase
+                .from('members')
+                .update(updateField)
+                .eq('id', adminUser.id);
+
+            if (updateError) {
+                alert("Failed to update PIN: " + updateError.message);
+            } else {
+                alert("PIN successfully reset! Your old PIN is now disabled. You can now log in with your new PIN.");
+            }
+
+        } catch (err) {
+            alert("Network error during PIN reset verification.");
+        }
+    });
     </script>
 </body>
 </html>
