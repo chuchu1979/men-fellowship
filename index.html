@@ -182,15 +182,6 @@
             margin-top: 10px;
         }
 
-        .btn-bio {
-            background: #0d9488;
-            margin-top: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
         .toggle-text { text-align: center; font-size: 0.82rem; color: var(--subtext-color); margin-top: 18px; }
         .toggle-text span { color: var(--accent-color); cursor: pointer; font-weight: 600; }
 
@@ -288,14 +279,6 @@
 
         .header-brand { display: flex; align-items: center; gap: 8px; }
 
-        .header-logo-img {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--accent-color);
-        }
-
         .header-logo {
             width: 38px;
             height: 38px;
@@ -314,41 +297,7 @@
         .header-user-name { font-size: 0.8rem; font-weight: 700; color: var(--accent-color); }
         .header-user-phone { font-size: 0.68rem; color: var(--subtext-color); font-weight: 500; }
 
-        .notif-bell-container {
-            position: relative;
-            cursor: pointer;
-            font-size: 1.2rem;
-            padding: 4px;
-        }
-
-        .notif-badge {
-            position: absolute;
-            top: -2px;
-            right: -4px;
-            background: #ef4444;
-            color: #ffffff;
-            font-size: 0.6rem;
-            font-weight: 800;
-            padding: 2px 5px;
-            border-radius: 10px;
-            display: none;
-        }
-
         .icon-btn { background: none; border: none; color: var(--text-color); font-size: 1.2rem; cursor: pointer; }
-
-        .btn-manager-login {
-            background: #0284c7;
-            color: #ffffff;
-            font-size: 0.68rem;
-            font-weight: 700;
-            padding: 6px 10px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            display: none;
-            align-items: center;
-            gap: 4px;
-        }
 
         .card-box {
             background: var(--card-bg);
@@ -358,7 +307,7 @@
             margin: 0 16px 16px;
         }
 
-        .search-item, .history-item {
+        .history-item {
             background: var(--input-bg);
             border: 1px solid var(--border-color);
             padding: 12px;
@@ -369,7 +318,6 @@
             gap: 6px;
         }
 
-        .history-row { display: flex; justify-content: space-between; align-items: center; }
         .history-title { font-size: 0.85rem; font-weight: 700; color: var(--text-color); }
 
         .theme-toggle-btn {
@@ -383,27 +331,6 @@
             cursor: pointer;
             margin-top: 10px;
         }
-
-        .roles-checkbox-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 8px;
-            margin-top: 8px;
-            background: var(--input-bg);
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        .roles-checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.8rem;
-            cursor: pointer;
-        }
-
-        .roles-checkbox-item input { width: auto; }
     </style>
 </head>
 <body>
@@ -546,7 +473,6 @@
         <div class="header">
             <div class="header-brand">
                 <button class="icon-btn" id="sidebar-toggle">☰</button>
-                <button class="btn-manager-login" id="btn-login-as-admin">🔑 Login as Admin</button>
                 <img id="header-user-passport" class="passport-preview" style="width:38px; height:38px; border-width:2px; display:none;" alt="User Passport">
                 <div class="header-logo" id="header-logo-badge">MF</div>
                 <div>
@@ -554,10 +480,6 @@
                 </div>
             </div>
             <div class="header-user-info">
-                <div class="notif-bell-container" id="top-notif-bell">
-                    🔔
-                    <span class="notif-badge" id="notif-bell-count">0</span>
-                </div>
                 <div>
                     <div class="header-user-name" id="top-user-name">User</div>
                     <div class="header-user-phone" id="top-user-phone">08000000000</div>
@@ -595,26 +517,12 @@
 
         <!-- ADMIN DASHBOARD SECTION -->
         <div id="admin-dashboard-section" style="display: none;">
-            
-            <!-- ADMIN BIRTHDAY CELEBRANTS SECTION -->
             <div id="sec-admin-birthdays" class="card-box">
                 <h3 style="font-size: 0.95rem; color:#f43f5e; margin-bottom: 12px;">🎂 Birthday Celebrants (2-Day Range)</h3>
                 <div id="admin-birthday-list-container">
                     <p style="font-size:0.75rem; color:var(--subtext-color); text-align:center;">Checking birthday records...</p>
                 </div>
             </div>
-
-            <!-- ADMIN MANAGERS CONTROL SECTION -->
-            <div id="sec-admin-managers" class="card-box" style="display: none;">
-                <h3 style="font-size: 0.95rem; color:#0284c7; margin-bottom: 12px;">🛡️ Managers Management & Role Assign</h3>
-                <div class="form-group">
-                    <label>Assign Roles (Sidebar Permissions)</label>
-                    <div class="roles-checkbox-grid">
-                        <label class="roles-checkbox-item"><input type="checkbox" class="role-chk" value="birthdays"> 🎂 Birthday Celebrants</label>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
     </div>
@@ -657,6 +565,26 @@
                 document.getElementById('auth-container').style.display = 'block';
                 document.getElementById('auth-container').style.opacity = '1';
             }, 1000);
+        });
+
+        // FIXED LOGIN TAB SWITCHING
+        const tabMember = document.getElementById('tab-member');
+        const tabAdmin = document.getElementById('tab-admin');
+        const memberWrapper = document.getElementById('member-login-form-wrapper');
+        const adminWrapper = document.getElementById('admin-login-form-wrapper');
+
+        tabMember.addEventListener('click', () => {
+            tabMember.classList.add('active');
+            tabAdmin.classList.remove('active');
+            memberWrapper.style.display = 'block';
+            adminWrapper.style.display = 'none';
+        });
+
+        tabAdmin.addEventListener('click', () => {
+            tabAdmin.classList.add('active');
+            tabMember.classList.remove('active');
+            adminWrapper.style.display = 'block';
+            memberWrapper.style.display = 'none';
         });
 
         // Toggle Login / Register View
@@ -737,7 +665,7 @@
             }
         });
 
-        // Admin Login
+        // Admin Login Handle
         document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const phone = document.getElementById('admin-login-phone').value.trim();
@@ -820,7 +748,7 @@
             else alert('Full Birthday Picture uploaded successfully!');
         });
 
-        // Fetch Birthday Celebrants (2 days interval to current day)
+        // Fetch Birthday Celebrants
         async function fetchBirthdayCelebrants() {
             const container = document.getElementById('admin-birthday-list-container');
             container.innerHTML = '<p style="font-size:0.75rem; color:var(--subtext-color); text-align:center;">Checking birthday records...</p>';
