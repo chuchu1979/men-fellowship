@@ -3631,20 +3631,17 @@
       }
     </script>
     <script>
-    // Forgotten PIN Multi-Step Verification & Supabase Update Logic
+    // Forgotten PIN Multi-Step Verification & Supabase Update Logic (Example removed)
     document.getElementById('forgot-admin-pin-link').addEventListener('click', async function(e) {
         e.preventDefault();
         
-        // Step 1: Enter registered phone number
         let phone = prompt("Enter your registered admin phone number:");
         if (!phone) return;
         
-        // Step 2: Enter year of birth
-        let yob = prompt("Enter your year of birth (e.g. 1980):");
+        let yob = prompt("Enter your year of birth:");
         if (!yob) return;
 
         try {
-            // Verify admin credentials against Supabase
             let { data: adminUser, error } = await _supabase
                 .from('members')
                 .select('*')
@@ -3656,21 +3653,23 @@
                 return;
             }
 
-            // Step 3: Enter new 6-digit PIN
+            if (String(adminUser.year_of_birth).trim() !== String(yob).trim()) {
+                alert("Incorrect Year of Birth verification failed.");
+                return;
+            }
+
             let newPin = prompt("Enter new login PIN (6 digits):");
             if (!newPin || newPin.length !== 6 || isNaN(newPin)) {
                 alert("PIN must be exactly 6 digits.");
                 return;
             }
             
-            // Step 4: Confirm new 6-digit PIN
             let confirmPin = prompt("Confirm new login PIN (6 digits):");
             if (newPin !== confirmPin) {
                 alert("PINs do not match. Please try again.");
                 return;
             }
 
-            // Step 5: Update PIN in Supabase (overwriting old PIN completely so old PIN stops working)
             let updateField = adminUser.role === 'manager' ? { manager_pin: newPin } : { pin_hash: newPin };
             let { error: updateError } = await _supabase
                 .from('members')
