@@ -264,6 +264,104 @@
             background: rgba(56, 189, 248, 0.2);
             color: #38bdf8;
         }
+
+        /* Matured Custom Modal Card Styling */
+        #custom-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            backdrop-filter: blur(5px);
+        }
+
+        .matured-modal-card {
+            background: #1e293b;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 16px;
+            padding: 22px 18px;
+            width: 100%;
+            max-width: 360px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            animation: modalPopIn 0.25s ease-out;
+        }
+
+        @keyframes modalPopIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .matured-modal-title {
+            font-size: 1rem;
+            color: #38bdf8;
+            margin-bottom: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .matured-modal-msg {
+            font-size: 0.82rem;
+            color: #cbd5e1;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+
+        .matured-input-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .matured-input-group label {
+            display: block;
+            font-size: 0.72rem;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+
+        .matured-input-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: #ffffff;
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        .matured-modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .matured-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: none;
+        }
+
+        .matured-btn-cancel {
+            background: #334155;
+            color: #cbd5e1;
+            display: none;
+        }
+
+        .matured-btn-ok {
+            background: #2563eb;
+            color: #ffffff;
+        }
     </style>
 </head>
 <body>
@@ -362,6 +460,24 @@
         </div>
     </div>
 
+    <!-- Matured Custom Modal Card Overlay -->
+    <div id="custom-modal-overlay">
+        <div class="matured-modal-card">
+            <h3 id="modal-title" class="matured-modal-title">Men Fellowship</h3>
+            <p id="modal-message" class="matured-modal-msg">Message goes here...</p>
+            
+            <div id="modal-input-container" class="matured-input-group" style="display: none;">
+                <label id="modal-input-label">Enter details:</label>
+                <input type="text" id="modal-input-field" placeholder="">
+            </div>
+
+            <div class="matured-modal-buttons">
+                <button id="modal-cancel-btn" class="matured-btn matured-btn-cancel">Cancel</button>
+                <button id="modal-ok-btn" class="matured-btn matured-btn-ok">OK</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const SUPABASE_URL = 'https://dgoanvhtgdkoqowwbddh.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_Msx99khN4c2O5hxMcdpfUw_7zB1U4LY';
@@ -372,6 +488,52 @@
         const overlay = document.getElementById('sidebar-overlay');
         const toggleBtn = document.getElementById('sidebar-toggle');
         const closeBtn = document.getElementById('sidebar-close');
+
+        // Matured Custom Modal Helper Function
+        function showCustomModal(title, message, needsInput = false, inputLabel = "") {
+            return new Promise((resolve) => {
+                const modalOverlay = document.getElementById('custom-modal-overlay');
+                const modalTitle = document.getElementById('modal-title');
+                const modalMessage = document.getElementById('modal-message');
+                const inputContainer = document.getElementById('modal-input-container');
+                const inputField = document.getElementById('modal-input-field');
+                const inputLabel = document.getElementById('modal-input-label');
+                const okBtn = document.getElementById('modal-ok-btn');
+                const cancelBtn = document.getElementById('modal-cancel-btn');
+
+                modalTitle.textContent = title;
+                modalMessage.textContent = message;
+                inputField.value = '';
+
+                if (needsInput) {
+                    inputContainer.style.display = 'block';
+                    inputLabel.textContent = inputLabel || 'Enter details:';
+                    cancelBtn.style.display = 'block';
+                } else {
+                    inputContainer.style.display = 'none';
+                    cancelBtn.style.display = 'none';
+                }
+
+                modalOverlay.style.display = 'flex';
+
+                function cleanup() {
+                    okBtn.onclick = null;
+                    cancelBtn.onclick = null;
+                    modalOverlay.style.display = 'none';
+                }
+
+                okBtn.onclick = () => {
+                    const val = inputField.value;
+                    cleanup();
+                    resolve(needsInput ? val : true);
+                };
+
+                cancelBtn.onclick = () => {
+                    cleanup();
+                    resolve(needsInput ? null : false);
+                };
+            });
+        }
 
         function showMessage(text, isError = true) {
             msgBox.textContent = text;
@@ -490,4 +652,3 @@
     </script>
 </body>
 </html>
-
