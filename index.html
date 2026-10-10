@@ -606,6 +606,10 @@
                     <input type="tel" id="reg-whatsapp" placeholder="e.g. 08012345678" required>
                 </div>
                 <div class="form-group">
+                    <label for="reg-yob">Year of Birth</label>
+                    <input type="number" id="reg-yob" min="1900" max="2026" placeholder="e.g. 1985" required>
+                </div>
+                <div class="form-group">
                     <label for="reg-origin">State of Origin</label>
                     <input type="text" id="reg-origin" placeholder="e.g. Imo" required>
                 </div>
@@ -2000,6 +2004,7 @@
             const email = document.getElementById('reg-email').value.trim();
             const phone = document.getElementById('reg-phone').value.trim();
             const whatsapp = document.getElementById('reg-whatsapp').value.trim();
+            const yearOfBirth = document.getElementById('reg-yob').value.trim();
             const origin = document.getElementById('reg-origin').value.trim();
             const residence = document.getElementById('reg-residence').value.trim();
             const address = document.getElementById('reg-address').value.trim();
@@ -2030,6 +2035,7 @@
                         email: email,
                         phone_number: phone,
                         whatsapp_number: whatsapp,
+                        year_of_birth: yearOfBirth,
                         state_of_origin: origin,
                         state_of_residence: residence,
                         residence_address: address,
@@ -2838,6 +2844,7 @@
 
                         <div class="profile-row"><span class="profile-key">Phone:</span><span class="profile-val">${m.phone_number}</span></div>
                         <div class="profile-row"><span class="profile-key">WhatsApp:</span><span class="profile-val">${m.whatsapp_number || 'N/A'}</span></div>
+                        <div class="profile-row"><span class="profile-key">Year of Birth:</span><span class="profile-val">${m.year_of_birth || 'N/A'}</span></div>
                         <div class="profile-row"><span class="profile-key">State of Residence:</span><span class="profile-val">${m.state_of_residence || 'N/A'}</span></div>
                         <div class="profile-row"><span class="profile-key">Residence Address:</span><span class="profile-val">${m.residence_address || 'N/A'}</span></div>
                         <div class="profile-row"><span class="profile-key">State of Origin:</span><span class="profile-val">${m.state_of_origin || 'N/A'}</span></div>
