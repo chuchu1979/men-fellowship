@@ -946,8 +946,7 @@
                     <div>
                         <label style="font-size:0.75rem; color:var(--subtext-color);">Filter Year</label>
                         <select id="admin-dues-year-select" style="width:100%; padding:8px; border-radius:8px; background:var(--input-bg); color:var(--text-color); border:1px solid var(--border-color);">
-                            <option value="2026" selected>2026</option>
-                            <option value="2027">2027</option>
+                            <!-- Years 2026 to 4040 generated dynamically -->
                         </select>
                     </div>
                     <div>
@@ -1257,6 +1256,22 @@
 
         document.getElementById('att-meeting-date').valueAsDate = new Date();
         document.getElementById('expense-date-input').valueAsDate = new Date();
+
+        // Initialize year options from 2026 to 4040 dynamically
+        function populateYearSelects() {
+            const adminYearSelect = document.getElementById('admin-dues-year-select');
+            if (adminYearSelect) {
+                adminYearSelect.innerHTML = '';
+                for (let yr = 2026; yr <= 4040; yr++) {
+                    const opt = document.createElement('option');
+                    opt.value = yr.toString();
+                    opt.textContent = yr.toString();
+                    if (yr === 2026) opt.selected = true;
+                    adminYearSelect.appendChild(opt);
+                }
+            }
+        }
+        document.addEventListener('DOMContentLoaded', populateYearSelects);
 
         // PWA AUTO-INSTALL PROMPT
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -2386,7 +2401,7 @@
                 
                 const monthsPaidYears = Math.floor((totalMonthsPaidCount - 1) / 12);
                 const maxPaidYear = startYear + monthsPaidYears;
-                const endYear = Math.max(currentYear + 5, maxPaidYear + 2);
+                const endYear = Math.max(4040, maxPaidYear + 2);
 
                 const existingYears = Array.from(yearSelect.options).map(o => o.value);
 
